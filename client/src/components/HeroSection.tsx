@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
-import heroImage from "@assets/generated_images/Arabic_cultural_hero_background_5605dc23.png";
+import heroImage from "@assets/generated_images/Modern_Arabic_library_hero_72133ecf.png";
 
 export default function HeroSection() {
   const handleExplore = () => {
