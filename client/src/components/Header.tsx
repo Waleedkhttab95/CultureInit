@@ -12,9 +12,12 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-primary">
-                مبادرة الإدارة الثقافية
-              </h1>
+              <img 
+                src="/attached_assets/00 الشعار الرئيسي_1758304639237.png" 
+                alt="مبادرة الإدارة الثقافية" 
+                className="h-10 w-auto"
+                data-testid="logo-main"
+              />
             </div>
           </div>
 

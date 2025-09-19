@@ -32,9 +32,19 @@ export default function HeroSection() {
           منصة معرفية متخصصة
         </div>
 
+        {/* Logo in Hero */}
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/attached_assets/02 الشعار الرئيسي أبيض_1758304639238.png" 
+            alt="مبادرة الإدارة الثقافية" 
+            className="h-16 sm:h-20 lg:h-24 w-auto"
+            data-testid="logo-hero"
+          />
+        </div>
+
         {/* Main heading */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-          مبادرة
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+          منصة معرفية متخصصة في 
           <span className="block text-primary">الإدارة الثقافية</span>
         </h1>
 

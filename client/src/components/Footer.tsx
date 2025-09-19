@@ -31,9 +31,12 @@ export default function Footer() {
           <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
             {/* Brand Section */}
             <div className="lg:col-span-2">
-              <h3 className="text-xl font-bold mb-4">
-                مبادرة الإدارة الثقافية
-              </h3>
+              <img 
+                src="/attached_assets/02 الشعار الرئيسي أبيض_1758304639238.png" 
+                alt="مبادرة الإدارة الثقافية" 
+                className="h-8 w-auto mb-4"
+                data-testid="logo-footer"
+              />
               <p className="text-background/80 leading-relaxed mb-6 max-w-md">
                 منصة معرفية متخصصة في نشر وتعزيز مفاهيم الإدارة الثقافية، تستهدف الممارسين والمهتمين والجهات العاملة في القطاع الثقافي.
               </p>

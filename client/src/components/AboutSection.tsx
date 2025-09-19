@@ -38,6 +38,14 @@ export default function AboutSection() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/attached_assets/07 الإيقونة_1758304639239.png" 
+              alt="أيقونة المبادرة" 
+              className="h-16 w-16"
+              data-testid="icon-initiative"
+            />
+          </div>
           <Badge variant="secondary" className="mb-4 px-4 py-2">
             تعريف المبادرة
           </Badge>
