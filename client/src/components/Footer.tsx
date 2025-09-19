@@ -8,6 +8,7 @@ import {
   Instagram,
   ArrowUp
 } from "lucide-react";
+import whiteLogo from "@assets/white-logo.png";
 
 export default function Footer() {
   const handleScrollToTop = () => {
@@ -32,7 +33,7 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="lg:col-span-2">
               <img 
-                src="/attached_assets/02 الشعار الرئيسي أبيض_1758304639238.png" 
+                src={whiteLogo} 
                 alt="مبادرة الإدارة الثقافية" 
                 className="h-8 w-auto mb-4"
                 data-testid="logo-footer"

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Target, Eye, MessageSquare, CheckCircle } from "lucide-react";
+import initiativeIcon from "@assets/icon.png";
 
 export default function AboutSection() {
   //todo: remove mock functionality - these will be real data from the initiative content
@@ -40,7 +41,7 @@ export default function AboutSection() {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
             <img 
-              src="/attached_assets/07 الإيقونة_1758304639239.png" 
+              src={initiativeIcon} 
               alt="أيقونة المبادرة" 
               className="h-16 w-16"
               data-testid="icon-initiative"

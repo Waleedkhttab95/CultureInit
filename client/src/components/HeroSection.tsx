@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import heroImage from "@assets/generated_images/Modern_Arabic_library_hero_72133ecf.png";
+import whiteLogo from "@assets/white-logo.png";
 
 export default function HeroSection() {
   const handleExplore = () => {
@@ -35,7 +36,7 @@ export default function HeroSection() {
         {/* Logo in Hero */}
         <div className="flex justify-center mb-8">
           <img 
-            src="/attached_assets/02 الشعار الرئيسي أبيض_1758304639238.png" 
+            src={whiteLogo} 
             alt="مبادرة الإدارة الثقافية" 
             className="h-16 sm:h-20 lg:h-24 w-auto"
             data-testid="logo-hero"

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import mainLogo from "@assets/main-logo.png";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Header() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <img 
-                src="/attached_assets/00 الشعار الرئيسي_1758304639237.png" 
+                src={mainLogo} 
                 alt="مبادرة الإدارة الثقافية" 
                 className="h-10 w-auto"
                 data-testid="logo-main"
