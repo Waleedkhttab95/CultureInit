@@ -9,6 +9,7 @@ import {
   ArrowUp
 } from "lucide-react";
 import whiteLogo from "@assets/white-logo.png";
+import { Link } from "wouter";
 
 export default function Footer() {
   const handleScrollToTop = () => {
@@ -79,40 +80,25 @@ export default function Footer() {
               <h4 className="font-semibold text-background mb-4">روابط سريعة</h4>
               <ul className="space-y-3">
                 <li>
-                  <a 
-                    href="#about" 
-                    className="text-background/80 hover:text-background transition-colors"
-                    data-testid="footer-link-about"
-                  >
-                    حول المبادرة
-                  </a>
+                  <Link href="/articles">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-articles">
+                      المقالات
+                    </a>
+                  </Link>
                 </li>
                 <li>
-                  <a 
-                    href="#tracks" 
-                    className="text-background/80 hover:text-background transition-colors"
-                    data-testid="footer-link-tracks"
-                  >
-                    المسارات الرئيسية
-                  </a>
+                  <Link href="/resources">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-resources">
+                      الموارد
+                    </a>
+                  </Link>
                 </li>
                 <li>
-                  <a 
-                    href="#audience" 
-                    className="text-background/80 hover:text-background transition-colors"
-                    data-testid="footer-link-audience"
-                  >
-                    الجمهور المستهدف
-                  </a>
-                </li>
-                <li>
-                  <a 
-                    href="#contact" 
-                    className="text-background/80 hover:text-background transition-colors"
-                    data-testid="footer-link-contact"
-                  >
-                    تواصل معنا
-                  </a>
+                  <Link href="/programs">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-programs">
+                      البرامج
+                    </a>
+                  </Link>
                 </li>
               </ul>
             </div>

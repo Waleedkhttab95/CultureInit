@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import mainLogo from "@assets/main-logo.png";
+import { Link } from "wouter";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,39 +14,46 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <img 
-                src={mainLogo} 
-                alt="مبادرة الإدارة الثقافية" 
-                className="h-10 w-auto"
-                data-testid="logo-main"
-              />
+              <Link href="/">
+                <a aria-label="Go to homepage">
+                  <img 
+                    src={mainLogo} 
+                    alt="مبادرة الإدارة الثقافية" 
+                    className="h-10 w-auto cursor-pointer"
+                    data-testid="logo-main"
+                  />
+                </a>
+              </Link>
             </div>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4 space-x-reverse">
-              <a
-                href="#about"
-                className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                data-testid="link-about"
-              >
-                حول المبادرة
-              </a>
-              <a
-                href="#tracks"
-                className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                data-testid="link-tracks"
-              >
-                المسارات
-              </a>
-              <a
-                href="#audience"
-                className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                data-testid="link-audience"
-              >
-                الجمهور المستهدف
-              </a>
+              <Link href="/articles">
+                <a
+                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  data-testid="link-articles"
+                >
+                  المقالات
+                </a>
+              </Link>
+              <Link href="/resources">
+                <a
+                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  data-testid="link-resources"
+                >
+                  الموارد
+                </a>
+              </Link>
+              <Link href="/programs">
+                <a
+                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  data-testid="link-programs"
+                >
+                  البرامج
+                </a>
+              </Link>
               <Button size="sm" data-testid="button-contact">
                 تواصل معنا
               </Button>
@@ -69,30 +77,33 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a
-                href="#about"
-                className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsMenuOpen(false)}
-                data-testid="link-mobile-about"
-              >
-                حول المبادرة
-              </a>
-              <a
-                href="#tracks"
-                className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsMenuOpen(false)}
-                data-testid="link-mobile-tracks"
-              >
-                المسارات
-              </a>
-              <a
-                href="#audience"
-                className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsMenuOpen(false)}
-                data-testid="link-mobile-audience"
-              >
-                الجمهور المستهدف
-              </a>
+              <Link href="/articles">
+                <a
+                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                  data-testid="link-mobile-articles"
+                >
+                  المقالات
+                </a>
+              </Link>
+              <Link href="/resources">
+                <a
+                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                  data-testid="link-mobile-resources"
+                >
+                  الموارد
+                </a>
+              </Link>
+              <Link href="/programs">
+                <a
+                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                  data-testid="link-mobile-programs"
+                >
+                  البرامج
+                </a>
+              </Link>
               <Button className="w-full mt-2" size="sm" data-testid="button-mobile-contact">
                 تواصل معنا
               </Button>

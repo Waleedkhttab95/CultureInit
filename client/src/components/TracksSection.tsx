@@ -2,17 +2,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
+import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import articlesIcon from "@assets/generated_images/Articles_content_icon_27152365.png";
 import resourcesIcon from "@assets/generated_images/Resources_tools_icon_9fa4568c.png";  
 import programsIcon from "@assets/generated_images/Training_programs_icon_dbf1faef.png";
 
 export default function TracksSection() {
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
+  
   //todo: remove mock functionality - these will be real data from the initiative content
   const tracks = [
     {
       icon: articlesIcon,
       title: "المقالات",
-      subtitle: "Articles",
+      // subtitle: "Articles",
       description: "مقالات تحليلية ومترجمة عن مفاهيم الإدارة الثقافية، واستعراض تجارب عربية وعالمية في إدارة البرامج الثقافية، ومقالات رأي حول التحديات والسياسات الثقافية.",
       features: [
         "مقالات تحليلية متخصصة",
@@ -26,7 +30,7 @@ export default function TracksSection() {
     {
       icon: resourcesIcon,
       title: "الموارد",
-      subtitle: "Resources", 
+      // subtitle: "Resources", 
       description: "أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية.",
       features: [
         "أدلة تطبيقية",
@@ -40,7 +44,7 @@ export default function TracksSection() {
     {
       icon: programsIcon,
       title: "البرامج",
-      subtitle: "Programs",
+      // subtitle: "Programs",
       description: "ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي.",
       features: [
         "ورش عمل تدريبية",
@@ -53,12 +57,32 @@ export default function TracksSection() {
     }
   ];
 
+  const [, navigate] = useLocation();
+
   const handleTrackClick = (trackTitle: string) => {
+    if (trackTitle === "المقالات") {
+      navigate("/articles");
+      return;
+    }
+    if (trackTitle === "الموارد") {
+      navigate("/resources");
+      return;
+    }
+    if (trackTitle === "البرامج") {
+      navigate("/programs");
+      return;
+    }
     console.log(`${trackTitle} track clicked`);
   };
 
   return (
-    <section id="tracks" className="py-20 bg-background">
+    <section 
+      ref={sectionRef}
+      id="tracks" 
+      className={`py-20 bg-background transition-all duration-1000 ${
+        sectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -93,9 +117,9 @@ export default function TracksSection() {
                 <CardTitle className="text-xl font-bold text-foreground mb-2">
                   {track.title}
                 </CardTitle>
-                <p className="text-sm text-muted-foreground font-medium">
+                {/* <p className="text-sm text-muted-foreground font-medium">
                   {track.subtitle}
-                </p>
+                </p> */}
               </CardHeader>
 
               <CardContent className="space-y-4">
@@ -136,7 +160,7 @@ export default function TracksSection() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-12">
+        {/* <div className="text-center mt-12">
           <Button 
             size="lg" 
             variant="outline" 
@@ -146,7 +170,7 @@ export default function TracksSection() {
             اكتشف جميع المسارات
             <ArrowLeft className="ml-2 h-5 w-5" />
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );
