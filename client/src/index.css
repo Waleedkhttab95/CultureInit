@@ -49,9 +49,9 @@
   --chart-4: 338 63% 40%;
   --chart-5: 200 20% 30%;
 
-  --font-sans: 'Greta Arabic', 'Cairo', 'Noto Sans Arabic', sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
+  --font-sans: 'Greta Arabic', sans-serif;
+  --font-serif: 'Greta Arabic', serif;
+  --font-mono: 'Greta Arabic', monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
@@ -157,6 +157,11 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  /* Ensure all text uses Greta Arabic */
+  * {
+    font-family: 'Greta Arabic', sans-serif !important;
   }
 }
 

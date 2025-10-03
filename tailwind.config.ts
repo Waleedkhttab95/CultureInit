@@ -83,9 +83,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
-        serif: ["var(--font-serif)"],
-        mono: ["var(--font-mono)"],
+        sans: ["'Greta Arabic'", "sans-serif"],
+        serif: ["'Greta Arabic'", "serif"],
+        mono: ["'Greta Arabic'", "monospace"],
       },
       keyframes: {
         "accordion-down": {

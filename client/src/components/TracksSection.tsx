@@ -19,10 +19,7 @@ export default function TracksSection() {
       // subtitle: "Articles",
       description: "مقالات تحليلية ومترجمة عن مفاهيم الإدارة الثقافية، واستعراض تجارب عربية وعالمية في إدارة البرامج الثقافية، ومقالات رأي حول التحديات والسياسات الثقافية.",
       features: [
-        "مقالات تحليلية متخصصة",
-        "تجارب عربية وعالمية",
-        "مقالات رأي وتحليلات",
-        "ترجمات نوعية"
+     
       ],
       color: "from-primary/20 to-primary/5",
       buttonColor: "bg-primary hover:bg-primary/90"
@@ -33,10 +30,7 @@ export default function TracksSection() {
       // subtitle: "Resources", 
       description: "أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية.",
       features: [
-        "أدلة تطبيقية",
-        "كتيبات مبسطة",
-        "قوالب البرامج الثقافية",
-        "نماذج قياس الأثر"
+     
       ],
       color: "from-chart-2/20 to-chart-2/5",
       buttonColor: "bg-chart-2 hover:bg-chart-2/90"
@@ -47,10 +41,7 @@ export default function TracksSection() {
       // subtitle: "Programs",
       description: "ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي.",
       features: [
-        "ورش عمل تدريبية",
-        "لقاءات مع الخبراء", 
-        "دورات متقدمة",
-        "التخطيط الاستراتيجي"
+       
       ],
       color: "from-chart-3/20 to-chart-3/5",
       buttonColor: "bg-chart-3 hover:bg-chart-3/90"

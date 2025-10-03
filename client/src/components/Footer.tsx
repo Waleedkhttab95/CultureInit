@@ -30,7 +30,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
         <div className="py-16">
-          <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-5 md:grid-cols-2 gap-8">
             {/* Brand Section */}
             <div className="lg:col-span-2">
               <img 
@@ -97,6 +97,27 @@ export default function Footer() {
                   <Link href="/programs">
                     <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-programs">
                       البرامج
+                    </a>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Publishing */}
+            <div>
+              <h4 className="font-semibold text-background mb-4">النشر</h4>
+              <ul className="space-y-3">
+                <li>
+                  <Link href="/publish-with-us">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-publish-with-us">
+                      انشر معنا
+                    </a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/publishing-policy">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-publishing-policy">
+                      سياسة النشر
                     </a>
                   </Link>
                 </li>
