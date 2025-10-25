@@ -42,17 +42,27 @@ const programs: Program[] = [
 
 export default function ProgramsPage() {
   const { ref: mainRef, isVisible: mainVisible } = useScrollAnimation();
-  
+
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen bg-background font-sans flex flex-col">
       <Header />
-      <main 
+      <main
         ref={mainRef}
-        className={`py-16 transition-all duration-1000 ${
+        className={`flex-1 flex items-center justify-center transition-all duration-1000 ${
           mainVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Coming Soon Message */}
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold text-foreground">
+            قريباً
+          </h1>
+          <p className="text-xl text-muted-foreground mt-4">
+            Coming Soon
+          </p>
+        </div>
+
+        {/* <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
               البرامج
@@ -91,7 +101,7 @@ export default function ProgramsPage() {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
       </main>
       <Footer />
     </div>

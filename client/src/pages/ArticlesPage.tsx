@@ -37,21 +37,28 @@ const mockArticles: Article[] = [
 
 export default function ArticlesPage() {
   const { ref: mainRef, isVisible: mainVisible } = useScrollAnimation();
-  
+
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen bg-background font-sans flex flex-col">
       <Header />
-      <main 
+      <main
         ref={mainRef}
-        className={`py-16 transition-all duration-1000 ${
+        className={`flex-1 flex items-center justify-center transition-all duration-1000 ${
           mainVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Coming Soon Message */}
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl font-bold text-foreground">
+            قريباً
+          </h1>
+          <p className="text-xl text-muted-foreground mt-4">
+            Coming Soon
+          </p>
+        </div>
+
+        {/* <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            {/* <Badge variant="secondary" className="mb-4 px-4 py-2">
-              المقالات
-            </Badge> */}
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
                المقالات
             </h1>
@@ -77,7 +84,7 @@ export default function ArticlesPage() {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
       </main>
       <Footer />
     </div>

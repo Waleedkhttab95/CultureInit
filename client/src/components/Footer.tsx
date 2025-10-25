@@ -138,7 +138,7 @@ export default function Footer() {
                   data-testid="contact-email"
                 >
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-sm">info@cultural-management.sa</span>
+                  <span className="text-sm">info@cultural-managment.com</span>
                 </button>
                 <button
                   onClick={() => handleContactClick('phone')}
@@ -146,7 +146,7 @@ export default function Footer() {
                   data-testid="contact-phone"
                 >
                   <Phone className="h-4 w-4 text-primary" />
-                  <span className="text-sm">+966 11 123 4567</span>
+                  <span className="text-sm">+966 55 339 2905</span>
                 </button>
               </div>
             </div>
