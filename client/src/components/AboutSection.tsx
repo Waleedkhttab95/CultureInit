@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, MessageSquare } from "lucide-react";
 import initiativeIcon from "@assets/icon.png";
+import whiteIcon from "@assets/white-icon.png";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 export default function AboutSection() {
@@ -70,10 +71,18 @@ export default function AboutSection() {
               >
                 <div className={`absolute inset-0 bg-gradient-to-b ${item.accent} opacity-80 rounded-2xl blur-xl group-hover:opacity-100 transition-opacity`} />
                 <Card className={`relative h-full flex flex-col backdrop-blur supports-[backdrop-filter]:bg-card/70 border border-card-border ring-1 ${item.ring} overflow-hidden rounded-2xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-xl`}>
-                  <div className="absolute -end-8 -top-8 h-28 w-28 rounded-full bg-muted/40" />
-                  <div className="absolute -start-10 -bottom-10 h-32 w-32 rounded-full bg-muted/30" />
+                  {/* White Icon Background */}
+                  <div
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
+                  >
+                    <img
+                      src={whiteIcon}
+                      alt=""
+                      className="w-2/3 h-2/3 object-contain opacity-20"
+                    />
+                  </div>
 
-                  <CardHeader className="relative pb-2 text-center">
+                  <CardHeader className="relative pb-2 text-center z-10">
                     <div className="flex items-center justify-center">
                       <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-background/70 border border-card-border shadow-sm group-hover:scale-105 transition-transform">
                         <IconComponent className="h-7 w-7 text-foreground" />
@@ -83,7 +92,7 @@ export default function AboutSection() {
                       {item.title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="relative flex-1">
+                  <CardContent className="relative flex-1 z-10">
                     <p className="text-foreground/90 leading-relaxed text-center text-base sm:text-lg">
                       {item.description}
                     </p>

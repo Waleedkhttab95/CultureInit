@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Twitter, 
-  Linkedin, 
+import {
+  Mail,
+  Phone,
+  MapPin,
+  X,
+  Linkedin,
   Instagram,
   ArrowUp
 } from "lucide-react";
@@ -49,10 +49,17 @@ export default function Footer() {
                   size="icon"
                   variant="ghost"
                   className="text-background/80 hover:text-background hover:bg-background/10"
-                  onClick={() => handleSocialClick('Twitter')}
+                  asChild
                   data-testid="link-twitter"
                 >
-                  <Twitter className="h-5 w-5" />
+                  <a
+                    href="https://x.com/culturalmgmt?s=21&t=l9ET_F7SR5ITa2IH2yZb3A"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => handleSocialClick('Twitter')}
+                  >
+                    <X className="h-5 w-5" />
+                  </a>
                 </Button>
                 <Button
                   size="icon"
@@ -67,10 +74,17 @@ export default function Footer() {
                   size="icon"
                   variant="ghost"
                   className="text-background/80 hover:text-background hover:bg-background/10"
-                  onClick={() => handleSocialClick('Instagram')}
+                  asChild
                   data-testid="link-instagram"
                 >
-                  <Instagram className="h-5 w-5" />
+                  <a
+                    href="https://www.instagram.com/cultural_management?igsh=YTBoYjNtbzd3bGw5"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => handleSocialClick('Instagram')}
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
                 </Button>
               </div>
             </div>

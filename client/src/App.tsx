@@ -7,6 +7,7 @@ import LandingPage from "@/pages/LandingPage";
 import ArticlesPage from "@/pages/ArticlesPage";
 import ResourcesPage from "@/pages/ResourcesPage";
 import ProgramsPage from "@/pages/ProgramsPage";
+import PublishingPolicyPage from "@/pages/PublishingPolicyPage";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/articles" component={ArticlesPage} />
       <Route path="/resources" component={ResourcesPage} />
       <Route path="/programs" component={ProgramsPage} />
+      <Route path="/publishing-policy" component={PublishingPolicyPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
