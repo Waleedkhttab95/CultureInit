@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, MessageSquare } from "lucide-react";
 import initiativeIcon from "@assets/icon.png";
 import whiteIcon from "@assets/white-icon.png";
+import asset2 from "@assets/Asset2@4x.png";
+import asset6 from "@assets/Asset6@4x.png";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 
 export default function AboutSection() {
@@ -15,7 +17,8 @@ export default function AboutSection() {
       description:
         "أن تصبح المنصة المرجع العربي الأول في الإدارة الثقافية، ومصدراً موثوقاً للمعرفة والأدوات التي تدعم الممارسين وصناع القرار.",
       accent: "from-primary/20 via-primary/10 to-transparent",
-      ring: "ring-primary/25"
+      ring: "ring-primary/25",
+      backgroundImage: asset2
     },
     {
       icon: MessageSquare,
@@ -23,7 +26,8 @@ export default function AboutSection() {
       description:
         "تمكين القطاع الثقافي العربي عبر محتوى علمي وتطبيقي يربط النظرية بالممارسة، ويبني كفاءات قادرة على إدارة البرامج والمشاريع بكفاءة وابتكار.",
       accent: "from-chart-2/20 via-chart-2/10 to-transparent",
-      ring: "ring-chart-2/25"
+      ring: "ring-chart-2/25",
+      backgroundImage: asset6
     }
   ];
 
@@ -71,14 +75,14 @@ export default function AboutSection() {
               >
                 <div className={`absolute inset-0 bg-gradient-to-b ${item.accent} opacity-80 rounded-2xl blur-xl group-hover:opacity-100 transition-opacity`} />
                 <Card className={`relative h-full flex flex-col backdrop-blur supports-[backdrop-filter]:bg-card/70 border border-card-border ring-1 ${item.ring} overflow-hidden rounded-2xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-xl`}>
-                  {/* White Icon Background */}
+                  {/* Background Image */}
                   <div
-                    className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
+                    className="absolute inset-0 flex items-start justify-start pointer-events-none z-0"
                   >
                     <img
-                      src={whiteIcon}
+                      src={item.backgroundImage}
                       alt=""
-                      className="w-2/3 h-2/3 object-contain opacity-20"
+                      className="w-1/2 h-1/2 object-contain opacity-40"
                     />
                   </div>
 

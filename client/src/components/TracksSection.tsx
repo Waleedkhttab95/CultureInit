@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
-import articlesIcon from "@assets/generated_images/Articles_content_icon_27152365.png";
-import resourcesIcon from "@assets/generated_images/Resources_tools_icon_9fa4568c.png";  
-import programsIcon from "@assets/generated_images/Training_programs_icon_dbf1faef.png";
+import articlesIcon from "@assets/Asset13@4x.png";
+import resourcesIcon from "@assets/Asset7@4x.png";  
+import programsIcon from "@assets/Asset25@4x.png";
 
 export default function TracksSection() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
@@ -14,7 +14,7 @@ export default function TracksSection() {
   //todo: remove mock functionality - these will be real data from the initiative content
   const tracks = [
     {
-      icon: articlesIcon,
+      icon:programsIcon ,
       title: "المقالات",
       // subtitle: "Articles",
       description: "مقالات تحليلية ومترجمة عن مفاهيم الإدارة الثقافية، واستعراض تجارب عربية وعالمية في إدارة البرامج الثقافية، ومقالات رأي حول التحديات والسياسات الثقافية.",
@@ -25,7 +25,7 @@ export default function TracksSection() {
       buttonColor: "bg-primary hover:bg-primary/90"
     },
     {
-      icon: resourcesIcon,
+      icon: articlesIcon ,
       title: "الموارد",
       // subtitle: "Resources", 
       description: "أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية.",
@@ -36,7 +36,7 @@ export default function TracksSection() {
       buttonColor: "bg-chart-2 hover:bg-chart-2/90"
     },
     {
-      icon: programsIcon,
+      icon: resourcesIcon,
       title: "البرامج",
       // subtitle: "Programs",
       description: "ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي.",
