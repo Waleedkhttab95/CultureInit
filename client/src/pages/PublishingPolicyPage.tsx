@@ -105,59 +105,59 @@ export default function PublishingPolicyPage() {
 
                 <div className="space-y-4">
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">1)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">1)</span>
+                    <div>
                       يُرسل الكاتب النص المكتوب أو المترجم إلى البريد الإلكتروني الخاص بمنصة الإدارة الثقافية
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">2)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">2)</span>
+                    <div>
                       ترد الإدارة الثقافية على طلب النشر عادة في غضون أسبوعين بالموافقة المبدئية أو الرفض.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">3)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">3)</span>
+                    <div>
                       ترسل المشاركات المراد نشرها بـمنصة الإدارة الثقافية عبر البريد الإلكتروني بصيغتين: Word، و PDF.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">4)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">4)</span>
+                    <div>
                       يرفق الباحث نبذة تعريفيّة مختصرة من سيرته الذاتيّة، متضمّنة أبرز أعماله، وبياناته الأساسيّة.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">5)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">5)</span>
+                    <div>
                       تقوم هيئة التحرير في منصة الإدارة الثقافية بالنظر في الأوراق المقدّمة، وتحديد مدى مطابقتها لقواعد النشر وأهدافه في المنصة؛ لتحديد أهليّتها للنشر. وإبلاغ الباحث بنتيجة هذه المرحلة قبولًا أو رفضًا.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">6)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">6)</span>
+                    <div>
                       تقوم منصة الإدارة الثقافية بتكليف المُحكّمين المناسبين من أولي الخبرة والكفاءة، وفقًا للموضوع المقدّم.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">7)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">7)</span>
+                    <div>
                       في حال قبول البحث للنشر يُخطر الباحث بذلك، ويرسل خطاب اعتذار له إن كانت نتيجة التحكيم هي الرفض، مع امتلاك أحقيّة عدم إبداء أسباب الرفض.
-                    </p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold">8)</span>
-                    <p>
+                    <span className="text-primary font-bold mt-1 shrink-0">8)</span>
+                    <div>
                       في حال قبول البحث للنشر تؤول كافة حقوق النشر لمنصة الإدارة الثقافية بكل اللغات والقوالب الورقية والإلكترونية، ولا يجوز إعادة النشر إلا بإذنها.
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>

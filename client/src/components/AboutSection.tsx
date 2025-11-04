@@ -15,7 +15,7 @@ export default function AboutSection() {
       icon: Eye,
       title: "الرؤية",
       description:
-        "أن تصبح المنصة المرجع العربي الأول في الإدارة الثقافية، ومصدراً موثوقاً للمعرفة والأدوات التي تدعم الممارسين وصناع القرار.",
+"الممكّن المعرفي للقطاع الثقافي.",
       accent: "from-primary/20 via-primary/10 to-transparent",
       ring: "ring-primary/25",
       backgroundImage: asset2

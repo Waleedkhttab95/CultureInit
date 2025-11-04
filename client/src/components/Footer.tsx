@@ -130,7 +130,11 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/publishing-policy">
-                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-publishing-policy">
+                    <a
+                      className="text-background/80 hover:text-background transition-colors"
+                      data-testid="footer-link-publishing-policy"
+                      onClick={handleScrollToTop}
+                    >
                       سياسة النشر
                     </a>
                   </Link>

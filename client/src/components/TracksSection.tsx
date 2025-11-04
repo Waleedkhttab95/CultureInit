@@ -17,7 +17,7 @@ export default function TracksSection() {
       icon:programsIcon ,
       title: "المقالات",
       // subtitle: "Articles",
-      description: "مقالات تحليلية ومترجمة عن مفاهيم الإدارة الثقافية، واستعراض تجارب عربية وعالمية في إدارة البرامج الثقافية، ومقالات رأي حول التحديات والسياسات الثقافية.",
+      description: "مقالات تعريفية وتحليلية عن مفاهيم الإدارة الثقافية، وتجارب عربية وعالمية في إدارة البرامج الثقافية.",
       features: [
      
       ],
@@ -28,7 +28,7 @@ export default function TracksSection() {
       icon: articlesIcon ,
       title: "الموارد",
       // subtitle: "Resources", 
-      description: "أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية.",
+      description: "أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.",
       features: [
      
       ],
@@ -39,7 +39,7 @@ export default function TracksSection() {
       icon: resourcesIcon,
       title: "البرامج",
       // subtitle: "Programs",
-      description: "ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي.",
+      description: "ورش عمل تدريبية قصيرة، وبرامج تأهيلية، وحوارات إثرائية في موضوعات الإدارة الثقافية.",
       features: [
        
       ],
@@ -84,16 +84,15 @@ export default function TracksSection() {
             ثلاثة مسارات متكاملة لتطوير الإدارة الثقافية
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            نقدم محتوى متنوع ومتخصص يلبي احتياجات جميع المهتمين بالقطاع الثقافي
-          </p>
+          نقدم محتوى متنوعًا ومتخصصًا يلبي احتياجات الفاعلين بالقطاع الثقافي          </p>
         </div>
 
         {/* Tracks Grid */}
         <div className="grid lg:grid-cols-3 gap-8">
           {tracks.map((track, index) => (
-            <Card 
-              key={index} 
-              className={`group relative overflow-hidden border-card-border hover-elevate transition-all duration-500 hover:shadow-lg bg-gradient-to-br ${track.color}`}
+            <Card
+              key={index}
+              className={`group relative overflow-hidden border-card-border hover-elevate transition-all duration-500 hover:shadow-lg bg-gradient-to-br ${track.color} h-full flex flex-col`}
             >
               <CardHeader className="text-center pb-4">
                 {/* Track Icon */}
@@ -113,16 +112,16 @@ export default function TracksSection() {
                 </p> */}
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="flex-1 flex flex-col space-y-4">
                 {/* Description */}
-                <p className="text-muted-foreground leading-relaxed text-sm">
+                <p className="text-muted-foreground leading-relaxed text-sm flex-1 text-justify">
                   {track.description}
                 </p>
 
                 {/* Features */}
                 <div className="space-y-2">
                   {track.features.map((feature, featureIndex) => (
-                    <div 
+                    <div
                       key={featureIndex}
                       className="flex items-center gap-2 text-sm"
                     >

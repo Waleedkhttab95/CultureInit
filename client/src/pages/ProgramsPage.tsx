@@ -1,107 +1,108 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useScrollAnimation } from "@/hooks/use-scroll-animation";
-import programsIcon from "@assets/generated_images/Training_programs_icon_dbf1faef.png";
-
-type Program = {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  buttonText?: string;
-};
-
-const programs: Program[] = [
-  {
-    id: "p1",
-    title: "أساسيات الإدارة الثقافية",
-    description:
-      "برنامج تمهيدي يعرّف المشاركين على المفاهيم والأطر الأساسية في الإدارة الثقافية وتطبيقاتها العملية.",
-    image: programsIcon,
-    buttonText: "سجل الآن",
-  },
-  {
-    id: "p2",
-    title: "تصميم البرامج الثقافية",
-    description:
-      "ورشة عملية لتصميم وتنفيذ البرامج الثقافية من مرحلة التحليل وحتى التقييم، مع قوالب تطبيقية.",
-    image: programsIcon,
-    buttonText: "سجل الآن",
-  },
-  {
-    id: "p3",
-    title: "قياس الأثر والتقييم",
-    description:
-      "منهجيات وأدوات قياس الأثر للمشاريع الثقافية وبناء مؤشرات الأداء المناسبة.",
-    image: programsIcon,
-    buttonText: "سجل الآن",
-  },
-];
+import { useEffect, useState, useRef } from "react";
+import whiteIcon from "@assets/white-icon.png";
+import programsIcon from "@assets/Asset25@4x.png";
 
 export default function ProgramsPage() {
-  const { ref: mainRef, isVisible: mainVisible } = useScrollAnimation();
+  const [parallaxY, setParallaxY] = useState(0);
+  const reduceMotionRef = useRef(false);
+
+  useEffect(() => {
+    // Respect reduced motion
+    if (typeof window !== 'undefined') {
+      try {
+        reduceMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      } catch {}
+    }
+
+    if (reduceMotionRef.current) return;
+
+    let frameId: number | null = null;
+    const maxShift = 24; // px
+
+    const onScroll = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(() => {
+        const scrollY = window.scrollY || 0;
+        const shift = Math.max(-maxShift, Math.min(maxShift, scrollY * 0.06));
+        setParallaxY(shift);
+        frameId = null;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
       <Header />
       <main
-        ref={mainRef}
-        className={`flex-1 flex items-center justify-center transition-all duration-1000 ${
-          mainVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundColor: '#ab2451',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        {/* Coming Soon Message */}
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground">
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40"></div>
+
+        {/* Subtle vignette + grain overlay */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(120% 60% at 50% 40%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.25) 100%), radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+            backgroundSize: "100% 100%, 2px 2px",
+            mixBlendMode: "soft-light",
+          }}
+        />
+
+        {/* White logo watermark as background */}
+        <div
+          className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start pl-8 sm:pl-12 lg:pl-20"
+          style={{ transform: `translateY(${parallaxY}px)` }}
+        >
+          <img
+            src={whiteIcon}
+            alt="Background watermark icon"
+            className="select-none opacity-10 mix-blend-soft-light w-[35vw] max-w-[450px] drop-shadow-[0_0_24px_rgba(255,255,255,0.25)] animate-fade-in-down-soft [animation-delay:150ms] motion-reduce:animate-none"
+          />
+        </div>
+
+        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
+          {/* Programs Icon */}
+          <div className="flex justify-center mb-8 animate-shimmer">
+            <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm p-5 shadow-lg">
+              <img
+                src={programsIcon}
+                alt="البرامج"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Coming Soon Message */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             قريباً
           </h1>
-          <p className="text-xl text-muted-foreground mt-4">
-            Coming Soon
+          <p className="text-xl sm:text-2xl text-white/90 mb-4 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:120ms]">
+            البرامج
+          </p>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
+            ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي
           </p>
         </div>
 
-        {/* <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">
-              البرامج
-            </h1>
-            <p className="text-muted-foreground mt-3">
-              ورش عمل ودورات متخصصة لتطوير المهارات في الإدارة الثقافية
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {programs.map((program) => (
-              <Card
-                key={program.id}
-                className="group relative overflow-hidden border-card-border hover-elevate transition-all duration-500 hover:shadow-lg bg-gradient-to-br from-chart-3/20 to-chart-3/5"
-              >
-                <CardHeader className="p-0">
-                  <div className="relative w-full h-40 overflow-hidden">
-                    <img
-                      src={program.image}
-                      alt={`${program.title} image`}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-4">
-                  <CardTitle className="text-xl font-bold text-foreground">
-                    {program.title}
-                  </CardTitle>
-                  <p className="text-muted-foreground leading-relaxed text-sm">
-                    {program.description}
-                  </p>
-                  <Button className="w-full mt-2 bg-chart-3 hover:bg-chart-3/90 text-white border-0" data-testid={`button-program-${program.id}`}>
-                    {program.buttonText || "انضم الآن"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div> */}
+        {/* Decorative elements */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-chart-2/10 rounded-full blur-2xl"></div>
       </main>
       <Footer />
     </div>

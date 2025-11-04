@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Greta Arabic Font Family */
+@font-face {
+  font-family: 'Greta Arabic';
+  src: url('@assets/gretaarabic/GretaArabic-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greta Arabic';
+  src: url('@assets/gretaarabic/GretaArabic-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greta Arabic';
+  src: url('@assets/gretaarabic/GretaArabic-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greta Arabic';
+  src: url('@assets/gretaarabic/GretaArabic-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);
@@ -49,9 +82,9 @@
   --chart-4: 338 63% 40%;
   --chart-5: 200 20% 30%;
 
-  --font-sans: 'Tajawal', sans-serif;
-  --font-serif: 'Tajawal', serif;
-  --font-mono: 'Tajawal', monospace;
+  --font-sans: 'Greta Arabic', sans-serif;
+  --font-serif: 'Greta Arabic', serif;
+  --font-mono: 'Greta Arabic', monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
@@ -159,9 +192,9 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 
-  /* Ensure all text uses Tajawal */
+  /* Ensure all text uses Greta Arabic */
   * {
-    font-family: 'Tajawal', sans-serif !important;
+    font-family: 'Greta Arabic', sans-serif !important;
   }
 }
 
