@@ -3,10 +3,20 @@ import Footer from "@/components/Footer";
 import { useEffect, useState, useRef } from "react";
 import whiteIcon from "@assets/white-icon.png";
 import resourcesIcon from "@assets/Asset7@4x.png";
+import pdfFile from "@assets/download.pdf";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Download, FileText, User, Mail, Check } from "lucide-react";
 
 export default function ResourcesPage() {
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     // Respect reduced motion
@@ -37,6 +47,59 @@ export default function ResourcesPage() {
       window.removeEventListener('scroll', onScroll);
     };
   }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/pdf/download-request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit request');
+      }
+
+      setIsSubmitted(true);
+
+      // Start PDF download
+      const link = document.createElement('a');
+      link.href = pdfFile;
+      link.download = 'دليل_دائرة_الإدارة_الثقافية.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Reset form and close dialog after delay
+      setTimeout(() => {
+        setIsDialogOpen(false);
+        setIsSubmitted(false);
+        setFormData({ name: '', email: '' });
+      }, 2000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDownloadClick = () => {
+    setIsDialogOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
@@ -88,16 +151,42 @@ export default function ResourcesPage() {
             </div>
           </div>
 
-          {/* Coming Soon Message */}
+          {/* Resources Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            قريباً
-          </h1>
-          <p className="text-xl sm:text-2xl text-white/90 mb-4 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:120ms]">
             الموارد
-          </p>
+          </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
             أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية
           </p>
+
+          {/* PDF Download Section */}
+          <div className="mt-16 max-w-2xl mx-auto animate-fade-in-up [animation-delay:240ms]">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm p-5 shadow-lg">
+                    <FileText className="w-full h-full text-white" />
+                  </div>
+                </div>
+                <div className="flex-1 text-center md:text-right">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    دليل دائرة الإدارة الثقافية
+                  </h3>
+                  <p className="text-white/80 text-base mb-4">
+                    دليل شامل يساعدك على فهم الإدارة الثقافية وتطبيقها بشكل فعال
+                  </p>
+                  <Button
+                    onClick={handleDownloadClick}
+                    size="lg"
+                    className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  >
+                    <Download className="ml-2 h-5 w-5" />
+                    تحميل الدليل
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Decorative elements */}
@@ -105,6 +194,91 @@ export default function ResourcesPage() {
         <div className="absolute bottom-20 left-20 w-24 h-24 bg-chart-2/10 rounded-full blur-2xl"></div>
       </main>
       <Footer />
+
+      {/* Download Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center">
+              تحميل دليل دائرة الإدارة الثقافية
+            </DialogTitle>
+            <DialogDescription className="text-center text-base">
+              يرجى تعبئة البيانات التالية لتحميل الدليل
+            </DialogDescription>
+          </DialogHeader>
+
+          {isSubmitted ? (
+            <div className="text-center py-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4 animate-bounce">
+                <Check className="h-10 w-10 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                جاري تحميل الدليل...
+              </h3>
+              <p className="text-muted-foreground">
+                شكراً لك!
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <User className="h-4 w-4 text-primary" />
+                  الاسم الكامل
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="أدخل اسمك الكامل"
+                  required
+                  className="h-12 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-primary" />
+                  البريد الإلكتروني
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="أدخل بريدك الإلكتروني"
+                  required
+                  className="h-12 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    جاري المعالجة...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    تحميل الدليل
+                  </div>
+                )}
+              </Button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
