@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download, FileText, User, Mail, Check } from "lucide-react";
+import resourcesData from "@/data/resources.json";
 
 export default function ResourcesPage() {
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '' });
+  const resource = resourcesData[0]; // Use the first resource
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -78,7 +80,7 @@ export default function ResourcesPage() {
       // Start PDF download
       const link = document.createElement('a');
       link.href = pdfFile;
-      link.download = 'دليل_دائرة_الإدارة_الثقافية.pdf';
+      link.download = `${resource.title.replace(/\s+/g, '_')}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -159,26 +161,31 @@ export default function ResourcesPage() {
             أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية
           </p>
 
-          {/* PDF Download Section */}
-          <div className="mt-16 max-w-2xl mx-auto animate-fade-in-up [animation-delay:240ms]">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm p-5 shadow-lg">
-                    <FileText className="w-full h-full text-white" />
-                  </div>
-                </div>
-                <div className="flex-1 text-center md:text-right">
-                  <h3 className="text-2xl font-bold text-white mb-2">
-                    دليل دائرة الإدارة الثقافية
-                  </h3>
-                  <p className="text-white/80 text-base mb-4">
-                    دليل شامل يساعدك على فهم الإدارة الثقافية وتطبيقها بشكل فعال
-                  </p>
+          {/* Resource Card */}
+          <div className="mt-12 max-w-lg mx-auto animate-fade-in-up [animation-delay:240ms]">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 overflow-hidden group">
+              {/* Preview Image */}
+              <div className="h-56 overflow-hidden bg-white/5 flex items-center justify-center p-4">
+                <img
+                  src={resource.image}
+                  alt={resource.title}
+                  className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              
+              {/* Content */}
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-4 text-right">
+                  {resource.title}
+                </h3>
+                <p className="text-white/90 text-sm leading-relaxed text-right mb-6">
+                  {resource.description}
+                </p>
+                <div className="flex justify-center">
                   <Button
                     onClick={handleDownloadClick}
                     size="lg"
-                    className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Download className="ml-2 h-5 w-5" />
                     تحميل الدليل
@@ -200,7 +207,7 @@ export default function ResourcesPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-center">
-              تحميل دليل دائرة الإدارة الثقافية
+              تحميل {resource.title}
             </DialogTitle>
             <DialogDescription className="text-center text-base">
               يرجى تعبئة البيانات التالية لتحميل الدليل

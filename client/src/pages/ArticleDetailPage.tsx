@@ -77,7 +77,7 @@ export default function ArticleDetailPage() {
 
           {/* Article Content */}
           <div
-            className="prose prose-lg max-w-none prose-headings:text-right prose-p:text-right prose-p:leading-relaxed prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-p:mb-4 prose-strong:text-foreground prose-strong:font-bold"
+            className="prose prose-lg max-w-none prose-headings:text-right prose-p:text-justify prose-p:leading-relaxed prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-p:mb-4 prose-strong:text-foreground prose-strong:font-bold"
             style={{ direction: 'rtl' }}
           >
             {article.content.split('\n\n').map((paragraph, index) => {
@@ -110,7 +110,7 @@ export default function ArticleDetailPage() {
 
               // Regular paragraph
               return (
-                <p key={index} className="text-right">
+                <p key={index} className="text-justify">
                   {renderText(paragraph)}
                 </p>
               );
