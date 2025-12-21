@@ -141,7 +141,7 @@ export default function ResourcesPage() {
           />
         </div>
 
-        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
+        <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up pt-16 sm:pt-20">
           {/* Resources Icon */}
           <div className="flex justify-center mb-8 animate-shimmer">
             <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm p-5 shadow-lg">
@@ -158,8 +158,7 @@ export default function ResourcesPage() {
             الموارد
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
-            أدلة تطبيقية وكتيبات مبسطة في الإدارة الثقافية، مع ترجمات أو تلخيصات لأدلة عالمية في المجال، وأدوات عملية مثل قوالب تصميم البرامج الثقافية
-          </p>
+          أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.          </p>
 
           {/* Resource Card */}
           <div className="mt-12 max-w-lg mx-auto animate-fade-in-up [animation-delay:240ms]">

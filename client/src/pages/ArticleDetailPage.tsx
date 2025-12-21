@@ -119,6 +119,9 @@ export default function ArticleDetailPage() {
 
           {/* Back to Articles Button */}
           <div className="mt-12 pt-8 border-t border-border">
+            <p className="text-sm text-muted-foreground text-center mb-6 mt-4">
+              *الآراء والأفكار الواردة في المقالات تمثّل وِجهة نَظر كتّابها فقط.
+            </p>
             <Link href="/articles">
               <Button size="lg" className="gap-2">
                 <ArrowRight className="h-5 w-5" />

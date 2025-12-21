@@ -96,8 +96,8 @@ export default function ProgramsPage() {
             البرامج
           </p>
           <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
-            ورش عمل تدريبية قصيرة في موضوعات محددة، ولقاءات حوارية مع خبراء محليين ودوليين، ودورات متقدمة في الإدارة الثقافية والتخطيط الاستراتيجي
-          </p>
+          ورش عمل تدريبية قصيرة، وبرامج تأهيلية، وحوارات إثرائية في موضوعات الإدارة الثقافية.
+</p>
         </div>
 
         {/* Decorative elements */}

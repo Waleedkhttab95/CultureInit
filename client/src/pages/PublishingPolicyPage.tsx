@@ -60,13 +60,13 @@ export default function PublishingPolicyPage() {
                     <strong>جودة المحتوى:</strong> تخضع المواد المرسلة للمراجعة العلمية لضمان رصانتها وقيمتها المضافة إلى مجالها.
                   </div>
                 </div>
-
+{/* 
                 <div className="flex gap-3 items-start">
                   <span className="text-primary font-bold mt-1">•</span>
                   <div>
                     <strong>تحرير النص:</strong> يجب اتباع الخطوط العامة المقررة من منصة الإدارة الثقافية في تنسيق النص وتحريره (يرجى تحميل دليل الإدارة الثقافية لأسلوب التحرير والترجمة).
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex gap-3 items-start">
                   <span className="text-primary font-bold mt-1">•</span>
@@ -78,14 +78,14 @@ export default function PublishingPolicyPage() {
                 <div className="flex gap-3 items-start">
                   <span className="text-primary font-bold mt-1">•</span>
                   <div>
-                    <strong>المراجع والمصادر:</strong> يلزم ذكر جميع المراجع في المقالات الفلسفية والعلمية وتوثيقها وفق منهج التوثيق المعتمد من منصة الإدارة الثقافية (الدليل)
+                    <strong>المراجع والمصادر:</strong> يلزم ذكر جميع المراجع في المقالات الفلسفية والعلمية وتوثيقها وفق مناهج التوثيق المعتمدة
                   </div>
                 </div>
 
                 <div className="flex gap-3 items-start">
                   <span className="text-primary font-bold mt-1">•</span>
                   <div>
-                    <strong>الاسم:</strong> لا تُنشر المواد إلا بالاسم الثلاثي الصريح للكاتب أو المترجم.
+                    <strong>الاسم:</strong> لا تُنشر المواد إلا بالاسم  الصريح للكاتب أو المترجم.
                   </div>
                 </div>
 
@@ -128,33 +128,28 @@ export default function PublishingPolicyPage() {
                   <div className="flex gap-3 items-start">
                     <span className="text-primary font-bold mt-1 shrink-0">4)</span>
                     <div>
-                      يرفق الباحث نبذة تعريفيّة مختصرة من سيرته الذاتيّة، متضمّنة أبرز أعماله، وبياناته الأساسيّة.
+                      يرفق الكاتب نبذة تعريفيّة مختصرة من سيرته الذاتيّة، متضمّنة أبرز أعماله، وبياناته الأساسيّة.
                     </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
                     <span className="text-primary font-bold mt-1 shrink-0">5)</span>
                     <div>
-                      تقوم هيئة التحرير في منصة الإدارة الثقافية بالنظر في الأوراق المقدّمة، وتحديد مدى مطابقتها لقواعد النشر وأهدافه في المنصة؛ لتحديد أهليّتها للنشر. وإبلاغ الباحث بنتيجة هذه المرحلة قبولًا أو رفضًا.
+                      تقوم هيئة التحرير في منصة الإدارة الثقافية بالنظر في الأوراق المقدّمة، وتحديد مدى مطابقتها لقواعد النشر وأهدافه في المنصة؛ لتحديد أهليّتها للنشر. وإبلاغ الكاتب بنتيجة هذه المرحلة قبولًا أو رفضًا.
                     </div>
                   </div>
+
+            
 
                   <div className="flex gap-3 items-start">
                     <span className="text-primary font-bold mt-1 shrink-0">6)</span>
                     <div>
-                      تقوم منصة الإدارة الثقافية بتكليف المُحكّمين المناسبين من أولي الخبرة والكفاءة، وفقًا للموضوع المقدّم.
+                      في حال قبول البحث للنشر يُخطر الكاتب بذلك، ويرسل خطاب اعتذار له إن كانت نتيجة التحكيم هي الرفض، مع امتلاك أحقيّة عدم إبداء أسباب الرفض.
                     </div>
                   </div>
 
                   <div className="flex gap-3 items-start">
                     <span className="text-primary font-bold mt-1 shrink-0">7)</span>
-                    <div>
-                      في حال قبول البحث للنشر يُخطر الباحث بذلك، ويرسل خطاب اعتذار له إن كانت نتيجة التحكيم هي الرفض، مع امتلاك أحقيّة عدم إبداء أسباب الرفض.
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 items-start">
-                    <span className="text-primary font-bold mt-1 shrink-0">8)</span>
                     <div>
                       في حال قبول البحث للنشر تؤول كافة حقوق النشر لمنصة الإدارة الثقافية بكل اللغات والقوالب الورقية والإلكترونية، ولا يجوز إعادة النشر إلا بإذنها.
                     </div>
