@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema } from "@shared/schema";
-import { addContactToBrevo, isBrevoConfigured } from "./brevo";
+import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -173,7 +173,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Save to database
       const request = await storage.createPublishRequest({ name, email, title, message });
 
-      // Add to Brevo if configured
+      // Send email notification
+      if (await isBrevoConfigured()) {
+        const recipientEmail = process.env.ADMIN_EMAIL || 'admin@culturalinitiative.com';
+
+        await sendEmail({
+          to: [{ email: recipientEmail }],
+          subject: `طلب نشر جديد: ${title}`,
+          htmlContent: `
+            <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
+                  طلب نشر جديد
+                </h2>
+
+                <div style="margin-bottom: 20px;">
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">الاسم:</strong> ${name}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">البريد الإلكتروني:</strong> ${email}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">العنوان:</strong> ${title}
+                  </p>
+                </div>
+
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin-top: 20px;">
+                  <p style="margin: 0 0 10px 0; color: #1f2937; font-weight: bold;">الرسالة:</p>
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+                  <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                    تم إرسال هذه الرسالة من نموذج "انشر معنا" في موقع مبادرة الإدارة الثقافية
+                  </p>
+                </div>
+              </div>
+            </div>
+          `,
+          textContent: `
+طلب نشر جديد
+
+الاسم: ${name}
+البريد الإلكتروني: ${email}
+العنوان: ${title}
+
+الرسالة:
+${message}
+
+---
+تم إرسال هذه الرسالة من نموذج "انشر معنا" في موقع مبادرة الإدارة الثقافية
+          `
+        });
+      }
+
+      // Add to Brevo contact list if configured
       if (await isBrevoConfigured()) {
         try {
           const brevoResponse = await addContactToBrevo({

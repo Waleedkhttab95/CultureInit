@@ -1,12 +1,14 @@
 import * as brevo from '@getbrevo/brevo';
 
 const apiInstance = new brevo.ContactsApi();
+const emailApiInstance = new brevo.TransactionalEmailsApi();
 
 // Get API key from environment variable
 const apiKey = process.env.BREVO_API_KEY;
 
 if (apiKey) {
   apiInstance.setApiKey(brevo.ContactsApiApiKeys.apiKey, apiKey);
+  emailApiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, apiKey);
 }
 
 export interface BrevoContactData {
@@ -60,4 +62,45 @@ export async function addContactToBrevo(data: BrevoContactData): Promise<{ id: n
 
 export async function isBrevoConfigured(): Promise<boolean> {
   return !!apiKey;
+}
+
+export interface SendEmailData {
+  to: { email: string; name?: string }[];
+  subject: string;
+  htmlContent: string;
+  textContent?: string;
+  sender?: { email: string; name?: string };
+}
+
+export async function sendEmail(data: SendEmailData): Promise<boolean> {
+  if (!apiKey) {
+    console.warn('BREVO_API_KEY not set. Skipping email sending.');
+    return false;
+  }
+
+  try {
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+    // Use environment variable for sender or default
+    sendSmtpEmail.sender = data.sender || {
+      email: process.env.BREVO_SENDER_EMAIL || 'noreply@culturalinitiative.com',
+      name: process.env.BREVO_SENDER_NAME || 'Cultural Initiative'
+    };
+
+    sendSmtpEmail.to = data.to;
+    sendSmtpEmail.subject = data.subject;
+    sendSmtpEmail.htmlContent = data.htmlContent;
+
+    if (data.textContent) {
+      sendSmtpEmail.textContent = data.textContent;
+    }
+
+    await emailApiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('✅ Email sent successfully via Brevo');
+    return true;
+  } catch (error: any) {
+    console.error('❌ Error sending email via Brevo:', error);
+    console.error('Error details:', error.response?.body || error.message);
+    return false;
+  }
 }
