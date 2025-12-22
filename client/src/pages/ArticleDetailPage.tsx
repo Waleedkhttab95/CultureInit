@@ -66,13 +66,16 @@ export default function ArticleDetailPage() {
             </div>
 
             {/* Featured Image */}
-            <div className="aspect-video overflow-hidden rounded-2xl bg-muted mb-8">
+            <div className="aspect-video overflow-hidden rounded-2xl bg-muted mb-2">
               <img
                 src={article.image}
                 alt={article.title}
                 className="w-full h-full object-cover"
               />
             </div>
+            <p className="text-xs text-muted-foreground text-right mb-8">
+              *حقوق الصور محفوظة بالتعاون مع منصة The stock.
+            </p>
           </div>
 
           {/* Article Content */}
