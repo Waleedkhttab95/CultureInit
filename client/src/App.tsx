@@ -10,6 +10,7 @@ import ArticleDetailPage from "@/pages/ArticleDetailPage";
 import ResourcesPage from "@/pages/ResourcesPage";
 import ProgramsPage from "@/pages/ProgramsPage";
 import PublishingPolicyPage from "@/pages/PublishingPolicyPage";
+import PublishWithUsPage from "@/pages/PublishWithUsPage";
 import NotFound from "@/pages/not-found";
 
 // Component to scroll to top on route change
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/resources" component={ResourcesPage} />
         <Route path="/programs" component={ProgramsPage} />
         <Route path="/publishing-policy" component={PublishingPolicyPage} />
+        <Route path="/publish-with-us" component={PublishWithUsPage} />
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>

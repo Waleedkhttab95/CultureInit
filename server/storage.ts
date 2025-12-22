@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest } from "@shared/schema";
+import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -14,17 +14,22 @@ export interface IStorage {
   getPdfDownloadRequestByEmail(email: string): Promise<PdfDownloadRequest | undefined>;
   createPdfDownloadRequest(request: InsertPdfDownloadRequest): Promise<PdfDownloadRequest>;
   updatePdfDownloadRequestBrevoId(email: string, brevoContactId: string): Promise<void>;
+  getPublishRequestByEmail(email: string): Promise<PublishRequest | undefined>;
+  createPublishRequest(request: InsertPublishRequest): Promise<PublishRequest>;
+  updatePublishRequestBrevoId(email: string, brevoContactId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private newsletterSubscribers: Map<string, NewsletterSubscriber>;
   private pdfDownloadRequests: Map<string, PdfDownloadRequest>;
+  private publishRequests: Map<string, PublishRequest>;
 
   constructor() {
     this.users = new Map();
     this.newsletterSubscribers = new Map();
     this.pdfDownloadRequests = new Map();
+    this.publishRequests = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -94,6 +99,35 @@ export class MemStorage implements IStorage {
     if (request) {
       request.brevoContactId = brevoContactId;
       this.pdfDownloadRequests.set(request.id, request);
+    }
+  }
+
+  async getPublishRequestByEmail(email: string): Promise<PublishRequest | undefined> {
+    return Array.from(this.publishRequests.values()).find(
+      (request) => request.email === email,
+    );
+  }
+
+  async createPublishRequest(insertRequest: InsertPublishRequest): Promise<PublishRequest> {
+    const id = randomUUID();
+    const request: PublishRequest = {
+      id,
+      name: insertRequest.name,
+      email: insertRequest.email,
+      title: insertRequest.title,
+      message: insertRequest.message,
+      requestedAt: new Date(),
+      brevoContactId: null,
+    };
+    this.publishRequests.set(id, request);
+    return request;
+  }
+
+  async updatePublishRequestBrevoId(email: string, brevoContactId: string): Promise<void> {
+    const request = await this.getPublishRequestByEmail(email);
+    if (request) {
+      request.brevoContactId = brevoContactId;
+      this.publishRequests.set(request.id, request);
     }
   }
 }

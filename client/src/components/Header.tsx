@@ -54,9 +54,13 @@ export default function Header() {
                   البرامج
                 </a>
               </Link>
-              <Button size="sm" data-testid="button-contact">
-                تواصل معنا
-              </Button>
+              <Link href="/publish-with-us">
+                <a>
+                  <Button size="sm" data-testid="button-contact">
+                    تواصل معنا
+                  </Button>
+                </a>
+              </Link>
             </div>
           </nav>
 
@@ -104,9 +108,13 @@ export default function Header() {
                   البرامج
                 </a>
               </Link>
-              <Button className="w-full mt-2" size="sm" data-testid="button-mobile-contact">
-                تواصل معنا
-              </Button>
+              <Link href="/publish-with-us">
+                <a onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full mt-2" size="sm" data-testid="button-mobile-contact">
+                    تواصل معنا
+                  </Button>
+                </a>
+              </Link>
             </div>
           </div>
         )}

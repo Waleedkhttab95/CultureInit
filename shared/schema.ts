@@ -51,3 +51,28 @@ export const insertPdfDownloadRequestSchema = createInsertSchema(pdfDownloadRequ
 
 export type InsertPdfDownloadRequest = z.infer<typeof insertPdfDownloadRequestSchema>;
 export type PdfDownloadRequest = typeof pdfDownloadRequests.$inferSelect;
+
+export const publishRequests = pgTable("publish_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  requestedAt: timestamp("requested_at").notNull().defaultNow(),
+  brevoContactId: text("brevo_contact_id"),
+});
+
+export const insertPublishRequestSchema = createInsertSchema(publishRequests).pick({
+  name: true,
+  email: true,
+  title: true,
+  message: true,
+}).extend({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+export type InsertPublishRequest = z.infer<typeof insertPublishRequestSchema>;
+export type PublishRequest = typeof publishRequests.$inferSelect;

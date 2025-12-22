@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema } from "@shared/schema";
+import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured } from "./brevo";
 import { fromZodError } from "zod-validation-error";
 
@@ -150,6 +150,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(500).json({
         error: "Internal server error",
         message: "Failed to process PDF download request"
+      });
+    }
+  });
+
+  // Publish request endpoint
+  app.post("/api/publish-request", async (req, res) => {
+    try {
+      // Validate request body
+      const result = insertPublishRequestSchema.safeParse(req.body);
+
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({
+          error: "Validation failed",
+          message: validationError.message
+        });
+      }
+
+      const { name, email, title, message } = result.data;
+
+      // Save to database
+      const request = await storage.createPublishRequest({ name, email, title, message });
+
+      // Add to Brevo if configured
+      if (await isBrevoConfigured()) {
+        try {
+          const brevoResponse = await addContactToBrevo({
+            email,
+            listIds: process.env.BREVO_PUBLISH_LIST_ID ? [parseInt(process.env.BREVO_PUBLISH_LIST_ID)] : [],
+            attributes: {
+              NAME: name,
+              SIGNUP_SOURCE: 'publish_with_us',
+              SIGNUP_DATE: new Date().toISOString(),
+              PUBLISH_TITLE: title,
+              PUBLISH_MESSAGE: message,
+            },
+          });
+
+          if (brevoResponse) {
+            await storage.updatePublishRequestBrevoId(email, brevoResponse.id.toString());
+          }
+        } catch (brevoError) {
+          console.error("Brevo integration error:", brevoError);
+          // Don't fail the request if Brevo fails
+        }
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: "Request processed successfully",
+        request: {
+          id: request.id,
+          name: request.name,
+          email: request.email,
+          title: request.title,
+          message: request.message,
+        }
+      });
+
+    } catch (error) {
+      console.error("Publish request error:", error);
+      return res.status(500).json({
+        error: "Internal server error",
+        message: "Failed to process publish request"
       });
     }
   });
