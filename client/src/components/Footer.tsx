@@ -65,10 +65,17 @@ export default function Footer() {
                   size="icon"
                   variant="ghost"
                   className="text-background/80 hover:text-background hover:bg-background/10"
-                  onClick={() => handleSocialClick('LinkedIn')}
+                  asChild
                   data-testid="link-linkedin"
                 >
-                  <Linkedin className="h-5 w-5" />
+                  <a
+                    href="https://www.linkedin.com/company/%D8%A7%D9%84%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%AB%D9%82%D8%A7%D9%81%D9%8A%D8%A9/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => handleSocialClick('LinkedIn')}
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
                 </Button>
                 <Button
                   size="icon"

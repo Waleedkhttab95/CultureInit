@@ -1,0 +1,15 @@
+# Robots.txt for مبادرة الإدارة الثقافية
+# https://cultural-managment.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin or private paths if any
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemap location
+Sitemap: https://cultural-managment.com/sitemap.xml
+
+# Crawl delay (optional, in seconds)
+Crawl-delay: 1

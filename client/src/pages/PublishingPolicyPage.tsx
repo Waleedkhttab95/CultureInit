@@ -29,6 +29,13 @@ export default function PublishingPolicyPage() {
                 <div className="flex gap-3 items-start">
                   <span className="text-primary font-bold mt-1">•</span>
                   <div>
+                    <strong>مجالات المنصة:</strong> مبادئ الإدارة الثقافية - الابتكار الثقافي - إدارة المشاريع الثقافية - إدارة الأصول الثقافية - الاستثمار الثقافي - التمويل الثقافي - الاقتصاد الثقافي - علم النفس الثقافي - التطوع الثقافي - ريادة الأعمال الثقافية - التسويق الثقافي - السياحة الثقافية - إدارة التراث، وما يتصل بها.
+                  </div>
+                </div>
+
+                <div className="flex gap-3 items-start">
+                  <span className="text-primary font-bold mt-1">•</span>
+                  <div>
                     <strong>أصالة المادة المنشورة:</strong> يشترط ألا تكون المادة المقدمة للنشر منشورة سابقًا مع أي جهة أخرى، كما تؤول ملكيتها نشرًا وترجمة لمنصة الإدارة الثقافية حال نشرها على المنصة.
                   </div>
                 </div>
