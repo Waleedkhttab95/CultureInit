@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema } from "@shared/schema";
+import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { fromZodError } from "zod-validation-error";
 
@@ -269,6 +269,94 @@ ${message}
       return res.status(500).json({
         error: "Internal server error",
         message: "Failed to process publish request"
+      });
+    }
+  });
+
+  // Program registration endpoint
+  app.post("/api/program/register", async (req, res) => {
+    try {
+      const result = insertProgramRegistrationSchema.safeParse(req.body);
+
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({
+          error: "Validation failed",
+          message: validationError.message
+        });
+      }
+
+      const { name, email, phone, organization, jobTitle, reason } = result.data;
+
+      const registration = await storage.createProgramRegistration({ name, email, phone, organization, jobTitle, reason });
+
+      // Send email notification
+      if (await isBrevoConfigured()) {
+        const recipientEmail = process.env.ADMIN_EMAIL || 'admin@culturalinitiative.com';
+
+        await sendEmail({
+          to: [{ email: recipientEmail }],
+          subject: `طلب تسجيل جديد في برنامج ممارس الإدارة الثقافية: ${name}`,
+          htmlContent: `
+            <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">
+                  طلب تسجيل جديد — ممارس الإدارة الثقافية
+                </h2>
+                <div style="margin-bottom: 20px;">
+                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">الاسم:</strong> ${name}</p>
+                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">البريد الإلكتروني:</strong> ${email}</p>
+                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">رقم الجوال:</strong> ${phone}</p>
+                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">جهة العمل:</strong> ${organization}</p>
+                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">المسمى الوظيفي:</strong> ${jobTitle}</p>
+                </div>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin-top: 20px;">
+                  <p style="margin: 0 0 10px 0; color: #1f2937; font-weight: bold;">سبب الانضمام:</p>
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${reason}</p>
+                </div>
+              </div>
+            </div>
+          `,
+          textContent: `طلب تسجيل جديد — ممارس الإدارة الثقافية\n\nالاسم: ${name}\nالبريد: ${email}\nالجوال: ${phone}\nجهة العمل: ${organization}\nالمسمى: ${jobTitle}\n\nسبب الانضمام:\n${reason}`
+        });
+
+        try {
+          const brevoResponse = await addContactToBrevo({
+            email,
+            listIds: process.env.BREVO_PROGRAM_LIST_ID ? [parseInt(process.env.BREVO_PROGRAM_LIST_ID)] : [],
+            attributes: {
+              NAME: name,
+              PHONE: phone,
+              ORGANIZATION: organization,
+              JOB_TITLE: jobTitle,
+              SIGNUP_SOURCE: 'program_registration',
+              SIGNUP_DATE: new Date().toISOString(),
+            },
+          });
+
+          if (brevoResponse) {
+            await storage.updateProgramRegistrationBrevoId(email, brevoResponse.id.toString());
+          }
+        } catch (brevoError) {
+          console.error("Brevo integration error:", brevoError);
+        }
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: "Registration submitted successfully",
+        registration: {
+          id: registration.id,
+          name: registration.name,
+          email: registration.email,
+        }
+      });
+
+    } catch (error) {
+      console.error("Program registration error:", error);
+      return res.status(500).json({
+        error: "Internal server error",
+        message: "Failed to process registration"
       });
     }
   });

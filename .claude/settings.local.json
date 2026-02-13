@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(source:*)",
+      "Bash(nvm use:*)",
+      "Bash(./node_modules/.bin/vite build:*)",
+      "Bash(lsof:*)"
+    ]
+  }
+}

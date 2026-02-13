@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest } from "@shared/schema";
+import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest, type ProgramRegistration, type InsertProgramRegistration } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -17,6 +17,9 @@ export interface IStorage {
   getPublishRequestByEmail(email: string): Promise<PublishRequest | undefined>;
   createPublishRequest(request: InsertPublishRequest): Promise<PublishRequest>;
   updatePublishRequestBrevoId(email: string, brevoContactId: string): Promise<void>;
+  getProgramRegistrationByEmail(email: string): Promise<ProgramRegistration | undefined>;
+  createProgramRegistration(registration: InsertProgramRegistration): Promise<ProgramRegistration>;
+  updateProgramRegistrationBrevoId(email: string, brevoContactId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -24,12 +27,14 @@ export class MemStorage implements IStorage {
   private newsletterSubscribers: Map<string, NewsletterSubscriber>;
   private pdfDownloadRequests: Map<string, PdfDownloadRequest>;
   private publishRequests: Map<string, PublishRequest>;
+  private programRegistrations: Map<string, ProgramRegistration>;
 
   constructor() {
     this.users = new Map();
     this.newsletterSubscribers = new Map();
     this.pdfDownloadRequests = new Map();
     this.publishRequests = new Map();
+    this.programRegistrations = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -128,6 +133,37 @@ export class MemStorage implements IStorage {
     if (request) {
       request.brevoContactId = brevoContactId;
       this.publishRequests.set(request.id, request);
+    }
+  }
+
+  async getProgramRegistrationByEmail(email: string): Promise<ProgramRegistration | undefined> {
+    return Array.from(this.programRegistrations.values()).find(
+      (reg) => reg.email === email,
+    );
+  }
+
+  async createProgramRegistration(insertReg: InsertProgramRegistration): Promise<ProgramRegistration> {
+    const id = randomUUID();
+    const registration: ProgramRegistration = {
+      id,
+      name: insertReg.name,
+      email: insertReg.email,
+      phone: insertReg.phone,
+      organization: insertReg.organization,
+      jobTitle: insertReg.jobTitle,
+      reason: insertReg.reason,
+      registeredAt: new Date(),
+      brevoContactId: null,
+    };
+    this.programRegistrations.set(id, registration);
+    return registration;
+  }
+
+  async updateProgramRegistrationBrevoId(email: string, brevoContactId: string): Promise<void> {
+    const reg = await this.getProgramRegistrationByEmail(email);
+    if (reg) {
+      reg.brevoContactId = brevoContactId;
+      this.programRegistrations.set(reg.id, reg);
     }
   }
 }

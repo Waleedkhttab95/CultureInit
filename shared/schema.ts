@@ -76,3 +76,34 @@ export const insertPublishRequestSchema = createInsertSchema(publishRequests).pi
 
 export type InsertPublishRequest = z.infer<typeof insertPublishRequestSchema>;
 export type PublishRequest = typeof publishRequests.$inferSelect;
+
+export const programRegistrations = pgTable("program_registrations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  organization: text("organization").notNull(),
+  jobTitle: text("job_title").notNull(),
+  reason: text("reason").notNull(),
+  registeredAt: timestamp("registered_at").notNull().defaultNow(),
+  brevoContactId: text("brevo_contact_id"),
+});
+
+export const insertProgramRegistrationSchema = createInsertSchema(programRegistrations).pick({
+  name: true,
+  email: true,
+  phone: true,
+  organization: true,
+  jobTitle: true,
+  reason: true,
+}).extend({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(9, "Phone number must be at least 9 characters"),
+  organization: z.string().min(2, "Organization must be at least 2 characters"),
+  jobTitle: z.string().min(2, "Job title must be at least 2 characters"),
+  reason: z.string().min(10, "Reason must be at least 10 characters"),
+});
+
+export type InsertProgramRegistration = z.infer<typeof insertProgramRegistrationSchema>;
+export type ProgramRegistration = typeof programRegistrations.$inferSelect;
