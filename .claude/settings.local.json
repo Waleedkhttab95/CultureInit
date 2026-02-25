@@ -5,7 +5,8 @@
       "Bash(source:*)",
       "Bash(nvm use:*)",
       "Bash(./node_modules/.bin/vite build:*)",
-      "Bash(lsof:*)"
+      "Bash(lsof:*)",
+      "Bash(ls:*)"
     ]
   }
 }
