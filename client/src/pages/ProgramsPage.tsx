@@ -526,7 +526,7 @@ export default function ProgramsPage() {
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#0f172a]/5 border border-[#0f172a]/10">
                 <Clock className="h-5 w-5 text-[#0f172a]" />
                 <span className="text-foreground font-semibold">
-                  مدة البرنامج: مارس – أغسطس 2025
+                  مدة البرنامج: مارس – أغسطس 2026
                 </span>
               </div>
             </div>
@@ -576,8 +576,7 @@ export default function ProgramsPage() {
               قدّم طلبك الآن
             </h2>
             <p className="text-white/70 mb-10 text-lg">
-              سجّل في برنامج ممارس الإدارة الثقافية وانضم لأول دفعة معتمدة من
-              بيرسون
+              سجّل الآن وانضم لأول دفعة من قادة الإدارة الثقافية
             </p>
             <a href="/programs/register">
               <Button
@@ -604,20 +603,24 @@ export default function ProgramsPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-14">
               شركاء البرنامج
             </h2>
-            <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-16">
-              <div className="bg-[#0f172a] rounded-2xl px-8 py-6 shadow-sm border border-[#0f172a]/10">
+            <div className="flex flex-wrap items-center justify-center gap-14 sm:gap-20">
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-sm font-semibold text-[#d4a574]">الشريك الاستراتيجي</span>
                 <img
                   src={aljaziraLogo}
                   alt="بنك الجزيرة"
-                  className="h-16 sm:h-20 w-auto"
+                  className="h-24 sm:h-32 w-auto"
                 />
               </div>
-              <div className="bg-white rounded-2xl px-8 py-6 shadow-sm border border-[#0f172a]/5">
-                <img
-                  src={alrajhiLogo}
-                  alt="الراجحي الإنسانية"
-                  className="h-16 sm:h-20 w-auto"
-                />
+              <div className="flex flex-col items-center gap-3">
+                <span className="text-sm font-semibold text-[#d4a574]">الشريك الماسي</span>
+                <div className="bg-white rounded-2xl px-8 py-5 shadow-sm border border-[#0f172a]/5">
+                  <img
+                    src={alrajhiLogo}
+                    alt="الراجحي الإنسانية"
+                    className="h-14 sm:h-16 w-auto"
+                  />
+                </div>
               </div>
             </div>
           </div>

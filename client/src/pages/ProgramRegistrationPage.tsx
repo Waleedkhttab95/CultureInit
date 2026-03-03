@@ -536,7 +536,7 @@ export default function ProgramRegistrationPage() {
                 {/* Works in culture */}
                 <div className="space-y-2">
                   <Label className={labelClass}>
-                    هل تعمل حاليًا في قطاع ثقافي؟
+                    هل تعمل حاليًا في القطاع الثقافي؟
                   </Label>
                   <RadioGroup
                     value={formData.worksInCulture}

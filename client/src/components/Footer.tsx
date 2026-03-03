@@ -189,7 +189,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 text-background/50 text-xs">
               <span>تطوير وتشغيل بواسطة</span>
               <a
-                href="https://letsops.com"
+                href="https://letsops.co"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
