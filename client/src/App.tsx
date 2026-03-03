@@ -9,6 +9,7 @@ import ArticlesPage from "@/pages/ArticlesPage";
 import ArticleDetailPage from "@/pages/ArticleDetailPage";
 import ResourcesPage from "@/pages/ResourcesPage";
 import ProgramsPage from "@/pages/ProgramsPage";
+import ProgramRegistrationPage from "@/pages/ProgramRegistrationPage";
 import PublishingPolicyPage from "@/pages/PublishingPolicyPage";
 import PublishWithUsPage from "@/pages/PublishWithUsPage";
 import NotFound from "@/pages/not-found";
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/articles/:id" component={ArticleDetailPage} />
         <Route path="/resources" component={ResourcesPage} />
         <Route path="/programs" component={ProgramsPage} />
+        <Route path="/programs/register" component={ProgramRegistrationPage} />
         <Route path="/publishing-policy" component={PublishingPolicyPage} />
         <Route path="/publish-with-us" component={PublishWithUsPage} />
         {/* Fallback to 404 */}

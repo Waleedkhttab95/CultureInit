@@ -1,9 +1,34 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 import { storage } from "./storage";
 import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
+import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
+
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: uploadsDir,
+    filename: (_req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [".pdf", ".doc", ".docx"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, allowed.includes(ext));
+  },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Newsletter subscription / Contact form endpoint
@@ -274,9 +299,14 @@ ${message}
   });
 
   // Program registration endpoint
-  app.post("/api/program/register", async (req, res) => {
+  app.post("/api/program/register", upload.single("resume"), async (req, res) => {
     try {
-      const result = insertProgramRegistrationSchema.safeParse(req.body);
+      const body = { ...req.body };
+      if (req.file) {
+        body.resumeFileName = req.file.originalname;
+      }
+
+      const result = insertProgramRegistrationSchema.safeParse(body);
 
       if (!result.success) {
         const validationError = fromZodError(result.error);
@@ -286,56 +316,102 @@ ${message}
         });
       }
 
-      const { name, email, phone, organization, jobTitle, reason } = result.data;
+      const data = result.data;
+      const registration = await storage.createProgramRegistration(data);
 
-      const registration = await storage.createProgramRegistration({ name, email, phone, organization, jobTitle, reason });
+      // Save to Google Sheets
+      if (await isGoogleSheetsConfigured()) {
+        try {
+          await appendRegistrationToSheet(data);
+        } catch (sheetError) {
+          console.error("Google Sheets error:", sheetError);
+        }
+      }
 
       // Send email notification
       if (await isBrevoConfigured()) {
         const recipientEmail = process.env.ADMIN_EMAIL || 'admin@culturalinitiative.com';
 
+        const genderLabel = data.gender === "male" ? "ذكر" : "أنثى";
+        const orgTypeLabels: Record<string, string> = { government: "حكومية", private: "خاصة", nonprofit: "غير ربحية", freelance: "مستقل" };
+        const worksInCultureLabels: Record<string, string> = { yes: "نعم", no: "لا", partial: "بشكل جزئي" };
+
         await sendEmail({
           to: [{ email: recipientEmail }],
-          subject: `طلب تسجيل جديد في برنامج ممارس الإدارة الثقافية: ${name}`,
+          subject: `طلب تسجيل جديد في برنامج ممارس الإدارة الثقافية: ${data.fullName}`,
           htmlContent: `
             <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
               <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <h2 style="color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #d4a574; padding-bottom: 10px;">
                   طلب تسجيل جديد — ممارس الإدارة الثقافية
                 </h2>
-                <div style="margin-bottom: 20px;">
-                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">الاسم:</strong> ${name}</p>
-                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">البريد الإلكتروني:</strong> ${email}</p>
-                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">رقم الجوال:</strong> ${phone}</p>
-                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">جهة العمل:</strong> ${organization}</p>
-                  <p style="margin: 10px 0; color: #4b5563;"><strong style="color: #1f2937;">المسمى الوظيفي:</strong> ${jobTitle}</p>
+
+                <h3 style="color: #d4a574; margin-top: 20px;">البيانات الأساسية</h3>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>الاسم:</strong> ${data.fullName}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>رقم الهوية:</strong> ${data.idNumber}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>الجنس:</strong> ${genderLabel}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>الجوال:</strong> ${data.phone}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>البريد:</strong> ${data.email}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>المدينة:</strong> ${data.city}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>العمر:</strong> ${data.age}</p>
+                ${data.linkedin ? `<p style="margin: 8px 0; color: #4b5563;"><strong>LinkedIn:</strong> ${data.linkedin}</p>` : ""}
+
+                <h3 style="color: #d4a574; margin-top: 20px;">الخلفية التعليمية والمهنية</h3>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>المؤهل:</strong> ${data.qualification}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>التخصص:</strong> ${data.major}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>جهة الدراسة:</strong> ${data.studyInstitution}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>جهة العمل:</strong> ${data.organization}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>نوع الجهة:</strong> ${orgTypeLabels[data.orgType] || data.orgType}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>سنوات الخبرة:</strong> ${data.yearsOfExperience}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>المسمى الوظيفي:</strong> ${data.jobTitle}</p>
+                ${data.resumeFileName ? `<p style="margin: 8px 0; color: #4b5563;"><strong>السيرة الذاتية:</strong> ${data.resumeFileName}</p>` : ""}
+
+                <h3 style="color: #d4a574; margin-top: 20px;">الخبرة الثقافية</h3>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>يعمل في قطاع ثقافي:</strong> ${worksInCultureLabels[data.worksInCulture] || data.worksInCulture}</p>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin: 10px 0;">
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${data.cultureExperience}</p>
                 </div>
-                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin-top: 20px;">
-                  <p style="margin: 0 0 10px 0; color: #1f2937; font-weight: bold;">سبب الانضمام:</p>
-                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${reason}</p>
+
+                <h3 style="color: #d4a574; margin-top: 20px;">الالتزام</h3>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>حضور اللقاءات:</strong> ${data.canAttendAll === "yes" ? "نعم" : "لا"}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>مشروع التخرج:</strong> ${data.canDesignProject === "yes" ? "نعم" : "لا"}</p>
+                <p style="margin: 8px 0; color: #4b5563;"><strong>موافقة جهة العمل:</strong> ${data.hasEmployerApproval === "yes" ? "نعم" : data.hasEmployerApproval === "na" ? "لا ينطبق" : "لا"}</p>
+
+                <h3 style="color: #d4a574; margin-top: 20px;">الأسئلة التقييمية</h3>
+                <p style="margin: 8px 0; color: #1f2937; font-weight: bold;">أبرز فجوة في إدارة المشاريع الثقافية:</p>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin: 10px 0;">
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${data.gapQuestion}</p>
+                </div>
+                <p style="margin: 8px 0; color: #1f2937; font-weight: bold;">عناصر بناء مبادرة ثقافية:</p>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin: 10px 0;">
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${data.initiativeQuestion}</p>
+                </div>
+                <p style="margin: 8px 0; color: #1f2937; font-weight: bold;">تجربة فشل أو نجاح مهني:</p>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin: 10px 0;">
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${data.experienceQuestion}</p>
                 </div>
               </div>
             </div>
           `,
-          textContent: `طلب تسجيل جديد — ممارس الإدارة الثقافية\n\nالاسم: ${name}\nالبريد: ${email}\nالجوال: ${phone}\nجهة العمل: ${organization}\nالمسمى: ${jobTitle}\n\nسبب الانضمام:\n${reason}`
+          textContent: `طلب تسجيل جديد — ممارس الإدارة الثقافية\n\nالاسم: ${data.fullName}\nالبريد: ${data.email}\nالجوال: ${data.phone}\nجهة العمل: ${data.organization}\nالمسمى: ${data.jobTitle}`
         });
 
         try {
           const brevoResponse = await addContactToBrevo({
-            email,
+            email: data.email,
             listIds: process.env.BREVO_PROGRAM_LIST_ID ? [parseInt(process.env.BREVO_PROGRAM_LIST_ID)] : [],
             attributes: {
-              NAME: name,
-              PHONE: phone,
-              ORGANIZATION: organization,
-              JOB_TITLE: jobTitle,
+              NAME: data.fullName,
+              PHONE: data.phone,
+              ORGANIZATION: data.organization,
+              JOB_TITLE: data.jobTitle,
               SIGNUP_SOURCE: 'program_registration',
               SIGNUP_DATE: new Date().toISOString(),
             },
           });
 
           if (brevoResponse) {
-            await storage.updateProgramRegistrationBrevoId(email, brevoResponse.id.toString());
+            await storage.updateProgramRegistrationBrevoId(data.email, brevoResponse.id.toString());
           }
         } catch (brevoError) {
           console.error("Brevo integration error:", brevoError);
@@ -347,7 +423,7 @@ ${message}
         message: "Registration submitted successfully",
         registration: {
           id: registration.id,
-          name: registration.name,
+          fullName: registration.fullName,
           email: registration.email,
         }
       });

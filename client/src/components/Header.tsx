@@ -18,7 +18,7 @@ export default function Header() {
                 <a aria-label="Go to homepage">
                   <img 
                     src={mainLogo} 
-                    alt="مبادرة الإدارة الثقافية" 
+                    alt="منصة الإدارة الثقافية" 
                     className="h-10 w-auto cursor-pointer"
                     data-testid="logo-main"
                   />

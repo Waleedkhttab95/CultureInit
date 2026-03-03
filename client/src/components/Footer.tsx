@@ -9,6 +9,7 @@ import {
   ArrowUp
 } from "lucide-react";
 import whiteLogo from "@assets/white-logo.png";
+import letsopsLogo from "@assets/letsops-logo.png";
 import { Link } from "wouter";
 
 export default function Footer() {
@@ -35,7 +36,7 @@ export default function Footer() {
             <div className="lg:col-span-2">
               <img 
                 src={whiteLogo} 
-                alt="مبادرة الإدارة الثقافية" 
+                alt="منصة الإدارة الثقافية" 
                 className="h-8 w-auto mb-4"
                 data-testid="logo-footer"
               />
@@ -182,9 +183,26 @@ export default function Footer() {
         <div className="border-t border-background/20 py-6">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-background/60 text-sm text-center sm:text-right">
-              © 2025 مبادرة الإدارة الثقافية. جميع الحقوق محفوظة.
+              © 2025 منصة الإدارة الثقافية. جميع الحقوق محفوظة.
             </p>
-            
+
+            <div className="flex items-center gap-2 text-background/50 text-xs">
+              <span>تطوير وتشغيل بواسطة</span>
+              <a
+                href="https://letsops.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src={letsopsLogo}
+                  alt="Let'sOps"
+                  className="h-5 w-auto"
+                />
+                <span className="text-background/70 font-medium">Let'sOps</span>
+              </a>
+            </div>
+
             <Button
               size="sm"
               variant="ghost"

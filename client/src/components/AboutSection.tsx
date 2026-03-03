@@ -51,7 +51,7 @@ export default function AboutSection() {
           <div className="flex justify-center mb-4">
             <img
               src={initiativeIcon}
-              alt="أيقونة المبادرة"
+              alt="منصة الإدارة الثقافية"
               className="h-14 w-14"
               data-testid="icon-initiative"
             />

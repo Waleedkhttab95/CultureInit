@@ -105,7 +105,7 @@ export default function HeroSection() {
         <div className="flex justify-center mb-8 animate-shimmer">
           <img 
             src={whiteLogo} 
-            alt="مبادرة الإدارة الثقافية" 
+            alt="منصة الإدارة الثقافية" 
             className="h-16 sm:h-20 lg:h-24 w-auto"
             data-testid="logo-hero"
           />

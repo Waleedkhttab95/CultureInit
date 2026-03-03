@@ -1,13 +1,13 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState, useRef } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import whiteIcon from "@assets/white-icon.png";
-import pdfFile from "@assets/download.pdf";
+import pdfFile from "@assets/program-brochure.pdf";
+import pearsonLogo from "@assets/pearson-logo.png";
+import aljaziraLogo from "@assets/aljazira-bank-logo.jpeg";
+import alrajhiLogo from "@assets/alrajhi-humanitarian-logo.png";
 import {
   BookOpen,
   Award,
@@ -22,14 +22,8 @@ import {
   Target,
   Check,
   Send,
-  User,
-  Mail,
-  Phone,
-  Building2,
   Briefcase,
-  MessageSquare,
   Clock,
-  ArrowDown,
   Sparkles,
   FileText,
   Download,
@@ -56,28 +50,30 @@ const COURSES = [
   },
   {
     number: 4,
-    title: "الوساطة الثقافية",
-    description: "إدارة العلاقة بين المنتج الثقافي والجمهور.",
-    icon: Users,
-  },
-  {
-    number: 5,
-    title: "إدارة المواهب الثقافية",
-    description: "تصميم برامج اكتشاف وتنمية المواهب.",
-    icon: Star,
-  },
-  {
-    number: 6,
     title: "إدارة المشاريع الثقافية",
     description: "من الفكرة إلى التنفيذ والتقييم.",
     icon: Briefcase,
   },
   {
-    number: 7,
+    number: 5,
     title: "تسويق وتمويل الثقافة",
     description: "بناء خطط تسويق وشراكات ورعايات مستدامة.",
     icon: Megaphone,
   },
+  {
+    number: 6,
+    title: "الوساطة الثقافية",
+    description: "إدارة العلاقة بين المنتج الثقافي والجمهور.",
+    icon: Users,
+  },
+  {
+    number: 7,
+    title: "إدارة المواهب الثقافية",
+    description: "تصميم برامج اكتشاف وتنمية المواهب.",
+    icon: Star,
+  },
+ 
+  
 ];
 
 const TOOLS = [
@@ -86,21 +82,31 @@ const TOOLS = [
   { label: "سماع موجه", icon: Headphones },
   { label: "لقاءات خبراء", icon: Award },
   { label: "دراسات حالة", icon: FileText },
-  { label: "زيارات ميدانية", icon: MapPin },
   { label: "تدريب تطبيقي", icon: Target },
 ];
 
-const TIMELINE = [
-  { step: 1, phase: "التسجيل", duration: "" },
-  { step: 2, phase: "الفرز", duration: "" },
-  { step: 3, phase: "إعلان القبول", duration: "" },
-  { step: 4, phase: "لقاءات معرفية مكثفة", duration: "شهران" },
-  { step: 5, phase: "تطوير مشروع التخرج", duration: "شهر" },
-  { step: 6, phase: "إشراف وتحكيم وتخرج", duration: "شهران" },
+const TIMELINE_STEPS = [
+  { step: 1, phase: "التسجيل", date: "1 مارس – 4 أبريل" },
+  { step: 2, phase: "الفرز", date: "5 أبريل – 10 أبريل" },
+  { step: 3, phase: "المقابلات", date: "12 أبريل – 23 أبريل" },
+  { step: 4, phase: "إعلان المقبولين", date: "26 أبريل" },
+  { step: 5, phase: "مرحلة المقررات", date: "مايو – يونيو", hasCourses: true },
+  { step: 6, phase: "تطوير مشروع التخرج", date: "يوليو" },
+  { step: 7, phase: "التحكيم والتخرج", date: "أغسطس" },
+];
+
+const COURSES_SCHEDULE = [
+  { name: "مدخل الإدارة الثقافية", date: "8-9 مايو" },
+  { name: "اقتصاديات الثقافة", date: "15-16 مايو" },
+  { name: "علم النفس الثقافي", date: "22-23 مايو" },
+  { name: "إدارة المشاريع الثقافية", date: "5-6 يونيو" },
+  { name: "تسويق وتمويل الثقافة", date: "12-13 يونيو" },
+  { name: "الوساطة الثقافية", date: "19-20 يونيو" },
+  { name: "إدارة المواهب الثقافية", date: "26-27 يونيو" },
 ];
 
 const AUDIENCE = [
-  "العاملين في الجهات الثقافية الحكومية والخاصة",
+  "العاملين في الجهات الثقافية الحكومية والخاصة و غير الربحية",
   "مديري المبادرات والبرامج الثقافية",
   "المستقلين ومؤسسي المشاريع الثقافية",
   "المهتمين بتطوير مسار مهني احترافي في الثقافة",
@@ -115,18 +121,9 @@ export default function ProgramsPage() {
   const { ref: learnRef, isVisible: learnVisible } = useScrollAnimation();
   const { ref: toolsRef, isVisible: toolsVisible } = useScrollAnimation();
   const { ref: timelineRef, isVisible: timelineVisible } = useScrollAnimation();
-  const { ref: formRef, isVisible: formVisible } = useScrollAnimation();
-
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    organization: "",
-    jobTitle: "",
-    reason: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { ref: accreditationRef, isVisible: accreditationVisible } = useScrollAnimation();
+  const { ref: ctaRef, isVisible: ctaVisible } = useScrollAnimation();
+  const { ref: partnersRef, isVisible: partnersVisible } = useScrollAnimation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -158,53 +155,6 @@ export default function ProgramsPage() {
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
-
-  const scrollToForm = () => {
-    formRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch("/api/program/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setTimeout(() => {
-          setIsSubmitted(false);
-          setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            organization: "",
-            jobTitle: "",
-            reason: "",
-          });
-        }, 3000);
-      } else {
-        const data = await response.json();
-        alert(data.message || "حدث خطأ أثناء إرسال البيانات");
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
@@ -259,7 +209,7 @@ export default function ProgramsPage() {
             {/* Subtitle */}
             <p className="text-lg sm:text-xl lg:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:120ms]">
               برنامج تأهيلي عملي لتطوير مهارات تصميم وإدارة المشاريع والمنظمات
-              الثقافية وفق أعلى الممارسات العالمية.
+            الثقافية.
             </p>
 
             {/* Quick bullets */}
@@ -275,7 +225,7 @@ export default function ProgramsPage() {
                 },
                 {
                   icon: Users,
-                  text: "لقاءات خبراء وزيارات ميدانية",
+                  text: "لقاءات خبراء",
                 },
                 {
                   icon: GraduationCap,
@@ -296,14 +246,14 @@ export default function ProgramsPage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:360ms]">
-              <Button
-                onClick={scrollToForm}
-                size="lg"
-                className="h-14 px-8 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <ArrowDown className="h-5 w-5" />
-                قدّم طلبك الآن
-              </Button>
+              <a href="/programs/register">
+                <Button
+                  size="lg"
+                  className="h-14 px-8 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  قدّم طلبك الآن
+                </Button>
+              </a>
               <Button
                 variant="outline"
                 size="lg"
@@ -374,7 +324,7 @@ export default function ProgramsPage() {
                 لمن هذا البرنامج؟
               </h2>
               <p className="text-lg text-primary font-semibold">
-                صُمم للممارسين الحقيقيين في القطاع الثقافي والفاعلين فيه!
+                صُمم للممارسين الحقيقيين في القطاع الثقافي والفاعلين فيه.
               </p>
             </div>
 
@@ -472,7 +422,7 @@ export default function ProgramsPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
               {TOOLS.map((tool, i) => (
                 <div
                   key={i}
@@ -502,65 +452,72 @@ export default function ProgramsPage() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">
-                مسار البرنامج الزمني
+                الجدول الزمني للبرنامج
               </h2>
             </div>
 
-            {/* Desktop timeline */}
-            <div className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute top-8 right-0 left-0 h-0.5 bg-card-border" />
+            {/* Vertical timeline */}
+            <div className="relative pr-8 sm:pr-0 sm:max-w-2xl sm:mx-auto">
+              <div className="absolute right-[1.15rem] sm:right-auto sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-card-border" />
 
-                <div className="grid grid-cols-6 gap-4">
-                  {TIMELINE.map((item) => (
-                    <div
-                      key={item.step}
-                      className="relative flex flex-col items-center"
-                    >
-                      <div className="w-16 h-16 rounded-full bg-[#0f172a] flex items-center justify-center text-white font-bold text-lg z-10 border-4 border-background">
+              <div className="space-y-8">
+                {TIMELINE_STEPS.map((item) => (
+                  <div key={item.step}>
+                    <div className="relative flex items-start gap-4 sm:gap-6">
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#0f172a] flex items-center justify-center text-white font-bold text-sm sm:text-lg z-10 border-4 border-background">
                         {item.step}
                       </div>
-                      <h4 className="mt-4 text-foreground font-bold text-center text-sm">
-                        {item.phase}
-                      </h4>
-                      {item.duration && (
-                        <span className="mt-2 text-xs text-[#d4a574] font-medium bg-[#d4a574]/10 px-3 py-1 rounded-full">
-                          {item.duration}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile timeline */}
-            <div className="lg:hidden">
-              <div className="relative pr-8">
-                <div className="absolute right-[1.15rem] top-0 bottom-0 w-0.5 bg-card-border" />
-
-                <div className="space-y-8">
-                  {TIMELINE.map((item) => (
-                    <div
-                      key={item.step}
-                      className="relative flex items-start gap-6"
-                    >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#0f172a] flex items-center justify-center text-white font-bold text-sm z-10 border-4 border-background">
-                        {item.step}
-                      </div>
-                      <div className="pt-1">
-                        <h4 className="text-foreground font-bold">
+                      <div className="pt-1 sm:pt-2 flex-1">
+                        <h4 className="text-foreground font-bold text-base sm:text-lg">
                           {item.phase}
                         </h4>
-                        {item.duration && (
-                          <span className="inline-block mt-1 text-xs text-[#d4a574] font-medium bg-[#d4a574]/10 px-3 py-1 rounded-full">
-                            {item.duration}
-                          </span>
-                        )}
+                        <span className="inline-block mt-1 text-xs sm:text-sm text-[#d4a574] font-medium bg-[#d4a574]/10 px-3 py-1 rounded-full">
+                          {item.date}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    {/* Courses table for step 5 */}
+                    {item.hasCourses && (
+                      <div className="mt-6 mr-14 sm:mr-20">
+                        <div className="overflow-hidden rounded-xl border border-card-border">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-[#0f172a] text-white">
+                                <th className="py-3 px-4 text-right font-semibold">المادة</th>
+                                <th className="py-3 px-4 text-right font-semibold">التاريخ</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {COURSES_SCHEDULE.map((course, idx) => (
+                                <tr
+                                  key={idx}
+                                  className={idx % 2 === 0 ? "bg-background" : "bg-[#0f172a]/[0.03]"}
+                                >
+                                  <td className="py-3 px-4 text-foreground font-medium">
+                                    {course.name}
+                                  </td>
+                                  <td className="py-3 px-4 text-muted-foreground">
+                                    {idx === 0 && (
+                                      <span className="block text-[#d4a574] text-xs font-medium mb-1">
+                                        الجمعة والسبت
+                                      </span>
+                                    )}
+                                    {course.date}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4 text-[#d4a574]" />
+                          <span>حضوريًا في الرياض</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -569,203 +526,100 @@ export default function ProgramsPage() {
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#0f172a]/5 border border-[#0f172a]/10">
                 <Clock className="h-5 w-5 text-[#0f172a]" />
                 <span className="text-foreground font-semibold">
-                  مدة البرنامج: تقريبًا 5–6 أشهر
+                  مدة البرنامج: مارس – أغسطس 2025
                 </span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ===== REGISTRATION FORM ===== */}
+        {/* ===== ACCREDITATION ===== */}
         <section
-          ref={formRef}
-          id="registration"
+          ref={accreditationRef}
+          className={`py-20 sm:py-28 bg-[#f8f6f3] transition-all duration-1000 ${
+            accreditationVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
+              اعتماد البرنامج
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
+              البرنامج معتمد من منظمة بيرسون البريطانية، لضمان توافق البرنامج مع
+              معايير الجودة العالمية في التعليم المهني، وتعزيز فرص الاعتراف
+              الدولي بالشهادة.
+            </p>
+            <div className="inline-flex items-center justify-center bg-white rounded-2xl px-10 py-6 shadow-sm border border-[#0f172a]/5">
+              <img
+                src={pearsonLogo}
+                alt="Pearson"
+                className="h-12 sm:h-16 w-auto"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ===== CTA ===== */}
+        <section
+          ref={ctaRef}
           className={`py-20 sm:py-28 transition-all duration-1000 ${
-            formVisible
+            ctaVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"
           }`}
           style={{ backgroundColor: "#0f172a" }}
         >
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                قدّم طلبك الآن
-              </h2>
-              <p className="text-white/70">
-                سجّل بياناتك وسنتواصل معك قريباً
-              </p>
-            </div>
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              قدّم طلبك الآن
+            </h2>
+            <p className="text-white/70 mb-10 text-lg">
+              سجّل في برنامج ممارس الإدارة الثقافية وانضم لأول دفعة معتمدة من
+              بيرسون
+            </p>
+            <a href="/programs/register">
+              <Button
+                size="lg"
+                className="h-14 px-12 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                <Send className="h-5 w-5" />
+                سجّل الآن
+              </Button>
+            </a>
+          </div>
+        </section>
 
-            {isSubmitted ? (
-              <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6 animate-bounce">
-                  <Check className="h-10 w-10 text-green-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">
-                  تم إرسال طلبك بنجاح!
-                </h3>
-                <p className="text-white/70">
-                  شكراً لك، سنتواصل معك قريباً
-                </p>
+        {/* ===== PARTNERS ===== */}
+        <section
+          ref={partnersRef}
+          className={`py-20 sm:py-28 bg-background transition-all duration-1000 ${
+            partnersVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-14">
+              شركاء البرنامج
+            </h2>
+            <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-16">
+              <div className="bg-[#0f172a] rounded-2xl px-8 py-6 shadow-sm border border-[#0f172a]/10">
+                <img
+                  src={aljaziraLogo}
+                  alt="بنك الجزيرة"
+                  className="h-16 sm:h-20 w-auto"
+                />
               </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 space-y-6">
-                  {/* Name */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-name"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <User className="h-4 w-4 text-[#d4a574]" />
-                      الاسم الكامل
-                    </Label>
-                    <Input
-                      id="reg-name"
-                      name="name"
-                      type="text"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="أدخل اسمك الكامل"
-                      required
-                      className="h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-email"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <Mail className="h-4 w-4 text-[#d4a574]" />
-                      البريد الإلكتروني
-                    </Label>
-                    <Input
-                      id="reg-email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="أدخل بريدك الإلكتروني"
-                      required
-                      className="h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-phone"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <Phone className="h-4 w-4 text-[#d4a574]" />
-                      رقم الجوال
-                    </Label>
-                    <Input
-                      id="reg-phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="05xxxxxxxx"
-                      required
-                      className="h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Organization */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-organization"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <Building2 className="h-4 w-4 text-[#d4a574]" />
-                      جهة العمل
-                    </Label>
-                    <Input
-                      id="reg-organization"
-                      name="organization"
-                      type="text"
-                      value={formData.organization}
-                      onChange={handleInputChange}
-                      placeholder="أدخل جهة عملك"
-                      required
-                      className="h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Job Title */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-jobTitle"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <Briefcase className="h-4 w-4 text-[#d4a574]" />
-                      المسمى الوظيفي
-                    </Label>
-                    <Input
-                      id="reg-jobTitle"
-                      name="jobTitle"
-                      type="text"
-                      value={formData.jobTitle}
-                      onChange={handleInputChange}
-                      placeholder="أدخل مسماك الوظيفي"
-                      required
-                      className="h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Reason */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="reg-reason"
-                      className="text-sm font-semibold text-white/90 flex items-center gap-2"
-                    >
-                      <MessageSquare className="h-4 w-4 text-[#d4a574]" />
-                      لماذا ترغب بالانضمام؟
-                    </Label>
-                    <Textarea
-                      id="reg-reason"
-                      name="reason"
-                      value={formData.reason}
-                      onChange={handleInputChange}
-                      placeholder="اكتب سبب رغبتك بالانضمام للبرنامج"
-                      required
-                      rows={4}
-                      className="text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl resize-none"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Submit */}
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full h-14 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-[#0f172a]/30 border-t-[#0f172a] rounded-full animate-spin" />
-                        جاري الإرسال...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Send className="h-5 w-5" />
-                        إرسال الطلب
-                      </div>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            )}
+              <div className="bg-white rounded-2xl px-8 py-6 shadow-sm border border-[#0f172a]/5">
+                <img
+                  src={alrajhiLogo}
+                  alt="الراجحي الإنسانية"
+                  className="h-16 sm:h-20 w-auto"
+                />
+              </div>
+            </div>
           </div>
         </section>
       </main>
