@@ -67,6 +67,49 @@ export default function ProgramRegistrationPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const FIELD_LABELS: Record<string, string> = {
+    fullName: "الاسم الرباعي",
+    idNumber: "رقم الهوية / الإقامة",
+    gender: "الجنس",
+    phone: "رقم الجوال",
+    email: "البريد الإلكتروني",
+    city: "المدينة",
+    age: "العمر",
+    qualification: "المؤهل العلمي",
+    major: "التخصص",
+    studyInstitution: "جهة الدراسة",
+    organization: "جهة العمل",
+    orgType: "نوع جهة العمل",
+    yearsOfExperience: "عدد سنوات الخبرة",
+    jobTitle: "المسمى الوظيفي",
+    worksInCulture: "هل تعمل في القطاع الثقافي",
+    cultureExperience: "وصف الخبرة الثقافية",
+    canAttendAll: "الالتزام بحضور اللقاءات",
+    canDesignProject: "القدرة على تصميم مشروع التخرج",
+    hasEmployerApproval: "موافقة جهة العمل",
+    gapQuestion: "سؤال فجوة إدارة المشاريع الثقافية",
+    initiativeQuestion: "سؤال المبادرة الثقافية المستدامة",
+    experienceQuestion: "سؤال تجربة الفشل أو النجاح",
+  };
+
+  const validateForm = (): string[] => {
+    const missing: string[] = [];
+    const required = [
+      "fullName", "idNumber", "gender", "phone", "email", "city", "age",
+      "qualification", "major", "studyInstitution", "organization", "orgType",
+      "yearsOfExperience", "jobTitle", "worksInCulture", "cultureExperience",
+      "canAttendAll", "canDesignProject", "hasEmployerApproval",
+      "gapQuestion", "initiativeQuestion", "experienceQuestion",
+    ];
+    for (const field of required) {
+      if (!formData[field as keyof typeof formData]?.trim()) {
+        missing.push(FIELD_LABELS[field] || field);
+      }
+    }
+    return missing;
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -87,6 +130,15 @@ export default function ProgramRegistrationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors([]);
+
+    const missing = validateForm();
+    if (missing.length > 0) {
+      setErrors(missing);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -106,12 +158,13 @@ export default function ProgramRegistrationPage() {
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        const data = await response.json();
-        alert(data.message || "حدث خطأ أثناء إرسال البيانات");
+        setErrors(["حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى."]);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+      setErrors(["حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."]);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
     }
@@ -159,6 +212,22 @@ export default function ProgramRegistrationPage() {
               برنامج ممارس الإدارة الثقافية
             </p>
           </div>
+
+          {/* Error Display Banner */}
+          {errors.length > 0 && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-2">
+              <h4 className="text-red-400 font-bold text-lg mb-3">
+                يرجى تعبئة الحقول التالية:
+              </h4>
+              <ul className="space-y-1.5 list-disc list-inside">
+                {errors.map((error, index) => (
+                  <li key={index} className="text-red-300/90 text-sm">
+                    {error}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             {/* ===== القسم الأول: البيانات الأساسية ===== */}
