@@ -96,17 +96,27 @@ export default function ProgramRegistrationPage() {
 
   const validateForm = (): string[] => {
     const missing: string[] = [];
-    const required = [
-      "fullName", "idNumber", "gender", "phone", "email", "city", "age",
-      "qualification", "major", "studyInstitution", "organization", "orgType",
-      "yearsOfExperience", "jobTitle", "worksInCulture", "cultureExperience",
-      "canAttendAll", "canDesignProject", "hasEmployerApproval",
-      "gapQuestion", "initiativeQuestion", "experienceQuestion",
-    ];
-    for (const field of required) {
-      if (!formData[field as keyof typeof formData]?.trim()) {
-        missing.push(FIELD_LABELS[field] || field);
+    const minLengths: Record<string, number> = {
+      fullName: 2, idNumber: 5, gender: 1, phone: 9, email: 1, city: 2, age: 1,
+      qualification: 1, major: 2, studyInstitution: 2, organization: 2, orgType: 1,
+      yearsOfExperience: 1, jobTitle: 2, worksInCulture: 1,
+      cultureExperience: 10, canAttendAll: 1, canDesignProject: 1, hasEmployerApproval: 1,
+      gapQuestion: 10, initiativeQuestion: 10, experienceQuestion: 10,
+    };
+    for (const [field, minLen] of Object.entries(minLengths)) {
+      const value = formData[field as keyof typeof formData]?.trim() || "";
+      if (value.length < minLen) {
+        if (value.length === 0) {
+          missing.push(FIELD_LABELS[field] || field);
+        } else {
+          missing.push(`${FIELD_LABELS[field] || field} (يجب ألا يقل عن ${minLen} أحرف)`);
+        }
       }
+    }
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email.trim())) {
+      missing.push("البريد الإلكتروني (صيغة غير صحيحة)");
     }
     return missing;
   };
