@@ -445,8 +445,6 @@ export default function ProgramRegistrationPage() {
                       <SelectValue placeholder="اختر المؤهل العلمي" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="highschool">ثانوية عامة</SelectItem>
-                      <SelectItem value="diploma">دبلوم</SelectItem>
                       <SelectItem value="bachelor">بكالوريوس</SelectItem>
                       <SelectItem value="master">ماجستير</SelectItem>
                       <SelectItem value="phd">دكتوراه</SelectItem>
