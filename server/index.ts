@@ -48,6 +48,12 @@ app.use((req, res, next) => {
     express.static(path.resolve(import.meta.dirname, "..", "attached_assets")),
   );
 
+  // Serve uploaded CVs/resumes
+  app.use(
+    "/uploads",
+    express.static(path.resolve(import.meta.dirname, "..", "uploads")),
+  );
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";

@@ -24,7 +24,8 @@ export async function isGoogleSheetsConfigured(): Promise<boolean> {
 }
 
 export async function appendRegistrationToSheet(
-  data: InsertProgramRegistration
+  data: InsertProgramRegistration,
+  baseUrl?: string
 ): Promise<boolean> {
   const auth = getAuth();
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
@@ -80,7 +81,9 @@ export async function appendRegistrationToSheet(
     orgTypeLabels[data.orgType] || data.orgType,
     data.yearsOfExperience,
     data.jobTitle,
-    data.resumeFileName || "",
+    data.resumeFileName
+      ? (baseUrl ? `${baseUrl}/uploads/${data.resumeFileName}` : data.resumeFileName)
+      : "",
     worksInCultureLabels[data.worksInCulture] || data.worksInCulture,
     data.cultureExperience,
     yesNoLabels[data.canAttendAll] || data.canAttendAll,

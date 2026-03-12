@@ -31,6 +31,23 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Admin endpoint: list all uploaded CVs
+  app.get("/api/admin/uploads", async (req, res) => {
+    try {
+      const files = fs.readdirSync(uploadsDir).filter(f => !f.startsWith("."));
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const fileList = files.map(f => ({
+        filename: f,
+        url: `${baseUrl}/uploads/${f}`,
+        uploadedAt: new Date(parseInt(f.split("-")[0])).toISOString(),
+      }));
+      fileList.sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+      res.json(fileList);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to list uploads" });
+    }
+  });
+
   // Newsletter subscription / Contact form endpoint
   app.post("/api/newsletter/subscribe", async (req, res) => {
     try {
@@ -303,7 +320,7 @@ ${message}
     try {
       const body = { ...req.body };
       if (req.file) {
-        body.resumeFileName = req.file.originalname;
+        body.resumeFileName = req.file.filename;
       }
 
       const result = insertProgramRegistrationSchema.safeParse(body);
@@ -322,7 +339,8 @@ ${message}
       // Save to Google Sheets
       if (await isGoogleSheetsConfigured()) {
         try {
-          await appendRegistrationToSheet(data);
+          const baseUrl = `${req.protocol}://${req.get("host")}`;
+          await appendRegistrationToSheet(data, baseUrl);
         } catch (sheetError) {
           console.error("Google Sheets error:", sheetError);
         }
