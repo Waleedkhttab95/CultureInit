@@ -6,16 +6,22 @@ import fs from "fs";
 import { storage } from "./storage";
 import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
-import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured, uploadFileToDrive } from "./google-sheets";
+import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
 
-const uploadsDir = path.join(process.cwd(), "uploads");
+const uploadsDir = "/uploads";
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: uploadsDir,
+    filename: (_req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + "-" + file.originalname);
+    },
+  }),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const allowed = [".pdf", ".doc", ".docx"];
@@ -313,26 +319,12 @@ ${message}
   app.post("/api/program/register", upload.single("resume"), async (req, res) => {
     try {
       const body = { ...req.body };
-      let resumeLink: string | undefined;
+      let resumeUrl: string | undefined;
 
-      // Upload CV to Google Drive
       if (req.file) {
-        body.resumeFileName = req.file.originalname;
-        try {
-          const driveLink = await uploadFileToDrive(
-            req.file.buffer,
-            req.file.originalname,
-            req.file.mimetype
-          );
-          if (driveLink) {
-            resumeLink = driveLink;
-            console.log("CV uploaded to Google Drive:", driveLink);
-          } else {
-            console.log("Drive upload returned null - check GOOGLE_SERVICE_ACCOUNT_KEY and Drive API is enabled");
-          }
-        } catch (driveError) {
-          console.error("Google Drive upload error:", driveError);
-        }
+        body.resumeFileName = req.file.filename;
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
+        resumeUrl = `${baseUrl}/uploads/${req.file.filename}`;
       }
 
       const result = insertProgramRegistrationSchema.safeParse(body);
@@ -351,7 +343,7 @@ ${message}
       // Save to Google Sheets
       if (await isGoogleSheetsConfigured()) {
         try {
-          await appendRegistrationToSheet(data, resumeLink);
+          await appendRegistrationToSheet(data, resumeUrl);
         } catch (sheetError) {
           console.error("Google Sheets error:", sheetError);
         }

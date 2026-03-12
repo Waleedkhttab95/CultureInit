@@ -48,10 +48,10 @@ app.use((req, res, next) => {
     express.static(path.resolve(import.meta.dirname, "..", "attached_assets")),
   );
 
-  // Serve uploaded CVs/resumes
+  // Serve uploaded CVs/resumes from persistent disk
   app.use(
     "/uploads",
-    express.static(path.resolve(import.meta.dirname, "..", "uploads")),
+    express.static("/uploads"),
   );
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

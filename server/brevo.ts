@@ -64,12 +64,18 @@ export async function isBrevoConfigured(): Promise<boolean> {
   return !!apiKey;
 }
 
+export interface EmailAttachment {
+  name: string;
+  content: string; // base64 encoded
+}
+
 export interface SendEmailData {
   to: { email: string; name?: string }[];
   subject: string;
   htmlContent: string;
   textContent?: string;
   sender?: { email: string; name?: string };
+  attachment?: EmailAttachment[];
 }
 
 export async function sendEmail(data: SendEmailData): Promise<boolean> {
@@ -93,6 +99,10 @@ export async function sendEmail(data: SendEmailData): Promise<boolean> {
 
     if (data.textContent) {
       sendSmtpEmail.textContent = data.textContent;
+    }
+
+    if (data.attachment && data.attachment.length > 0) {
+      sendSmtpEmail.attachment = data.attachment;
     }
 
     await emailApiInstance.sendTransacEmail(sendSmtpEmail);
