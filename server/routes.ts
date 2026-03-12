@@ -6,7 +6,7 @@ import fs from "fs";
 import { storage } from "./storage";
 import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
-import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
+import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured, uploadFileToDrive } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
 
 const uploadsDir = path.join(process.cwd(), "uploads");
@@ -319,8 +319,24 @@ ${message}
   app.post("/api/program/register", upload.single("resume"), async (req, res) => {
     try {
       const body = { ...req.body };
+      let resumeLink: string | undefined;
+
+      // Upload CV to Google Drive
       if (req.file) {
-        body.resumeFileName = req.file.filename;
+        body.resumeFileName = req.file.originalname;
+        try {
+          const fileBuffer = fs.readFileSync(req.file.path);
+          const driveLink = await uploadFileToDrive(
+            fileBuffer,
+            req.file.originalname,
+            req.file.mimetype
+          );
+          if (driveLink) {
+            resumeLink = driveLink;
+          }
+        } catch (driveError) {
+          console.error("Google Drive upload error:", driveError);
+        }
       }
 
       const result = insertProgramRegistrationSchema.safeParse(body);
@@ -339,8 +355,7 @@ ${message}
       // Save to Google Sheets
       if (await isGoogleSheetsConfigured()) {
         try {
-          const baseUrl = `${req.protocol}://${req.get("host")}`;
-          await appendRegistrationToSheet(data, baseUrl);
+          await appendRegistrationToSheet(data, resumeLink);
         } catch (sheetError) {
           console.error("Google Sheets error:", sheetError);
         }

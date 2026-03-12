@@ -1,7 +1,11 @@
 import { google } from "googleapis";
+import { Readable } from "stream";
 import type { InsertProgramRegistration } from "@shared/schema";
 
-const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
+const SCOPES = [
+  "https://www.googleapis.com/auth/spreadsheets",
+  "https://www.googleapis.com/auth/drive.file",
+];
 
 function getAuth() {
   const credentials = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
@@ -19,13 +23,62 @@ function getAuth() {
   }
 }
 
+export async function uploadFileToDrive(
+  fileBuffer: Buffer,
+  fileName: string,
+  mimeType: string
+): Promise<string | null> {
+  const auth = getAuth();
+  const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+  if (!auth) {
+    console.log("Google auth not configured, skipping Drive upload");
+    return null;
+  }
+
+  const drive = google.drive({ version: "v3", auth });
+
+  try {
+    const fileMetadata: { name: string; parents?: string[] } = { name: fileName };
+    if (folderId) {
+      fileMetadata.parents = [folderId];
+    }
+
+    const response = await drive.files.create({
+      requestBody: fileMetadata,
+      media: {
+        mimeType,
+        body: Readable.from(fileBuffer),
+      },
+      fields: "id, webViewLink",
+    });
+
+    const fileId = response.data.id;
+    if (!fileId) return null;
+
+    // Make the file viewable by anyone with the link
+    await drive.permissions.create({
+      fileId,
+      requestBody: {
+        role: "reader",
+        type: "anyone",
+      },
+    });
+
+    return response.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
+  } catch (err) {
+    console.error("Failed to upload file to Google Drive:", err);
+    return null;
+  }
+}
+
 export async function isGoogleSheetsConfigured(): Promise<boolean> {
   return !!(process.env.GOOGLE_SERVICE_ACCOUNT_KEY && process.env.GOOGLE_SHEET_ID);
 }
 
 export async function appendRegistrationToSheet(
   data: InsertProgramRegistration,
-  baseUrl?: string
+  resumeLink?: string
 ): Promise<boolean> {
   const auth = getAuth();
   const spreadsheetId = process.env.GOOGLE_SHEET_ID;
@@ -81,9 +134,7 @@ export async function appendRegistrationToSheet(
     orgTypeLabels[data.orgType] || data.orgType,
     data.yearsOfExperience,
     data.jobTitle,
-    data.resumeFileName
-      ? (baseUrl ? `${baseUrl}/uploads/${data.resumeFileName}` : data.resumeFileName)
-      : "",
+    resumeLink || "",
     worksInCultureLabels[data.worksInCulture] || data.worksInCulture,
     data.cultureExperience,
     yesNoLabels[data.canAttendAll] || data.canAttendAll,
