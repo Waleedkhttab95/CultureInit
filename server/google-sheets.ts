@@ -66,8 +66,11 @@ export async function uploadFileToDrive(
     });
 
     return response.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
-  } catch (err) {
-    console.error("Failed to upload file to Google Drive:", err);
+  } catch (err: any) {
+    console.error("Failed to upload file to Google Drive:", err?.message || err);
+    if (err?.response?.data) {
+      console.error("Drive API error details:", JSON.stringify(err.response.data));
+    }
     return null;
   }
 }

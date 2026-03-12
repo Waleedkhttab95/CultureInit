@@ -15,13 +15,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadsDir,
-    filename: (_req, file, cb) => {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const allowed = [".pdf", ".doc", ".docx"];
@@ -325,14 +319,16 @@ ${message}
       if (req.file) {
         body.resumeFileName = req.file.originalname;
         try {
-          const fileBuffer = fs.readFileSync(req.file.path);
           const driveLink = await uploadFileToDrive(
-            fileBuffer,
+            req.file.buffer,
             req.file.originalname,
             req.file.mimetype
           );
           if (driveLink) {
             resumeLink = driveLink;
+            console.log("CV uploaded to Google Drive:", driveLink);
+          } else {
+            console.log("Drive upload returned null - check GOOGLE_SERVICE_ACCOUNT_KEY and Drive API is enabled");
           }
         } catch (driveError) {
           console.error("Google Drive upload error:", driveError);
