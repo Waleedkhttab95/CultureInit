@@ -31,26 +31,25 @@ export async function uploadFileToDrive(
   const auth = getAuth();
   const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-  if (!auth) {
-    console.log("Google auth not configured, skipping Drive upload");
+  if (!auth || !folderId) {
+    console.log("Google auth or Drive folder not configured, skipping Drive upload");
     return null;
   }
 
   const drive = google.drive({ version: "v3", auth });
 
   try {
-    const fileMetadata: { name: string; parents?: string[] } = { name: fileName };
-    if (folderId) {
-      fileMetadata.parents = [folderId];
-    }
-
     const response = await drive.files.create({
-      requestBody: fileMetadata,
+      requestBody: {
+        name: fileName,
+        parents: [folderId],
+      },
       media: {
         mimeType,
         body: Readable.from(fileBuffer),
       },
       fields: "id, webViewLink",
+      supportsAllDrives: true,
     });
 
     const fileId = response.data.id;
@@ -63,6 +62,7 @@ export async function uploadFileToDrive(
         role: "reader",
         type: "anyone",
       },
+      supportsAllDrives: true,
     });
 
     return response.data.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;
