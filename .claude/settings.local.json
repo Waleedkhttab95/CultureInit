@@ -6,7 +6,14 @@
       "Bash(nvm use:*)",
       "Bash(./node_modules/.bin/vite build:*)",
       "Bash(lsof:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('client/src/data/articles.json','utf8'\\)\\); console.log\\('Valid JSON'\\)\" 2>&1 || echo \"INVALID\")",
+      "Read(//Users/waleedkhattab/Downloads/**)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(textutil -convert txt \"$f\" -stdout)",
+      "Bash(done)",
+      "Bash(node add_articles.js)"
     ]
   }
 }
