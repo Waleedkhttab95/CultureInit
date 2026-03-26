@@ -31,10 +31,13 @@ export async function addContactToBrevo(data: BrevoContactData): Promise<{ id: n
     createContact.updateEnabled = true; // Update if contact already exists
 
     const response = await apiInstance.createContact(createContact);
-    if (!response.body.id) {
-      throw new Error('No contact ID returned from Brevo');
+    const contactId = response.body?.id;
+    if (!contactId) {
+      // Contact was updated (already existed) — Brevo may not return an ID in this case
+      console.log('Contact created/updated in Brevo (no ID returned, likely already existed)');
+      return { id: 0 };
     }
-    return { id: response.body.id };
+    return { id: contactId };
   } catch (error: any) {
     // If contact already exists, get their ID
     if (error.response?.statusCode === 400 && error.response?.body?.message?.includes('already exist')) {
