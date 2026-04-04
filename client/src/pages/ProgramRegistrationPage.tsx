@@ -180,6 +180,33 @@ export default function ProgramRegistrationPage() {
     }
   };
 
+  // Registration is closed
+  return (
+    <div className="min-h-screen bg-[#0f172a] font-sans flex flex-col">
+      <Header />
+      <main className="flex-1 flex items-center justify-center py-20">
+        <div className="text-center px-4">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-[#d4a574]/20 rounded-full mb-8">
+            <Calendar className="h-12 w-12 text-[#d4a574]" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-4">
+            تم إغلاق التسجيل
+          </h2>
+          <p className="text-white/70 text-lg mb-8">
+            شكراً لاهتمامكم، تم إغلاق باب التسجيل في البرنامج. ترقبوا البرامج القادمة
+          </p>
+          <Button
+            onClick={() => (window.location.href = "/programs")}
+            className="bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] font-semibold rounded-xl px-8 h-12"
+          >
+            العودة لصفحة البرنامج
+          </Button>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#0f172a] font-sans flex flex-col">

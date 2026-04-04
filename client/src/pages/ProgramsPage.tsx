@@ -246,14 +246,13 @@ export default function ProgramsPage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:360ms]">
-              <a href="/programs/register">
-                <Button
-                  size="lg"
-                  className="h-14 px-8 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                >
-                  قدّم طلبك الآن
-                </Button>
-              </a>
+              <Button
+                size="lg"
+                disabled
+                className="h-14 px-8 text-lg font-semibold bg-white/20 text-white/70 rounded-xl cursor-not-allowed"
+              >
+                تم إغلاق التسجيل
+              </Button>
               <Button
                 variant="outline"
                 size="lg"
@@ -609,20 +608,18 @@ export default function ProgramsPage() {
         >
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              قدّم طلبك الآن
+              تم إغلاق التسجيل
             </h2>
             <p className="text-white/70 mb-10 text-lg">
-              سجّل الآن وانضم لأول دفعة من قادة الإدارة الثقافية
+              شكراً لاهتمامكم، تم إغلاق باب التسجيل في البرنامج. ترقبوا البرامج القادمة
             </p>
-            <a href="/programs/register">
-              <Button
-                size="lg"
-                className="h-14 px-12 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Send className="h-5 w-5" />
-                سجّل الآن
-              </Button>
-            </a>
+            <Button
+              size="lg"
+              disabled
+              className="h-14 px-12 text-lg font-semibold bg-white/20 text-white/70 rounded-xl cursor-not-allowed"
+            >
+              التسجيل مغلق
+            </Button>
           </div>
         </section>
       </main>
