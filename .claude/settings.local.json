@@ -13,7 +13,9 @@
       "Bash(do echo:*)",
       "Bash(textutil -convert txt \"$f\" -stdout)",
       "Bash(done)",
-      "Bash(node add_articles.js)"
+      "Bash(node add_articles.js)",
+      "Bash(python3 -c ':*)",
+      "Bash(python3:*)"
     ]
   }
 }
