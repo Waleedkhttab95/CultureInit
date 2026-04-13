@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import { useEffect, useState, useRef } from "react";
 import whiteIcon from "@assets/white-icon.png";
 import resourcesIcon from "@assets/Asset7@4x.png";
-import pdfFile from "@assets/download.pdf";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +15,7 @@ export default function ResourcesPage() {
   const reduceMotionRef = useRef(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '' });
-  const resource = resourcesData[0]; // Use the first resource
+  const [activeResource, setActiveResource] = useState<typeof resourcesData[number] | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -77,19 +76,20 @@ export default function ResourcesPage() {
 
       setIsSubmitted(true);
 
-      // Start PDF download
-      const link = document.createElement('a');
-      link.href = pdfFile;
-      link.download = `${resource.title.replace(/\s+/g, '_')}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (activeResource) {
+        const link = document.createElement('a');
+        link.href = activeResource.file;
+        link.download = `${activeResource.title.replace(/\s+/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
-      // Reset form and close dialog after delay
       setTimeout(() => {
         setIsDialogOpen(false);
         setIsSubmitted(false);
         setFormData({ name: '', email: '' });
+        setActiveResource(null);
       }, 2000);
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -99,7 +99,8 @@ export default function ResourcesPage() {
     }
   };
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = (resource: typeof resourcesData[number]) => {
+    setActiveResource(resource);
     setIsDialogOpen(true);
   };
 
@@ -160,38 +161,37 @@ export default function ResourcesPage() {
           <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
           أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.          </p>
 
-          {/* Resource Card */}
-          <div className="mt-12 max-w-lg mx-auto animate-fade-in-up [animation-delay:240ms]">
-            <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 overflow-hidden group">
-              {/* Preview Image */}
-              <div className="h-56 overflow-hidden bg-white/5 flex items-center justify-center p-4">
-                <img
-                  src={resource.image}
-                  alt={resource.title}
-                  className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-4 text-right">
-                  {resource.title}
-                </h3>
-                <p className="text-white/90 text-sm leading-relaxed text-right mb-6">
-                  {resource.description}
-                </p>
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleDownloadClick}
-                    size="lg"
-                    className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  >
-                    <Download className="ml-2 h-5 w-5" />
-                    تحميل الدليل
-                  </Button>
+          {/* Resource Cards */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto animate-fade-in-up [animation-delay:240ms]">
+            {resourcesData.map((resource) => (
+              <div key={resource.id} className="bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 overflow-hidden group flex flex-col">
+                <div className="h-56 overflow-hidden bg-white/5 flex items-center justify-center p-4">
+                  <img
+                    src={resource.image}
+                    alt={resource.title}
+                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold text-white mb-4 text-right">
+                    {resource.title}
+                  </h3>
+                  <p className="text-white/90 text-sm leading-relaxed text-right mb-6 flex-1">
+                    {resource.description}
+                  </p>
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={() => handleDownloadClick(resource)}
+                      size="lg"
+                      className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      <Download className="ml-2 h-5 w-5" />
+                      تحميل الدليل
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -206,7 +206,7 @@ export default function ResourcesPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-center">
-              تحميل {resource.title}
+              تحميل {activeResource?.title ?? ''}
             </DialogTitle>
             <DialogDescription className="text-center text-base">
               يرجى تعبئة البيانات التالية لتحميل الدليل
