@@ -15,7 +15,10 @@
       "Bash(done)",
       "Bash(node add_articles.js)",
       "Bash(python3 -c ':*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Read(//private/tmp/docx_extract/word/**)",
+      "Read(//private/tmp/**)",
+      "Bash(unzip -o \"/Users/waleedkhattab/Downloads/عقد من الثقافة.docx\" -d docx_extract)"
     ]
   }
 }
