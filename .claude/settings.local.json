@@ -18,7 +18,8 @@
       "Bash(python3:*)",
       "Read(//private/tmp/docx_extract/word/**)",
       "Read(//private/tmp/**)",
-      "Bash(unzip -o \"/Users/waleedkhattab/Downloads/عقد من الثقافة.docx\" -d docx_extract)"
+      "Bash(unzip -o \"/Users/waleedkhattab/Downloads/عقد من الثقافة.docx\" -d docx_extract)",
+      "mcp__claude_ai_Google_Drive__read_file_content"
     ]
   }
 }
