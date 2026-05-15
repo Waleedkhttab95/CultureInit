@@ -100,6 +100,26 @@ export default function ArticleDetailPage() {
                 );
               }
 
+              // Handle standalone image: ![alt](src)
+              const imageMatch = paragraph.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+              if (imageMatch) {
+                const [, alt, src] = imageMatch;
+                return (
+                  <figure key={index} className="my-8">
+                    <img
+                      src={src}
+                      alt={alt}
+                      className="w-full h-auto rounded-2xl mx-auto"
+                    />
+                    {alt && (
+                      <figcaption className="text-sm text-muted-foreground text-center mt-3">
+                        {alt}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              }
+
               // Handle bold text with **
               const renderText = (text: string) => {
                 const parts = text.split(/(\*\*.*?\*\*)/g);
