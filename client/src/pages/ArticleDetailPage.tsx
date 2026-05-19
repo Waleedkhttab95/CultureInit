@@ -1,17 +1,34 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useParams, Link } from "wouter";
-import articlesData from "@/data/articles.json";
+import { useQuery } from "@tanstack/react-query";
+import { fetchArticle, type PublicArticle } from "@/lib/articles";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function ArticleDetailPage() {
   const params = useParams();
-  const articleId = params.id;
+  const slug = params.id as string;
 
-  const article = articlesData.find((a) => a.id === articleId);
+  const { data: article, isLoading, isError } = useQuery<PublicArticle>({
+    queryKey: ["article", slug],
+    queryFn: () => fetchArticle(slug),
+    retry: false,
+  });
 
-  if (!article) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background font-sans flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">جارٍ التحميل...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isError || !article) {
     return (
       <div className="min-h-screen bg-background font-sans flex flex-col">
         <Header />
@@ -78,67 +95,12 @@ export default function ArticleDetailPage() {
             </p>
           </div>
 
-          {/* Article Content */}
+          {/* Article Content — server-sanitized HTML */}
           <div
-            className="prose prose-lg max-w-none prose-headings:text-right prose-p:text-justify prose-p:leading-relaxed prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-p:mb-4 prose-strong:text-foreground prose-strong:font-bold"
+            className="prose prose-lg max-w-none prose-headings:text-right prose-p:text-justify prose-p:leading-relaxed prose-headings:font-bold prose-h2:text-2xl prose-h3:text-xl prose-h2:mt-12 prose-h2:mb-4 prose-h3:mt-8 prose-h3:mb-3 prose-p:mb-4 prose-strong:text-foreground prose-strong:font-bold prose-img:rounded-2xl prose-img:mx-auto"
             style={{ direction: 'rtl' }}
-          >
-            {article.content.split('\n\n').map((paragraph, index) => {
-              // Handle headings
-              if (paragraph.startsWith('## ')) {
-                return (
-                  <h2 key={index} className="text-right">
-                    {paragraph.replace('## ', '')}
-                  </h2>
-                );
-              }
-              if (paragraph.startsWith('### ')) {
-                return (
-                  <h3 key={index} className="text-right">
-                    {paragraph.replace('### ', '')}
-                  </h3>
-                );
-              }
-
-              // Handle standalone image: ![alt](src)
-              const imageMatch = paragraph.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
-              if (imageMatch) {
-                const [, alt, src] = imageMatch;
-                return (
-                  <figure key={index} className="my-8">
-                    <img
-                      src={src}
-                      alt={alt}
-                      className="w-full h-auto rounded-2xl mx-auto"
-                    />
-                    {alt && (
-                      <figcaption className="text-sm text-muted-foreground text-center mt-3">
-                        {alt}
-                      </figcaption>
-                    )}
-                  </figure>
-                );
-              }
-
-              // Handle bold text with **
-              const renderText = (text: string) => {
-                const parts = text.split(/(\*\*.*?\*\*)/g);
-                return parts.map((part, i) => {
-                  if (part.startsWith('**') && part.endsWith('**')) {
-                    return <strong key={i}>{part.slice(2, -2)}</strong>;
-                  }
-                  return part;
-                });
-              };
-
-              // Regular paragraph
-              return (
-                <p key={index} className="text-justify">
-                  {renderText(paragraph)}
-                </p>
-              );
-            })}
-          </div>
+            dangerouslySetInnerHTML={{ __html: article.content }}
+          />
 
           {/* Back to Articles Button */}
           <div className="mt-12 pt-8 border-t border-border">

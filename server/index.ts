@@ -1,13 +1,35 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
+import { buildSessionMiddleware } from "./auth";
 
 const app = express();
-app.use(express.json());
+
+// Express sits behind Render's proxy — required for secure cookies and for
+// rate-limit / IP detection to work correctly.
+app.set("trust proxy", 1);
+
+// Security headers. CSP is intentionally left off to avoid breaking the
+// existing Vite SPA and externally-hosted article images; the other
+// protections (no-sniff, frameguard, HSTS, referrer policy) still apply.
+// Tightening CSP is a recommended future hardening step.
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
+
+app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
+
+// Session (admin auth + CSRF). Must come before route registration.
+app.use(buildSessionMiddleware());
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -56,10 +78,12 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+    // Log server-side, but never leak internal error details to clients.
+    console.error("[error]", err);
+    if (res.headersSent) return;
+    const message =
+      status >= 500 ? "Internal Server Error" : err.message || "Request failed";
+    res.status(status).json({ error: message });
   });
 
   // importantly only setup vite in development and after

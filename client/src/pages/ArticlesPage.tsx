@@ -2,15 +2,20 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useState, useRef } from "react";
 import { Link } from "wouter";
-import whiteIcon from "@assets/white-icon.png";
+import { useQuery } from "@tanstack/react-query";
 import articlesIcon from "@assets/Asset13@4x.png";
-import articlesData from "@/data/articles.json";
+import { fetchArticles, type PublicArticle } from "@/lib/articles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, User, ArrowLeft } from "lucide-react";
 
 export default function ArticlesPage() {
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
+
+  const { data: articles, isLoading, isError } = useQuery<PublicArticle[]>({
+    queryKey: ["articles"],
+    queryFn: fetchArticles,
+  });
 
   useEffect(() => {
     // Respect reduced motion
@@ -69,9 +74,22 @@ export default function ArticlesPage() {
       {/* Articles Grid */}
       <main className="flex-1 py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {isLoading && (
+            <p className="text-center text-muted-foreground">جارٍ التحميل...</p>
+          )}
+          {isError && (
+            <p className="text-center text-muted-foreground">
+              تعذّر تحميل المقالات. حاول لاحقًا.
+            </p>
+          )}
+          {!isLoading && !isError && articles?.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              لا توجد مقالات منشورة حاليًا.
+            </p>
+          )}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articlesData.map((article) => (
-              <Link key={article.id} href={`/articles/${article.id}`}>
+            {(articles ?? []).map((article) => (
+              <Link key={article.id} href={`/articles/${article.slug}`}>
                 <Card className="cursor-pointer hover-elevate transition-all duration-300 border-card-border h-full group overflow-hidden">
                   <div className="aspect-video overflow-hidden bg-muted">
                     <img

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -136,3 +136,48 @@ export const insertProgramRegistrationSchema = z.object({
 
 export type InsertProgramRegistration = z.infer<typeof insertProgramRegistrationSchema>;
 export type ProgramRegistration = typeof programRegistrations.$inferSelect;
+
+// Articles managed via the admin CMS.
+// `content` holds sanitized HTML produced by the WYSIWYG editor.
+// `date` is kept as a string ("YYYY-MM-DD") to match the existing
+// articles.json data and the frontend's `new Date(article.date)` usage.
+export const articles = pgTable("articles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  author: text("author").notNull(),
+  date: text("date").notNull(),
+  excerpt: text("excerpt").notNull(),
+  image: text("image").notNull(),
+  content: text("content").notNull(),
+  published: boolean("published").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Slugs are used directly in URLs (/articles/:slug), so restrict to a
+// safe, predictable character set. Empty is allowed on create — the
+// server will auto-generate from the title when omitted.
+const slugField = z
+  .string()
+  .max(200)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i, "Slug may only contain letters, numbers and hyphens")
+  .optional();
+
+export const insertArticleSchema = z.object({
+  slug: slugField,
+  title: z.string().trim().min(3, "Title must be at least 3 characters").max(300),
+  author: z.string().trim().min(2, "Author is required").max(120),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  excerpt: z.string().trim().min(10, "Excerpt must be at least 10 characters").max(600),
+  image: z.string().trim().min(1, "Image is required").max(500),
+  content: z.string().min(1, "Content is required"),
+  published: z.boolean().optional().default(true),
+});
+
+// All fields optional for partial updates; same constraints when present.
+export const updateArticleSchema = insertArticleSchema.partial();
+
+export type InsertArticle = z.infer<typeof insertArticleSchema>;
+export type UpdateArticle = z.infer<typeof updateArticleSchema>;
+export type Article = typeof articles.$inferSelect;

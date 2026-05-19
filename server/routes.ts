@@ -4,10 +4,28 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema } from "@shared/schema";
+import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertArticleSchema, updateArticleSchema } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
+import { isDbConfigured } from "./db";
+import {
+  requireAuth,
+  requireCsrf,
+  verifyAdminCredentials,
+  getOrCreateCsrfToken,
+  loginRateLimiter,
+  adminRateLimiter,
+} from "./auth";
+import {
+  listPublishedArticles,
+  getPublishedArticleBySlug,
+  listAllArticles,
+  getArticleById,
+  createArticle,
+  updateArticle,
+  deleteArticle,
+} from "./article-store";
 
 const uploadsDir = "/uploads";
 if (!fs.existsSync(uploadsDir)) {
@@ -30,9 +48,214 @@ const upload = multer({
   },
 });
 
+// Image uploads for the article editor. Filenames are randomized (the
+// original name is never used in the path) and restricted by extension
+// and MIME type, with a conservative size cap.
+const ALLOWED_IMAGE_EXT = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"];
+const imageUpload = multer({
+  storage: multer.diskStorage({
+    destination: uploadsDir,
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `img-${unique}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const okExt = ALLOWED_IMAGE_EXT.includes(ext);
+    const okMime = /^image\/(jpe?g|png|webp|gif|avif)$/.test(file.mimetype);
+    cb(null, okExt && okMime);
+  },
+});
+
+// The article CMS requires a database; surface a clear error if it is not
+// configured yet rather than throwing an opaque 500.
+const requireDb = (_req: any, res: any, next: any) => {
+  if (!isDbConfigured()) {
+    return res.status(503).json({
+      error: "Database not configured. Set DATABASE_URL to use the CMS.",
+    });
+  }
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Admin endpoint: list all uploaded CVs
-  app.get("/api/admin/uploads", async (req, res) => {
+  // ---- Public article API ------------------------------------------------
+  // Falls back to the bundled articles.json when no DB is configured, so the
+  // public site never goes down (see article-store.ts).
+  app.get("/api/articles", async (_req, res) => {
+    try {
+      const list = await listPublishedArticles();
+      res.json(list);
+    } catch (error) {
+      console.error("List articles error:", error);
+      res.status(500).json({ error: "Failed to load articles" });
+    }
+  });
+
+  app.get("/api/articles/:slug", async (req, res) => {
+    try {
+      const article = await getPublishedArticleBySlug(req.params.slug);
+      if (!article) return res.status(404).json({ error: "Article not found" });
+      res.json(article);
+    } catch (error) {
+      console.error("Get article error:", error);
+      res.status(500).json({ error: "Failed to load article" });
+    }
+  });
+
+  // ---- Admin auth --------------------------------------------------------
+  app.post("/api/admin/login", loginRateLimiter, (req, res) => {
+    const username = typeof req.body?.username === "string" ? req.body.username : "";
+    const password = typeof req.body?.password === "string" ? req.body.password : "";
+
+    if (!verifyAdminCredentials(username, password)) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    // Regenerate the session on login to prevent session fixation.
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regenerate error:", err);
+        return res.status(500).json({ error: "Login failed" });
+      }
+      req.session.isAdmin = true;
+      const csrfToken = getOrCreateCsrfToken(req as any);
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error("Session save error:", saveErr);
+          return res.status(500).json({ error: "Login failed" });
+        }
+        res.json({ authenticated: true, csrfToken });
+      });
+    });
+  });
+
+  app.post("/api/admin/logout", (req, res) => {
+    req.session.destroy(() => {
+      res.clearCookie("ci.sid");
+      res.json({ success: true });
+    });
+  });
+
+  // Session probe + CSRF token issuer. The client calls this on load to
+  // decide whether to show the admin UI, and to get the CSRF token.
+  app.get("/api/admin/me", (req, res) => {
+    if (!req.session?.isAdmin) {
+      return res.status(401).json({ authenticated: false });
+    }
+    res.json({ authenticated: true, csrfToken: getOrCreateCsrfToken(req as any) });
+  });
+
+  // ---- Admin article CRUD (auth + DB required) --------------------------
+  app.get("/api/admin/articles", requireAuth, requireDb, async (_req, res) => {
+    try {
+      res.json(await listAllArticles());
+    } catch (error) {
+      console.error("Admin list articles error:", error);
+      res.status(500).json({ error: "Failed to load articles" });
+    }
+  });
+
+  app.get("/api/admin/articles/:id", requireAuth, requireDb, async (req, res) => {
+    try {
+      const article = await getArticleById(req.params.id);
+      if (!article) return res.status(404).json({ error: "Article not found" });
+      res.json(article);
+    } catch (error) {
+      console.error("Admin get article error:", error);
+      res.status(500).json({ error: "Failed to load article" });
+    }
+  });
+
+  app.post(
+    "/api/admin/articles",
+    adminRateLimiter,
+    requireAuth,
+    requireCsrf,
+    requireDb,
+    async (req, res) => {
+      const result = insertArticleSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({
+          error: "Validation failed",
+          message: fromZodError(result.error).message,
+        });
+      }
+      try {
+        const created = await createArticle(result.data);
+        res.status(201).json(created);
+      } catch (error) {
+        console.error("Create article error:", error);
+        res.status(500).json({ error: "Failed to create article" });
+      }
+    },
+  );
+
+  app.put(
+    "/api/admin/articles/:id",
+    adminRateLimiter,
+    requireAuth,
+    requireCsrf,
+    requireDb,
+    async (req, res) => {
+      const result = updateArticleSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({
+          error: "Validation failed",
+          message: fromZodError(result.error).message,
+        });
+      }
+      try {
+        const updated = await updateArticle(req.params.id, result.data);
+        if (!updated) return res.status(404).json({ error: "Article not found" });
+        res.json(updated);
+      } catch (error) {
+        console.error("Update article error:", error);
+        res.status(500).json({ error: "Failed to update article" });
+      }
+    },
+  );
+
+  app.delete(
+    "/api/admin/articles/:id",
+    adminRateLimiter,
+    requireAuth,
+    requireCsrf,
+    requireDb,
+    async (req, res) => {
+      try {
+        const ok = await deleteArticle(req.params.id);
+        if (!ok) return res.status(404).json({ error: "Article not found" });
+        res.json({ success: true });
+      } catch (error) {
+        console.error("Delete article error:", error);
+        res.status(500).json({ error: "Failed to delete article" });
+      }
+    },
+  );
+
+  // Editor image upload.
+  app.post(
+    "/api/admin/images",
+    adminRateLimiter,
+    requireAuth,
+    requireCsrf,
+    imageUpload.single("image"),
+    (req, res) => {
+      if (!req.file) {
+        return res.status(400).json({ error: "No valid image uploaded" });
+      }
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      res.status(201).json({ url: `${baseUrl}/uploads/${req.file.filename}` });
+    },
+  );
+
+  // Admin endpoint: list all uploaded CVs (now authentication-protected —
+  // this previously leaked applicant PII to anyone).
+  app.get("/api/admin/uploads", requireAuth, async (req, res) => {
     try {
       const files = fs.readdirSync(uploadsDir).filter(f => !f.startsWith("."));
       const baseUrl = `${req.protocol}://${req.get("host")}`;
