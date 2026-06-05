@@ -21,7 +21,17 @@
       "Bash(unzip -o \"/Users/waleedkhattab/Downloads/عقد من الثقافة.docx\" -d docx_extract)",
       "mcp__claude_ai_Google_Drive__read_file_content",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(timeout 180 npx tsc)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(grep -o \"DATABASE_URL=.\\\\{0,30\\\\}\" .env)",
+      "Bash(sed 's/=$//')",
+      "Bash(node scripts/extract-wc.mjs)",
+      "Bash(node -e \"const a=require\\('./server/write-community-articles.json'\\); console.log\\('count',a.length\\); console.log\\(a.map\\(x=>x.slug\\).join\\('\\\\n'\\)\\); console.log\\('--- sample ---'\\); console.log\\(JSON.stringify\\(a[0],null,2\\).slice\\(0,600\\)\\)\")",
+      "Bash(grep -rn \"ArticleContent\" app components)",
+      "Bash(ls -la .env*)",
+      "Bash(rm \"app/articles/[slug]/ArticleContent.tsx\")",
+      "Bash(cat)"
     ]
   }
 }

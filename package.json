@@ -11,6 +11,7 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx server/seed-articles.ts",
+    "db:seed-write-community": "tsx server/seed-write-community.ts",
     "hash-password": "tsx server/hash-password.ts"
   },
   "dependencies": {

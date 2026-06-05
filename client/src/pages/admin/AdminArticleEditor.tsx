@@ -7,6 +7,7 @@ import {
   updateArticle,
   uploadImage,
   type ArticleInput,
+  type ArticleSite,
 } from "@/lib/adminApi";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,18 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight } from "lucide-react";
 
-const empty: ArticleInput = {
+const SITE_LABELS: Record<ArticleSite, string> = {
+  cultural: "مبادرة الإدارة الثقافية",
+  "write-community": "مجتمع الكتابة",
+};
+
+function siteFromSearch(): ArticleSite {
+  const s = new URLSearchParams(window.location.search).get("site");
+  return s === "write-community" ? "write-community" : "cultural";
+}
+
+const makeEmpty = (site: ArticleSite): ArticleInput => ({
+  site,
   title: "",
   slug: "",
   author: "",
@@ -25,8 +37,9 @@ const empty: ArticleInput = {
   excerpt: "",
   image: "",
   content: "",
+  category: "",
   published: true,
-};
+});
 
 export default function AdminArticleEditor() {
   const [match, params] = useRoute("/admin/articles/:id/edit");
@@ -37,8 +50,11 @@ export default function AdminArticleEditor() {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [form, setForm] = useState<ArticleInput>(empty);
+  const [form, setForm] = useState<ArticleInput>(() =>
+    makeEmpty(isEdit ? "cultural" : siteFromSearch()),
+  );
   const [saving, setSaving] = useState(false);
+  const site: ArticleSite = form.site ?? "cultural";
 
   const { data: existing } = useQuery({
     queryKey: ["admin", "article", id],
@@ -49,6 +65,7 @@ export default function AdminArticleEditor() {
   useEffect(() => {
     if (existing) {
       setForm({
+        site: existing.site,
         title: existing.title,
         slug: existing.slug,
         author: existing.author,
@@ -56,6 +73,7 @@ export default function AdminArticleEditor() {
         excerpt: existing.excerpt,
         image: existing.image,
         content: existing.content,
+        category: existing.category ?? "",
         published: existing.published,
       });
     }
@@ -88,6 +106,7 @@ export default function AdminArticleEditor() {
       const payload: ArticleInput = {
         ...form,
         slug: form.slug?.trim() || undefined,
+        category: form.category?.trim() || null,
       };
       if (isEdit) {
         await updateArticle(id as string, payload);
@@ -116,9 +135,12 @@ export default function AdminArticleEditor() {
             <ArrowRight className="h-4 w-4" /> رجوع
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold mb-6">
+        <h1 className="text-2xl font-bold mb-1">
           {isEdit ? "تعديل مقال" : "مقال جديد"}
         </h1>
+        <p className="text-sm text-muted-foreground mb-6">
+          الموقع: {SITE_LABELS[site]}
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
@@ -165,6 +187,18 @@ export default function AdminArticleEditor() {
               onChange={(e) => set("slug", e.target.value)}
             />
           </div>
+
+          {site === "write-community" && (
+            <div className="space-y-2">
+              <Label htmlFor="category">التصنيف (يظهر كوسم على البطاقة)</Label>
+              <Input
+                id="category"
+                value={form.category ?? ""}
+                placeholder="مثال: مقالات تعليمية"
+                onChange={(e) => set("category", e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="excerpt">المقتطف</Label>

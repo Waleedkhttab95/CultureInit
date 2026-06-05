@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertArticleSchema, updateArticleSchema } from "@shared/schema";
+import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertArticleSchema, updateArticleSchema, ARTICLE_SITES, type ArticleSite } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
@@ -81,13 +81,53 @@ const requireDb = (_req: any, res: any, next: any) => {
   next();
 };
 
+// Resolve the requested site from a query/body value, defaulting to the
+// Cultural Initiative site so existing callers (the cultural site itself,
+// which omits the param) keep working unchanged.
+function resolveSite(value: unknown): ArticleSite {
+  return ARTICLE_SITES.includes(value as ArticleSite)
+    ? (value as ArticleSite)
+    : "cultural";
+}
+
+// The public article API is read cross-origin by the write-community site
+// (a separate domain), so allow simple GET requests from any origin. These
+// endpoints expose only already-public, published articles.
+const publicReadCors: import("express").RequestHandler = (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+};
+
+// When a write-community article changes, the (statically built) write-community
+// site needs to rebuild to pick it up. If a deploy hook URL is configured we
+// ping it; failures are logged but never block the admin response.
+function triggerWriteCommunityRebuild(reason: string): void {
+  const hook = process.env.WRITE_COMMUNITY_DEPLOY_HOOK_URL;
+  if (!hook) return;
+  void fetch(hook, { method: "POST" })
+    .then((r) =>
+      console.log(`[deploy-hook] write-community rebuild (${reason}): ${r.status}`),
+    )
+    .catch((err) =>
+      console.error(`[deploy-hook] write-community rebuild failed (${reason}):`, err),
+    );
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // ---- Public article API ------------------------------------------------
   // Falls back to the bundled articles.json when no DB is configured, so the
-  // public site never goes down (see article-store.ts).
-  app.get("/api/articles", async (_req, res) => {
+  // cultural site never goes down (see article-store.ts). The optional `site`
+  // query param selects which site's articles to return (defaults to
+  // "cultural"); write-community fetches with `?site=write-community`.
+  app.options("/api/articles", publicReadCors);
+  app.options("/api/articles/:slug", publicReadCors);
+
+  app.get("/api/articles", publicReadCors, async (req, res) => {
     try {
-      const list = await listPublishedArticles();
+      const list = await listPublishedArticles(resolveSite(req.query.site));
       res.json(list);
     } catch (error) {
       console.error("List articles error:", error);
@@ -95,9 +135,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/articles/:slug", async (req, res) => {
+  app.get("/api/articles/:slug", publicReadCors, async (req, res) => {
     try {
-      const article = await getPublishedArticleBySlug(req.params.slug);
+      const article = await getPublishedArticleBySlug(
+        req.params.slug,
+        resolveSite(req.query.site),
+      );
       if (!article) return res.status(404).json({ error: "Article not found" });
       res.json(article);
     } catch (error) {
@@ -150,9 +193,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ---- Admin article CRUD (auth + DB required) --------------------------
-  app.get("/api/admin/articles", requireAuth, requireDb, async (_req, res) => {
+  app.get("/api/admin/articles", requireAuth, requireDb, async (req, res) => {
     try {
-      res.json(await listAllArticles());
+      res.json(await listAllArticles(resolveSite(req.query.site)));
     } catch (error) {
       console.error("Admin list articles error:", error);
       res.status(500).json({ error: "Failed to load articles" });
@@ -186,6 +229,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       try {
         const created = await createArticle(result.data);
+        if (created.site === "write-community") {
+          triggerWriteCommunityRebuild("create");
+        }
         res.status(201).json(created);
       } catch (error) {
         console.error("Create article error:", error);
@@ -211,6 +257,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const updated = await updateArticle(req.params.id, result.data);
         if (!updated) return res.status(404).json({ error: "Article not found" });
+        if (updated.site === "write-community") {
+          triggerWriteCommunityRebuild("update");
+        }
         res.json(updated);
       } catch (error) {
         console.error("Update article error:", error);
@@ -227,8 +276,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     requireDb,
     async (req, res) => {
       try {
-        const ok = await deleteArticle(req.params.id);
-        if (!ok) return res.status(404).json({ error: "Article not found" });
+        const deleted = await deleteArticle(req.params.id);
+        if (!deleted) return res.status(404).json({ error: "Article not found" });
+        if (deleted.site === "write-community") {
+          triggerWriteCommunityRebuild("delete");
+        }
         res.json({ success: true });
       } catch (error) {
         console.error("Delete article error:", error);

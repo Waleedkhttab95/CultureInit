@@ -71,6 +71,45 @@ the DB is configured.
 - The previously **public** `/api/admin/uploads` endpoint (which leaked
   applicant CV/PII) now requires authentication.
 
+## Managing the مجتمع الكتابة (write-community) site
+
+The same CMS now manages articles for a **second** website, مجتمع الكتابة
+(`write-community`). Articles are partitioned by a `site` column
+(`cultural` vs `write-community`); slugs only need to be unique within a site.
+
+### In the admin
+- The dashboard has a **site switcher** (tabs): "مبادرة الإدارة الثقافية" and
+  "مجتمع الكتابة". Pick a tab to list/manage that site's articles.
+- "مقال جديد" creates an article for the **currently selected** site.
+- write-community articles have an extra **التصنيف (category)** field, shown as
+  a badge on that site (e.g. "مقالات تعليمية"). The cultural site ignores it.
+
+### How write-community reads its articles
+The write-community project (Next.js static export, in `~/Documents/write-community`)
+fetches from this CMS's public API at **build time**:
+`GET /api/articles?site=write-community` (list) and
+`/api/articles/:slug?site=write-community` (detail). The CMS sends permissive
+CORS headers on these public GET endpoints. Set `CMS_API_URL` in the
+write-community build env (defaults to `https://cultural-managment.com`).
+
+Because it's a static export, the site must **rebuild** to show changes. Set
+`WRITE_COMMUNITY_DEPLOY_HOOK_URL` (a Netlify/Render build hook) on the CMS and
+it will trigger a redeploy automatically whenever a write-community article is
+created / updated / deleted.
+
+### One-time DB migration + seed
+After deploying this CMS update (so the new `site`/`category` columns and the
+`?site=` API exist), run with `DATABASE_URL` available:
+
+```bash
+npm run db:push                    # adds the site + category columns / index
+npm run db:seed-write-community    # imports the 22 original write-community articles
+```
+
+`db:seed-write-community` is idempotent (skips slugs that already exist), so it
+is safe to re-run. The seed data lives in `server/write-community-articles.json`
+(regenerate from the source project with `node scripts/extract-wc.mjs` if needed).
+
 ## Known pre-existing items (out of scope, flagged)
 - Newsletter / registration form submissions still use in-memory storage and
   are lost on restart — separate from articles; recommend migrating to the DB

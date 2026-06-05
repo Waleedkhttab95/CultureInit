@@ -1,8 +1,11 @@
 // Admin API helpers. All requests are same-origin with the session cookie;
 // state-changing requests must echo the session CSRF token in a header.
 
+export type ArticleSite = "cultural" | "write-community";
+
 export interface AdminArticle {
   id: string;
+  site: ArticleSite;
   slug: string;
   title: string;
   author: string;
@@ -10,12 +13,14 @@ export interface AdminArticle {
   excerpt: string;
   image: string;
   content: string;
+  category: string | null;
   published: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ArticleInput {
+  site?: ArticleSite;
   slug?: string;
   title: string;
   author: string;
@@ -23,6 +28,7 @@ export interface ArticleInput {
   excerpt: string;
   image: string;
   content: string;
+  category?: string | null;
   published: boolean;
 }
 
@@ -91,8 +97,15 @@ export async function logout() {
   setCsrfToken(null);
 }
 
-export async function listArticles(): Promise<AdminArticle[]> {
-  return (await adminFetch("GET", "/api/admin/articles")).json();
+export async function listArticles(
+  site: ArticleSite = "cultural",
+): Promise<AdminArticle[]> {
+  return (
+    await adminFetch(
+      "GET",
+      `/api/admin/articles?site=${encodeURIComponent(site)}`,
+    )
+  ).json();
 }
 
 export async function getArticle(id: string): Promise<AdminArticle> {

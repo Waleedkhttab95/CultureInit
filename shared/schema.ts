@@ -1,7 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Sites whose articles are managed by this CMS. "cultural" = the Cultural
+// Initiative site (this app); "write-community" = the مجتمع الكتابة site,
+// which reads its articles from this CMS's public API.
+export const ARTICLE_SITES = ["cultural", "write-community"] as const;
+export type ArticleSite = (typeof ARTICLE_SITES)[number];
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -141,19 +147,32 @@ export type ProgramRegistration = typeof programRegistrations.$inferSelect;
 // `content` holds sanitized HTML produced by the WYSIWYG editor.
 // `date` is kept as a string ("YYYY-MM-DD") to match the existing
 // articles.json data and the frontend's `new Date(article.date)` usage.
-export const articles = pgTable("articles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  author: text("author").notNull(),
-  date: text("date").notNull(),
-  excerpt: text("excerpt").notNull(),
-  image: text("image").notNull(),
-  content: text("content").notNull(),
-  published: boolean("published").notNull().default(true),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+// `site` partitions articles between the Cultural Initiative site and the
+// مجتمع الكتابة (write-community) site. `category` is used by write-community
+// (shown as a badge); it is optional and unused by the cultural site.
+export const articles = pgTable(
+  "articles",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    site: text("site").notNull().default("cultural"),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    author: text("author").notNull(),
+    date: text("date").notNull(),
+    excerpt: text("excerpt").notNull(),
+    image: text("image").notNull(),
+    content: text("content").notNull(),
+    category: text("category"),
+    published: boolean("published").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    // Slugs only need to be unique within a site, so both sites can have an
+    // article with the same slug without colliding.
+    siteSlugUnique: uniqueIndex("articles_site_slug_unique").on(t.site, t.slug),
+  }),
+);
 
 // Slugs are used directly in URLs (/articles/:slug), so restrict to a
 // safe, predictable character set. Empty is allowed on create — the
@@ -165,6 +184,7 @@ const slugField = z
   .optional();
 
 export const insertArticleSchema = z.object({
+  site: z.enum(ARTICLE_SITES).optional().default("cultural"),
   slug: slugField,
   title: z.string().trim().min(3, "Title must be at least 3 characters").max(300),
   author: z.string().trim().min(2, "Author is required").max(120),
@@ -172,6 +192,7 @@ export const insertArticleSchema = z.object({
   excerpt: z.string().trim().min(10, "Excerpt must be at least 10 characters").max(600),
   image: z.string().trim().min(1, "Image is required").max(500),
   content: z.string().min(1, "Content is required"),
+  category: z.string().trim().max(120).optional().nullable(),
   published: z.boolean().optional().default(true),
 });
 

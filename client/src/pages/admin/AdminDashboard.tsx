@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -6,6 +7,7 @@ import {
   updateArticle,
   logout,
   type AdminArticle,
+  type ArticleSite,
 } from "@/lib/adminApi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,14 +27,20 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, ExternalLink, LogOut } from "lucide-react";
 
+const SITES: { id: ArticleSite; label: string }[] = [
+  { id: "cultural", label: "مبادرة الإدارة الثقافية" },
+  { id: "write-community", label: "مجتمع الكتابة" },
+];
+
 export default function AdminDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
+  const [site, setSite] = useState<ArticleSite>("cultural");
 
   const { data: articles, isLoading } = useQuery<AdminArticle[]>({
-    queryKey: ["admin", "articles"],
-    queryFn: listArticles,
+    queryKey: ["admin", "articles", site],
+    queryFn: () => listArticles(site),
   });
 
   const invalidate = () =>
@@ -65,10 +73,10 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-muted/20 p-6" dir="rtl">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">إدارة المقالات</h1>
           <div className="flex gap-2">
-            <Link href="/admin/articles/new">
+            <Link href={`/admin/articles/new?site=${site}`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" /> مقال جديد
               </Button>
@@ -77,6 +85,23 @@ export default function AdminDashboard() {
               <LogOut className="h-4 w-4" /> خروج
             </Button>
           </div>
+        </div>
+
+        {/* Site switcher — each site's articles are managed separately. */}
+        <div className="flex gap-2 mb-6 border-b">
+          {SITES.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setSite(s.id)}
+              className={`px-4 py-2 -mb-px border-b-2 text-sm font-medium transition-colors ${
+                site === s.id
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
         </div>
 
         {isLoading ? (
@@ -104,6 +129,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {a.author} · {a.date} · /{a.slug}
+                    {a.category ? ` · ${a.category}` : ""}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -115,15 +141,17 @@ export default function AdminDashboard() {
                     }
                   />
                 </div>
-                <a
-                  href={`/articles/${a.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Button variant="ghost" size="icon" title="عرض">
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </a>
+                {a.site === "cultural" && (
+                  <a
+                    href={`/articles/${a.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Button variant="ghost" size="icon" title="عرض">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </a>
+                )}
                 <Link href={`/admin/articles/${a.id}/edit`}>
                   <Button variant="ghost" size="icon" title="تعديل">
                     <Pencil className="h-4 w-4" />
