@@ -22,10 +22,6 @@ export default function Footer() {
     console.log(`${platform} social link clicked`);
   };
 
-  const handleContactClick = (type: string) => {
-    console.log(`Contact ${type} clicked`);
-  };
-
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -158,22 +154,22 @@ export default function Footer() {
                   <MapPin className="h-4 w-4 text-primary" />
                   <span className="text-background/80 text-sm">الرياض، المملكة العربية السعودية</span>
                 </div>
-                <button
-                  onClick={() => handleContactClick('email')}
+                <a
+                  href="mailto:info@cultural-managment.com"
                   className="flex items-center gap-3 text-background/80 hover:text-background transition-colors"
                   data-testid="contact-email"
                 >
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-sm">info@cultural-managment.com</span>
-                </button>
-                <button
-                  onClick={() => handleContactClick('phone')}
+                  <span className="text-sm" dir="ltr">info@cultural-managment.com</span>
+                </a>
+                <a
+                  href="tel:+966553392905"
                   className="flex items-center gap-3 text-background/80 hover:text-background transition-colors"
                   data-testid="contact-phone"
                 >
                   <Phone className="h-4 w-4 text-primary" />
-                  <span className="text-sm">+966 55 339 2905</span>
-                </button>
+                  <span className="text-sm" dir="ltr">+966 55 339 2905</span>
+                </a>
               </div>
             </div>
           </div>

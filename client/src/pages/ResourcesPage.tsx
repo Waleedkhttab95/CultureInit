@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download, FileText, User, Mail, Check } from "lucide-react";
 import resourcesData from "@/data/resources.json";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ResourcesPage() {
+  const { toast } = useToast();
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -92,8 +94,11 @@ export default function ResourcesPage() {
         setActiveResource(null);
       }, 2000);
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.');
+      toast({
+        title: "خطأ",
+        description: 'حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.',
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -195,9 +200,6 @@ export default function ResourcesPage() {
           </div>
         </div>
 
-        {/* Decorative elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-chart-2/10 rounded-full blur-2xl"></div>
       </main>
       <Footer />
 
@@ -266,7 +268,7 @@ export default function ResourcesPage() {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

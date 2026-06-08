@@ -1,22 +1,39 @@
 import { Switch, Route, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import LandingPage from "@/pages/LandingPage";
-import ArticlesPage from "@/pages/ArticlesPage";
-import ArticleDetailPage from "@/pages/ArticleDetailPage";
-import ResourcesPage from "@/pages/ResourcesPage";
-import ProgramsPage from "@/pages/ProgramsPage";
-import ProgramRegistrationPage from "@/pages/ProgramRegistrationPage";
-import PublishingPolicyPage from "@/pages/PublishingPolicyPage";
-import PublishWithUsPage from "@/pages/PublishWithUsPage";
-import NotFound from "@/pages/not-found";
-import AdminLogin from "@/pages/admin/AdminLogin";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminArticleEditor from "@/pages/admin/AdminArticleEditor";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import RequireAdmin from "@/components/admin/RequireAdmin";
+
+// Code-split routes so the heavy editor (TipTap) and admin bundle stay out of
+// the initial download for public visitors.
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
+const ArticlesPage = lazy(() => import("@/pages/ArticlesPage"));
+const ArticleDetailPage = lazy(() => import("@/pages/ArticleDetailPage"));
+const ResourcesPage = lazy(() => import("@/pages/ResourcesPage"));
+const ProgramsPage = lazy(() => import("@/pages/ProgramsPage"));
+const ProgramRegistrationPage = lazy(() => import("@/pages/ProgramRegistrationPage"));
+const PublishingPolicyPage = lazy(() => import("@/pages/PublishingPolicyPage"));
+const PublishWithUsPage = lazy(() => import("@/pages/PublishWithUsPage"));
+const NotFound = lazy(() => import("@/pages/not-found"));
+const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminArticleEditor = lazy(() => import("@/pages/admin/AdminArticleEditor"));
+
+function RouteFallback() {
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center bg-background"
+      role="status"
+      aria-label="جارٍ التحميل"
+    >
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
 
 // Component to scroll to top on route change
 function ScrollToTop() {
@@ -33,6 +50,7 @@ function Router() {
   return (
     <>
       <ScrollToTop />
+      <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={LandingPage} />
         <Route path="/articles" component={ArticlesPage} />
@@ -62,18 +80,21 @@ function Router() {
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
+      </Suspense>
     </>
   );
 }
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { useToast } from "@/hooks/use-toast";
 import {
   Sparkles,
   User,
@@ -18,6 +19,7 @@ import {
 
 export default function PublishWithUsPage() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
+  const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -65,12 +67,19 @@ export default function PublishWithUsPage() {
           setFormData({ name: '', email: '', title: '', message: '' });
         }, 3000);
       } else {
-        alert(data.message || 'حدث خطأ أثناء إرسال البيانات');
+        toast({
+          title: "خطأ",
+          description: data.message || 'حدث خطأ أثناء إرسال البيانات',
+          variant: "destructive",
+        });
         setIsSubmitting(false);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.');
+      toast({
+        title: "خطأ",
+        description: 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
+        variant: "destructive",
+      });
       setIsSubmitting(false);
     }
   };
@@ -199,7 +208,7 @@ export default function PublishWithUsPage() {
                       <Button
                         type="submit"
                         size="lg"
-                        className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (

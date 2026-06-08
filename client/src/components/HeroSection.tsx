@@ -95,6 +95,9 @@ export default function HeroSection() {
       </div>
       
       <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
+        {/* Primary page heading — visually carried by the logo, exposed here for a11y/SEO */}
+        <h1 className="sr-only">منصة الإدارة الثقافية — منصة معرفية متخصصة في الإدارة الثقافية</h1>
+
         {/* Animated badge */}
         {/* <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6 hover-elevate">
           <Sparkles className="h-4 w-4 text-primary" />
@@ -102,7 +105,7 @@ export default function HeroSection() {
         </div> */}
 
         {/* Logo in Hero */}
-        <div className="flex justify-center mb-8 animate-shimmer">
+        <div className="flex justify-center mb-8">
           <img 
             src={whiteLogo} 
             alt="منصة الإدارة الثقافية" 
@@ -166,17 +169,15 @@ export default function HeroSection() {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
         <button
           onClick={handleScrollDown}
+          aria-label="انتقل إلى المحتوى"
           className="group flex items-center justify-center text-white/80 hover:text-white transition-all duration-300"
         >
-          <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110 animate-bounce-slow">
+          <div className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition-colors duration-300 group-hover:border-white/60 animate-float motion-reduce:animate-none">
             <ChevronDown className="h-5 w-5" />
           </div>
         </button>
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-20 left-20 w-24 h-24 bg-chart-2/10 rounded-full blur-2xl"></div>
     </section>
   );
 }

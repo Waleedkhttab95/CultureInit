@@ -267,8 +267,6 @@ export default function ProgramsPage() {
             </div>
           </div>
 
-          <div className="absolute top-20 right-20 w-64 h-64 bg-[#d4a574]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-20 w-48 h-48 bg-blue-400/5 rounded-full blur-3xl" />
         </section>
 
         {/* ===== WHY THIS PROGRAM ===== */}

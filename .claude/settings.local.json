@@ -31,7 +31,8 @@
       "Bash(grep -rn \"ArticleContent\" app components)",
       "Bash(ls -la .env*)",
       "Bash(rm \"app/articles/[slug]/ArticleContent.tsx\")",
-      "Bash(cat)"
+      "Bash(cat)",
+      "Bash(npx tsc *)"
     ]
   }
 }

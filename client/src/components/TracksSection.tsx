@@ -19,10 +19,9 @@ export default function TracksSection() {
       // subtitle: "Articles",
       description: "مقالات تعريفية وتحليلية عن مفاهيم الإدارة الثقافية، وتجارب عربية وعالمية في إدارة البرامج الثقافية.",
       features: [
-     
+
       ],
       color: "from-primary/20 to-primary/5",
-      buttonColor: "bg-primary hover:bg-primary/90"
     },
     {
       icon: articlesIcon ,
@@ -30,10 +29,9 @@ export default function TracksSection() {
       // subtitle: "Resources", 
       description: "أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.",
       features: [
-     
+
       ],
       color: "from-chart-2/20 to-chart-2/5",
-      buttonColor: "bg-chart-2 hover:bg-chart-2/90"
     },
     {
       icon: resourcesIcon,
@@ -41,10 +39,9 @@ export default function TracksSection() {
       // subtitle: "Programs",
       description: "ورش عمل تدريبية قصيرة، وبرامج تأهيلية، وحوارات إثرائية في موضوعات الإدارة الثقافية.",
       features: [
-       
+
       ],
       color: "from-chart-3/20 to-chart-3/5",
-      buttonColor: "bg-chart-3 hover:bg-chart-3/90"
     }
   ];
 
@@ -133,7 +130,7 @@ export default function TracksSection() {
 
                 {/* CTA Button */}
                 <Button
-                  className={`w-full mt-6 text-white ${track.buttonColor} border-0`}
+                  className="w-full mt-6 bg-foreground text-background hover:bg-foreground/90 border-0"
                   onClick={() => handleTrackClick(track.title)}
                   data-testid={`button-track-${index}`}
                 >
@@ -141,10 +138,6 @@ export default function TracksSection() {
                   <ArrowLeft className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>
-
-              {/* Decorative Elements */}
-              <div className="absolute -top-2 -right-2 w-16 h-16 bg-white/5 rounded-full blur-xl group-hover:bg-white/10 transition-colors duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-white/5 rounded-full blur-lg"></div>
             </Card>
           ))}
         </div>

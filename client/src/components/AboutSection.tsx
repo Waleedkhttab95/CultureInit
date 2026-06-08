@@ -16,7 +16,6 @@ export default function AboutSection() {
       title: "الرؤية",
       description:
 "الممكّن المعرفي للقطاع الثقافي.",
-      accent: "from-primary/20 via-primary/10 to-transparent",
       ring: "ring-primary/25",
       backgroundImage: asset2
     },
@@ -25,7 +24,6 @@ export default function AboutSection() {
       title: "الرسالة",
       description:
         "تمكين القطاع الثقافي العربي عبر محتوى علمي وتطبيقي يربط النظرية بالممارسة، ويبني كفاءات قادرة على إدارة البرامج والمشاريع بكفاءة وابتكار.",
-      accent: "from-chart-2/20 via-chart-2/10 to-transparent",
       ring: "ring-chart-2/25",
       backgroundImage: asset6
     }
@@ -40,12 +38,6 @@ export default function AboutSection() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Decorative background accents */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-24 -start-24 h-64 w-64 rounded-full bg-gradient-to-br from-primary/15 to-transparent blur-3xl" />
-          <div className="absolute -bottom-16 -end-16 h-64 w-64 rounded-full bg-gradient-to-tr from-chart-2/15 to-transparent blur-3xl" />
-        </div>
-
         {/* Section Header */}
         <div className="relative text-center mb-14">
           <div className="flex justify-center mb-4">
@@ -73,8 +65,7 @@ export default function AboutSection() {
                 key={index}
                 className="group relative h-full"
               >
-                <div className={`absolute inset-0 bg-gradient-to-b ${item.accent} opacity-80 rounded-2xl blur-xl group-hover:opacity-100 transition-opacity`} />
-                <Card className={`relative h-full flex flex-col backdrop-blur supports-[backdrop-filter]:bg-card/70 border border-card-border ring-1 ${item.ring} overflow-hidden rounded-2xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-xl`}>
+                <Card className={`relative h-full flex flex-col bg-card border border-card-border ring-1 ${item.ring} overflow-hidden rounded-2xl transition-all duration-300 group-hover:translate-y-[-2px] group-hover:shadow-lg`}>
                   {/* Background Image */}
                   <div
                     className="absolute inset-0 flex items-start justify-start pointer-events-none z-0"
@@ -92,7 +83,7 @@ export default function AboutSection() {
                         <IconComponent className="h-7 w-7 text-foreground" />
                       </span>
                     </div>
-                    <CardTitle className="mt-4 text-2xl font-extrabold text-foreground">
+                    <CardTitle className="mt-4 text-2xl font-bold text-foreground">
                       {item.title}
                     </CardTitle>
                   </CardHeader>

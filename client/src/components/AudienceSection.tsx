@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Building2, 
   Users, 
@@ -22,7 +23,8 @@ import {
 
 export default function AudienceSection() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
-  
+  const { toast } = useToast();
+
   //todo: remove mock functionality - these will be real data from the initiative content
   const audiences = [
     {
@@ -120,12 +122,19 @@ export default function AudienceSection() {
           setFormData({ name: '', email: '' });
         }, 3000);
       } else {
-        alert(data.message || 'حدث خطأ أثناء إرسال البيانات');
+        toast({
+          title: "خطأ",
+          description: data.message || 'حدث خطأ أثناء إرسال البيانات',
+          variant: "destructive",
+        });
         setIsSubmitting(false);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.');
+      toast({
+        title: "خطأ",
+        description: 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
+        variant: "destructive",
+      });
       setIsSubmitting(false);
     }
   };
@@ -290,7 +299,7 @@ export default function AudienceSection() {
                   <Button
                     type="submit"
                     size="lg"
-                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     data-testid="button-submit-form"
                     disabled={isSubmitting}
                   >
