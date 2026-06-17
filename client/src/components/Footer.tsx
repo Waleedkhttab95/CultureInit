@@ -30,10 +30,11 @@ export default function Footer() {
           <div className="grid lg:grid-cols-5 md:grid-cols-2 gap-8">
             {/* Brand Section */}
             <div className="lg:col-span-2">
-              <img 
-                src={whiteLogo} 
-                alt="منصة الإدارة الثقافية" 
+              <img
+                src={whiteLogo}
+                alt="منصة الإدارة الثقافية"
                 className="h-8 w-auto mb-4"
+                loading="lazy"
                 data-testid="logo-footer"
               />
               <p className="text-background/80 leading-relaxed mb-6 max-w-md">
@@ -53,9 +54,10 @@ export default function Footer() {
                     href="https://x.com/culturalmgmt?s=21&t=l9ET_F7SR5ITa2IH2yZb3A"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="تابعنا على إكس (تويتر)"
                     onClick={() => handleSocialClick('Twitter')}
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-5 w-5" aria-hidden="true" />
                   </a>
                 </Button>
                 <Button
@@ -69,9 +71,10 @@ export default function Footer() {
                     href="https://www.linkedin.com/company/%D8%A7%D9%84%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%AB%D9%82%D8%A7%D9%81%D9%8A%D8%A9/"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="تابعنا على لينكدإن"
                     onClick={() => handleSocialClick('LinkedIn')}
                   >
-                    <Linkedin className="h-5 w-5" />
+                    <Linkedin className="h-5 w-5" aria-hidden="true" />
                   </a>
                 </Button>
                 <Button
@@ -85,9 +88,10 @@ export default function Footer() {
                     href="https://www.instagram.com/cultural_management?igsh=YTBoYjNtbzd3bGw5"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="تابعنا على إنستغرام"
                     onClick={() => handleSocialClick('Instagram')}
                   >
-                    <Instagram className="h-5 w-5" />
+                    <Instagram className="h-5 w-5" aria-hidden="true" />
                   </a>
                 </Button>
               </div>
@@ -194,6 +198,7 @@ export default function Footer() {
                   src={letsopsLogo}
                   alt="Let'sOps"
                   className="h-5 w-auto"
+                  loading="lazy"
                 />
                 <span className="text-background/70 font-medium">Let'sOps</span>
               </a>

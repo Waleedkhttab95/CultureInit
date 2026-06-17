@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import heroImage from "@assets/generated_images/Modern_Arabic_library_hero_72133ecf.png";
 import whiteLogo from "@assets/white-logo.png";
 import whiteIcon from "@assets/white-icon.png";
 
@@ -61,11 +60,12 @@ export default function HeroSection() {
     <section 
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       style={{
-        // backgroundImage: `linear-gradient(135deg, rgba(255, 151, 26, 0.15) 0%, rgba(28, 147, 127, 0.15) 100%), url(${heroImage})`,
-        backgroundColor: '#ab2451',
+        // Brand hero gradient: identity orange → cultural green, driven by design tokens.
+        backgroundImage:
+          'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--chart-2)) 100%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Dark overlay for better text readability */}
@@ -170,10 +170,10 @@ export default function HeroSection() {
         <button
           onClick={handleScrollDown}
           aria-label="انتقل إلى المحتوى"
-          className="group flex items-center justify-center text-white/80 hover:text-white transition-all duration-300"
+          className="group flex items-center justify-center rounded-full text-white/80 hover:text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         >
           <div className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition-colors duration-300 group-hover:border-white/60 animate-float motion-reduce:animate-none">
-            <ChevronDown className="h-5 w-5" />
+            <ChevronDown className="h-5 w-5" aria-hidden="true" />
           </div>
         </button>
       </div>

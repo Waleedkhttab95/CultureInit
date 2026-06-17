@@ -45,6 +45,7 @@ export default function AboutSection() {
               src={initiativeIcon}
               alt="منصة الإدارة الثقافية"
               className="h-14 w-14"
+              loading="lazy"
               data-testid="icon-initiative"
             />
           </div>
@@ -73,7 +74,9 @@ export default function AboutSection() {
                     <img
                       src={item.backgroundImage}
                       alt=""
+                      aria-hidden="true"
                       className="w-1/2 h-1/2 object-contain opacity-40"
+                      loading="lazy"
                     />
                   </div>
 

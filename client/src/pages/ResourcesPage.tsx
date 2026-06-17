@@ -115,10 +115,12 @@ export default function ResourcesPage() {
       <main
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
         style={{
-          backgroundColor: '#ab2451',
+          // Brand hero gradient: identity orange → cultural green, driven by design tokens.
+          backgroundImage:
+            'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--chart-2)) 100%)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Dark overlay for better text readability */}
@@ -149,8 +151,8 @@ export default function ResourcesPage() {
 
         <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up pt-16 sm:pt-20">
           {/* Resources Icon */}
-          <div className="flex justify-center mb-8 animate-shimmer">
-            <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm p-5 shadow-lg">
+          <div className="flex justify-center mb-8">
+            <div className="w-24 h-24 rounded-full bg-white/15 p-5 shadow-md">
               <img
                 src={resourcesIcon}
                 alt="الموارد"
@@ -169,12 +171,13 @@ export default function ResourcesPage() {
           {/* Resource Cards */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto animate-fade-in-up [animation-delay:240ms]">
             {resourcesData.map((resource) => (
-              <div key={resource.id} className="bg-white/10 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-300 overflow-hidden group flex flex-col">
+              <div key={resource.id} className="bg-white/10 backdrop-blur-sm rounded-xl shadow-lg border border-white/15 hover:bg-white/15 transition-all duration-300 overflow-hidden group flex flex-col">
                 <div className="h-56 overflow-hidden bg-white/5 flex items-center justify-center p-4">
                   <img
                     src={resource.image}
                     alt={resource.title}
                     className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
@@ -188,7 +191,7 @@ export default function ResourcesPage() {
                     <Button
                       onClick={() => handleDownloadClick(resource)}
                       size="lg"
-                      className="bg-white text-[#ab2451] hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
                       <Download className="ml-2 h-5 w-5" />
                       تحميل الدليل
@@ -217,8 +220,8 @@ export default function ResourcesPage() {
 
           {isSubmitted ? (
             <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4 animate-bounce">
-                <Check className="h-10 w-10 text-green-600" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-chart-2/10 rounded-full mb-4 motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in motion-safe:duration-500">
+                <Check className="h-10 w-10 text-chart-2" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">
                 جاري تحميل الدليل...

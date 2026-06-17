@@ -82,6 +82,14 @@
   --chart-4: 338 63% 40%;
   --chart-5: 200 20% 30%;
 
+  /* Brand dark-slate surface — dark panel for hero / CTA / table headers.
+     Kept dark in BOTH themes; white foreground sits on it. */
+  --slate: 200 20% 20%;
+  --slate-light: 200 21% 27%;
+  --slate-foreground: 0 0% 98%;
+  /* Warm tinted neutral used for calm section backgrounds */
+  --surface-warm: 38 24% 96%;
+
   --font-sans: 'Greta Arabic', sans-serif;
   --font-serif: 'Greta Arabic', serif;
   --font-mono: 'Greta Arabic', monospace;
@@ -173,6 +181,12 @@
   --chart-4: 338 63% 60%;
   --chart-5: 0 0% 75%;
 
+  /* Slightly lifted slate so the panel reads as elevated on the dark page */
+  --slate: 200 18% 16%;
+  --slate-light: 200 16% 22%;
+  --slate-foreground: 0 0% 98%;
+  --surface-warm: 30 8% 13%;
+
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.00), 0px 1px 2px -1px hsl(0 0% 0% / 0.00);
@@ -195,6 +209,20 @@
   /* Ensure all text uses Greta Arabic */
   * {
     font-family: 'Greta Arabic', sans-serif !important;
+  }
+
+  /* Global reduced-motion safeguard — neutralizes CSS-only animations
+     (float, shimmer, rotate-slow, fade-ins) for users who request it,
+     covering any consumer that doesn't gate motion in JS. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

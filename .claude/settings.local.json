@@ -32,7 +32,11 @@
       "Bash(ls -la .env*)",
       "Bash(rm \"app/articles/[slug]/ArticleContent.tsx\")",
       "Bash(cat)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(grep -rn \"#[0-9a-fA-F]\\\\{3,6\\\\}\" client/src --include=\"*.tsx\")",
+      "Bash(grep -rl \"#[0-9a-fA-F]\\\\{3,6\\\\}\" client/src --include=\"*.tsx\")",
+      "Bash(xargs -I{} sh -c 'echo \"$\\(grep -c \"#[0-9a-fA-F]\\\\{3,6\\\\}\" \"{}\"\\) {}\"')",
+      "Bash(git stash *)"
     ]
   }
 }

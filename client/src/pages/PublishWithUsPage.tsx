@@ -111,8 +111,8 @@ export default function PublishWithUsPage() {
 
               {isSubmitted ? (
                 <div className="max-w-md mx-auto text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6 animate-bounce">
-                    <Check className="h-10 w-10 text-green-600" />
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-chart-2/10 rounded-full mb-6 motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in motion-safe:duration-500">
+                    <Check className="h-10 w-10 text-chart-2" />
                   </div>
                   <h5 className="text-xl font-bold text-foreground mb-2">
                     تم إرسال طلبك بنجاح!

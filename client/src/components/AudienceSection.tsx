@@ -171,7 +171,7 @@ export default function AudienceSection() {
                 className="text-center hover-elevate transition-all duration-300 border-card-border group"
               >
                 <CardHeader className="pb-4">
-                  <div className={`w-16 h-16 rounded-full ${audience.bgColor} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-16 h-16 rounded-full ${audience.bgColor} flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-300`}>
                     <IconComponent className={`h-8 w-8 ${audience.color}`} />
                   </div>
                   <CardTitle className="text-lg font-bold text-foreground leading-tight">
@@ -229,9 +229,6 @@ export default function AudienceSection() {
         {/* Contact Form Section */}
         <div className="bg-card border border-card-border rounded-2xl p-8 lg:p-12">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-6">
-              <Sparkles className="h-8 w-8 text-primary" />
-            </div>
             <h4 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
               انضم إلى مجتمعنا المعرفي
             </h4>
@@ -242,8 +239,8 @@ export default function AudienceSection() {
 
           {isSubmitted ? (
             <div className="max-w-md mx-auto text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6 animate-bounce">
-                <Check className="h-10 w-10 text-green-600" />
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-chart-2/10 rounded-full mb-6 motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in motion-safe:duration-500">
+                <Check className="h-10 w-10 text-chart-2" />
               </div>
               <h5 className="text-xl font-bold text-foreground mb-2">
                 تم إرسال طلبك بنجاح!

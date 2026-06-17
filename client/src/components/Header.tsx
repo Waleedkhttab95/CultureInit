@@ -68,17 +68,18 @@ export default function Header() {
 
           {/* Mobile controls */}
           <div className="flex items-center gap-1 md:hidden">
-            <ThemeToggle />
+            <ThemeToggle className="h-11 w-11" />
             <Button
               variant="ghost"
               size="icon"
+              className="h-11 w-11"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="القائمة"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               data-testid="button-menu-toggle"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
             </Button>
           </div>
         </div>

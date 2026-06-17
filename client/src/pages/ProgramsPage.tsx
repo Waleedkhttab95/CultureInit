@@ -161,10 +161,7 @@ export default function ProgramsPage() {
       <Header />
       <main>
         {/* ===== HERO SECTION ===== */}
-        <section
-          className="relative min-h-screen flex items-center justify-center overflow-hidden"
-          style={{ backgroundColor: "#0f172a" }}
-        >
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate">
           <div className="absolute inset-0 z-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
 
           <div
@@ -189,12 +186,12 @@ export default function ProgramsPage() {
             />
           </div>
 
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#d4a574] to-transparent z-20" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent z-20" />
 
           <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-24 sm:py-32">
             {/* Badge */}
             <div className="inline-block mb-8 animate-fade-in-down">
-              <span className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-medium bg-[#d4a574]/15 text-[#d4a574] border border-[#d4a574]/30 backdrop-blur-sm">
+              <span className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-medium bg-primary/15 text-primary border border-primary/30 backdrop-blur-sm">
                 <Sparkles className="h-4 w-4 ml-2" />
                 الدفعة الرائدة – أول شهادة مهنية متخصصة في الإدارة الثقافية في
                 المملكة
@@ -236,7 +233,7 @@ export default function ProgramsPage() {
                   key={i}
                   className="flex flex-col items-center gap-3 p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
                 >
-                  <item.icon className="h-6 w-6 text-[#d4a574]" />
+                  <item.icon className="h-6 w-6 text-primary" />
                   <span className="text-white/90 text-sm leading-snug">
                     {item.text}
                   </span>
@@ -369,8 +366,8 @@ export default function ProgramsPage() {
                   className="group relative p-6 rounded-xl bg-card border border-card-border hover:border-primary/30 hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#0f172a] flex items-center justify-center">
-                      <course.icon className="h-6 w-6 text-[#d4a574]" />
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate flex items-center justify-center">
+                      <course.icon className="h-6 w-6 text-primary" />
                     </div>
                     <span className="text-sm font-bold text-muted-foreground">
                       {course.number.toString().padStart(2, "0")}
@@ -387,9 +384,9 @@ export default function ProgramsPage() {
             </div>
 
             {/* Graduation Project */}
-            <div className="max-w-2xl mx-auto p-8 rounded-2xl bg-gradient-to-br from-[#0f172a] to-[#1e293b] text-white text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#d4a574]/20 mb-6">
-                <Award className="h-8 w-8 text-[#d4a574]" />
+            <div className="max-w-2xl mx-auto p-8 rounded-2xl bg-gradient-to-br from-slate to-slate-light text-slate-foreground text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-6">
+                <Award className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-3">مشروع التخرج</h3>
               <p className="text-white/80 leading-relaxed">
@@ -461,14 +458,14 @@ export default function ProgramsPage() {
                 {TIMELINE_STEPS.map((item) => (
                   <div key={item.step}>
                     <div className="relative flex items-start gap-4 sm:gap-6">
-                      <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#0f172a] flex items-center justify-center text-white font-bold text-sm sm:text-lg z-10 border-4 border-background">
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate flex items-center justify-center text-slate-foreground font-bold text-sm sm:text-lg z-10 border-4 border-background">
                         {item.step}
                       </div>
                       <div className="pt-1 sm:pt-2 flex-1">
                         <h4 className="text-foreground font-bold text-base sm:text-lg">
                           {item.phase}
                         </h4>
-                        <span className="inline-block mt-1 text-xs sm:text-sm text-[#d4a574] font-medium bg-[#d4a574]/10 px-3 py-1 rounded-full">
+                        <span className="inline-block mt-1 text-xs sm:text-sm text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">
                           {item.date}
                         </span>
                       </div>
@@ -477,26 +474,29 @@ export default function ProgramsPage() {
                     {/* Courses table for step 5 */}
                     {item.hasCourses && (
                       <div className="mt-6 mr-14 sm:mr-20">
-                        <div className="overflow-hidden rounded-xl border border-card-border">
+                        <div className="overflow-x-auto rounded-xl border border-card-border">
                           <table className="w-full text-sm">
+                            <caption className="sr-only">
+                              جدول مواد البرنامج ومواعيدها
+                            </caption>
                             <thead>
-                              <tr className="bg-[#0f172a] text-white">
-                                <th className="py-3 px-4 text-right font-semibold">المادة</th>
-                                <th className="py-3 px-4 text-right font-semibold">التاريخ</th>
+                              <tr className="bg-slate text-slate-foreground">
+                                <th scope="col" className="py-3 px-4 text-right font-semibold">المادة</th>
+                                <th scope="col" className="py-3 px-4 text-right font-semibold">التاريخ</th>
                               </tr>
                             </thead>
                             <tbody>
                               {COURSES_SCHEDULE.map((course, idx) => (
                                 <tr
                                   key={idx}
-                                  className={idx % 2 === 0 ? "bg-background" : "bg-[#0f172a]/[0.03]"}
+                                  className={idx % 2 === 0 ? "bg-background" : "bg-slate/[0.03]"}
                                 >
                                   <td className="py-3 px-4 text-foreground font-medium">
                                     {course.name}
                                   </td>
                                   <td className="py-3 px-4 text-muted-foreground">
                                     {idx === 0 && (
-                                      <span className="block text-[#d4a574] text-xs font-medium mb-1">
+                                      <span className="block text-primary text-xs font-medium mb-1">
                                         الجمعة والسبت
                                       </span>
                                     )}
@@ -508,7 +508,7 @@ export default function ProgramsPage() {
                           </table>
                         </div>
                         <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 text-[#d4a574]" />
+                          <MapPin className="h-4 w-4 text-primary" />
                           <span>حضوريًا في الرياض</span>
                         </div>
                       </div>
@@ -520,8 +520,8 @@ export default function ProgramsPage() {
 
             {/* Duration note */}
             <div className="mt-12 text-center">
-              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#0f172a]/5 border border-[#0f172a]/10">
-                <Clock className="h-5 w-5 text-[#0f172a]" />
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-slate/5 border border-slate/10">
+                <Clock className="h-5 w-5 text-slate" />
                 <span className="text-foreground font-semibold">
                   مدة البرنامج: مايو – أغسطس 2026
                 </span>
@@ -533,7 +533,7 @@ export default function ProgramsPage() {
         {/* ===== ACCREDITATION ===== */}
         <section
           ref={accreditationRef}
-          className={`py-20 sm:py-28 bg-[#f8f6f3] transition-all duration-1000 ${
+          className={`py-20 sm:py-28 bg-surface-warm transition-all duration-1000 ${
             accreditationVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"
@@ -548,11 +548,12 @@ export default function ProgramsPage() {
               معايير الجودة العالمية في التعليم المهني، وتعزيز فرص الاعتراف
               الدولي بالشهادة.
             </p>
-            <div className="inline-flex items-center justify-center bg-white rounded-2xl px-10 py-6 shadow-sm border border-[#0f172a]/5">
+            <div className="inline-flex items-center justify-center bg-white rounded-2xl px-10 py-6 shadow-sm border border-slate/10">
               <img
                 src={pearsonLogo}
                 alt="Pearson"
                 className="h-12 sm:h-16 w-auto"
+                loading="lazy"
               />
             </div>
           </div>
@@ -573,20 +574,22 @@ export default function ProgramsPage() {
             </h2>
             <div className="flex flex-wrap items-center justify-center gap-14 sm:gap-20">
               <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-semibold text-[#d4a574]">الشريك الاستراتيجي</span>
+                <span className="text-sm font-semibold text-primary">الشريك الاستراتيجي</span>
                 <img
                   src={aljaziraLogo}
                   alt="بنك الجزيرة"
                   className="h-40 sm:h-52 w-auto"
+                  loading="lazy"
                 />
               </div>
               <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-semibold text-[#d4a574]">الشريك الماسي</span>
-                <div className="bg-white rounded-2xl px-6 py-4 shadow-sm border border-[#0f172a]/5">
+                <span className="text-sm font-semibold text-primary">الشريك الماسي</span>
+                <div className="bg-white rounded-2xl px-6 py-4 shadow-sm border border-slate/10">
                   <img
                     src={alrajhiLogo}
                     alt="الراجحي الإنسانية"
                     className="h-10 sm:h-12 w-auto"
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -597,12 +600,11 @@ export default function ProgramsPage() {
         {/* ===== CTA ===== */}
         <section
           ref={ctaRef}
-          className={`py-20 sm:py-28 transition-all duration-1000 ${
+          className={`py-20 sm:py-28 bg-slate transition-all duration-1000 ${
             ctaVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-8"
           }`}
-          style={{ backgroundColor: "#0f172a" }}
         >
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">

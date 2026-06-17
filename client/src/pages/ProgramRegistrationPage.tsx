@@ -30,13 +30,13 @@ import {
 } from "lucide-react";
 
 const inputClass =
-  "h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl";
+  "h-12 text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl";
 const labelClass =
-  "text-sm font-semibold text-white/90 flex items-center gap-2";
+  "text-sm font-semibold text-foreground flex items-center gap-2";
 const textareaClass =
-  "text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl resize-none";
+  "text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl resize-none";
 const selectTriggerClass =
-  "h-12 text-base bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-[#d4a574] rounded-xl [&>span]:text-white data-[placeholder]:text-white/40";
+  "h-12 text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl [&>span]:text-foreground data-[placeholder]:text-muted-foreground";
 
 export default function ProgramRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -182,22 +182,22 @@ export default function ProgramRegistrationPage() {
 
   // Registration is closed
   return (
-    <div className="min-h-screen bg-[#0f172a] font-sans flex flex-col">
+    <div className="min-h-screen bg-background font-sans flex flex-col">
       <Header />
       <main className="flex-1 flex items-center justify-center py-20">
         <div className="text-center px-4">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-[#d4a574]/20 rounded-full mb-8">
-            <Calendar className="h-12 w-12 text-[#d4a574]" />
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-primary/10 rounded-full mb-8">
+            <Calendar className="h-12 w-12 text-primary" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
             تم إغلاق التسجيل
           </h2>
-          <p className="text-white/70 text-lg mb-8">
+          <p className="text-muted-foreground text-lg mb-8">
             شكراً لاهتمامكم، تم إغلاق باب التسجيل في البرنامج. ترقبوا البرامج القادمة
           </p>
           <Button
             onClick={() => (window.location.href = "/programs")}
-            className="bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] font-semibold rounded-xl px-8 h-12"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-8 h-12"
           >
             العودة لصفحة البرنامج
           </Button>
@@ -209,22 +209,22 @@ export default function ProgramRegistrationPage() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-[#0f172a] font-sans flex flex-col">
+      <div className="min-h-screen bg-background font-sans flex flex-col">
         <Header />
         <main className="flex-1 flex items-center justify-center py-20">
           <div className="text-center px-4">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-green-500/20 rounded-full mb-8 animate-bounce">
-              <Check className="h-12 w-12 text-green-400" />
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-chart-2/15 rounded-full mb-8">
+              <Check className="h-12 w-12 text-chart-2" />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-4">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               تم إرسال طلبك بنجاح!
             </h2>
-            <p className="text-white/70 text-lg mb-8">
+            <p className="text-muted-foreground text-lg mb-8">
               شكراً لك، سنراجع طلبك ونتواصل معك قريباً
             </p>
             <Button
               onClick={() => (window.location.href = "/programs")}
-              className="bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] font-semibold rounded-xl px-8 h-12"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-8 h-12"
             >
               العودة لصفحة البرنامج
             </Button>
@@ -236,29 +236,33 @@ export default function ProgramRegistrationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] font-sans flex flex-col">
+    <div className="min-h-screen bg-background font-sans flex flex-col">
       <Header />
       <main className="flex-1 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
               نموذج التسجيل
             </h1>
-            <p className="text-white/70 text-lg">
+            <p className="text-muted-foreground text-lg">
               برنامج ممارس الإدارة الثقافية
             </p>
           </div>
 
           {/* Error Display Banner */}
           {errors.length > 0 && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-2">
-              <h4 className="text-red-400 font-bold text-lg mb-3">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="bg-destructive/10 border border-destructive/30 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-2"
+            >
+              <h4 className="text-destructive font-bold text-lg mb-3">
                 يرجى تعبئة الحقول التالية:
               </h4>
               <ul className="space-y-1.5 list-disc list-inside">
                 {errors.map((error, index) => (
-                  <li key={index} className="text-red-300/90 text-sm">
+                  <li key={index} className="text-destructive/90 text-sm">
                     {error}
                   </li>
                 ))}
@@ -268,15 +272,15 @@ export default function ProgramRegistrationPage() {
 
           <form onSubmit={handleSubmit}>
             {/* ===== القسم الأول: البيانات الأساسية ===== */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 mb-8">
-              <h3 className="text-xl font-bold text-[#d4a574] mb-6 pb-3 border-b border-white/10">
+            <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
+              <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
                 القسم الأول: البيانات الأساسية
               </h3>
               <div className="space-y-5">
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className={labelClass}>
-                    <User className="h-4 w-4 text-[#d4a574]" />
+                    <User className="h-4 w-4 text-primary" />
                     الاسم الرباعي
                   </Label>
                   <Input
@@ -295,7 +299,7 @@ export default function ProgramRegistrationPage() {
                 {/* ID Number */}
                 <div className="space-y-2">
                   <Label htmlFor="idNumber" className={labelClass}>
-                    <CreditCard className="h-4 w-4 text-[#d4a574]" />
+                    <CreditCard className="h-4 w-4 text-primary" />
                     رقم الهوية / الإقامة
                   </Label>
                   <Input
@@ -313,11 +317,12 @@ export default function ProgramRegistrationPage() {
 
                 {/* Gender */}
                 <div className="space-y-2">
-                  <Label className={labelClass}>
-                    <User className="h-4 w-4 text-[#d4a574]" />
+                  <Label className={labelClass} id="gender-label">
+                    <User className="h-4 w-4 text-primary" />
                     الجنس
                   </Label>
                   <RadioGroup
+                    aria-labelledby="gender-label"
                     value={formData.gender}
                     onValueChange={(v) => handleSelectChange("gender", v)}
                     className="flex gap-6 pt-1"
@@ -328,11 +333,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="male"
                         id="male"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="male"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         ذكر
                       </Label>
@@ -341,11 +346,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="female"
                         id="female"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="female"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         أنثى
                       </Label>
@@ -357,7 +362,7 @@ export default function ProgramRegistrationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="phone" className={labelClass}>
-                      <Phone className="h-4 w-4 text-[#d4a574]" />
+                      <Phone className="h-4 w-4 text-primary" />
                       رقم الجوال
                     </Label>
                     <Input
@@ -374,7 +379,7 @@ export default function ProgramRegistrationPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email" className={labelClass}>
-                      <Mail className="h-4 w-4 text-[#d4a574]" />
+                      <Mail className="h-4 w-4 text-primary" />
                       البريد الإلكتروني
                     </Label>
                     <Input
@@ -395,7 +400,7 @@ export default function ProgramRegistrationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="city" className={labelClass}>
-                      <MapPin className="h-4 w-4 text-[#d4a574]" />
+                      <MapPin className="h-4 w-4 text-primary" />
                       المدينة
                     </Label>
                     <Input
@@ -412,7 +417,7 @@ export default function ProgramRegistrationPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="age" className={labelClass}>
-                      <Calendar className="h-4 w-4 text-[#d4a574]" />
+                      <Calendar className="h-4 w-4 text-primary" />
                       العمر
                     </Label>
                     <Input
@@ -432,7 +437,7 @@ export default function ProgramRegistrationPage() {
                 {/* LinkedIn */}
                 <div className="space-y-2">
                   <Label htmlFor="linkedin" className={labelClass}>
-                    <Linkedin className="h-4 w-4 text-[#d4a574]" />
+                    <Linkedin className="h-4 w-4 text-primary" />
                     الحساب المهني (LinkedIn إن وجد)
                   </Label>
                   <Input
@@ -450,15 +455,15 @@ export default function ProgramRegistrationPage() {
             </div>
 
             {/* ===== القسم الثاني: الخلفية التعليمية والمهنية ===== */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 mb-8">
-              <h3 className="text-xl font-bold text-[#d4a574] mb-6 pb-3 border-b border-white/10">
+            <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
+              <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
                 القسم الثاني: الخلفية التعليمية والمهنية
               </h3>
               <div className="space-y-5">
                 {/* Qualification */}
                 <div className="space-y-2">
                   <Label className={labelClass}>
-                    <GraduationCap className="h-4 w-4 text-[#d4a574]" />
+                    <GraduationCap className="h-4 w-4 text-primary" />
                     أعلى مؤهل علمي
                   </Label>
                   <Select
@@ -484,7 +489,7 @@ export default function ProgramRegistrationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="major" className={labelClass}>
-                      <GraduationCap className="h-4 w-4 text-[#d4a574]" />
+                      <GraduationCap className="h-4 w-4 text-primary" />
                       التخصص
                     </Label>
                     <Input
@@ -501,7 +506,7 @@ export default function ProgramRegistrationPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="studyInstitution" className={labelClass}>
-                      <Building2 className="h-4 w-4 text-[#d4a574]" />
+                      <Building2 className="h-4 w-4 text-primary" />
                       جهة الدراسة
                     </Label>
                     <Input
@@ -522,7 +527,7 @@ export default function ProgramRegistrationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="organization" className={labelClass}>
-                      <Building2 className="h-4 w-4 text-[#d4a574]" />
+                      <Building2 className="h-4 w-4 text-primary" />
                       جهة العمل
                     </Label>
                     <Input
@@ -539,7 +544,7 @@ export default function ProgramRegistrationPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className={labelClass}>
-                      <Building2 className="h-4 w-4 text-[#d4a574]" />
+                      <Building2 className="h-4 w-4 text-primary" />
                       نوع جهة العمل
                     </Label>
                     <Select
@@ -564,7 +569,7 @@ export default function ProgramRegistrationPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="yearsOfExperience" className={labelClass}>
-                      <Briefcase className="h-4 w-4 text-[#d4a574]" />
+                      <Briefcase className="h-4 w-4 text-primary" />
                       عدد سنوات الخبرة
                     </Label>
                     <Input
@@ -581,7 +586,7 @@ export default function ProgramRegistrationPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="jobTitle" className={labelClass}>
-                      <Briefcase className="h-4 w-4 text-[#d4a574]" />
+                      <Briefcase className="h-4 w-4 text-primary" />
                       المسمى الوظيفي الحالي
                     </Label>
                     <Input
@@ -601,7 +606,7 @@ export default function ProgramRegistrationPage() {
                 {/* Resume Upload */}
                 <div className="space-y-2">
                   <Label htmlFor="resume" className={labelClass}>
-                    <Upload className="h-4 w-4 text-[#d4a574]" />
+                    <Upload className="h-4 w-4 text-primary" />
                     أرفق سيرتك الذاتية
                   </Label>
                   <div className="relative">
@@ -615,11 +620,11 @@ export default function ProgramRegistrationPage() {
                     />
                     <label
                       htmlFor="resume"
-                      className="flex items-center justify-center gap-2 h-12 w-full rounded-xl border border-dashed border-white/30 bg-white/5 text-white/60 cursor-pointer hover:border-[#d4a574]/50 hover:bg-white/10 transition-colors"
+                      className="flex items-center justify-center gap-2 h-12 w-full rounded-xl border border-dashed border-input bg-muted/40 text-muted-foreground cursor-pointer hover:border-primary/50 hover:bg-card transition-colors"
                     >
                       <Upload className="h-4 w-4" />
                       {resumeFile ? (
-                        <span className="text-[#d4a574]">
+                        <span className="text-primary">
                           {resumeFile.name}
                         </span>
                       ) : (
@@ -632,17 +637,18 @@ export default function ProgramRegistrationPage() {
             </div>
 
             {/* ===== القسم الثالث: الخبرة في القطاع الثقافي ===== */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 mb-8">
-              <h3 className="text-xl font-bold text-[#d4a574] mb-6 pb-3 border-b border-white/10">
+            <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
+              <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
                 القسم الثالث: الخبرة في القطاع الثقافي
               </h3>
               <div className="space-y-5">
                 {/* Works in culture */}
                 <div className="space-y-2">
-                  <Label className={labelClass}>
+                  <Label className={labelClass} id="works-culture-label">
                     هل تعمل حاليًا في القطاع الثقافي؟
                   </Label>
                   <RadioGroup
+                    aria-labelledby="works-culture-label"
                     value={formData.worksInCulture}
                     onValueChange={(v) =>
                       handleSelectChange("worksInCulture", v)
@@ -655,11 +661,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="yes"
                         id="culture-yes"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="culture-yes"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         نعم
                       </Label>
@@ -668,11 +674,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="no"
                         id="culture-no"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="culture-no"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         لا
                       </Label>
@@ -681,11 +687,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="partial"
                         id="culture-partial"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="culture-partial"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         بشكل جزئي
                       </Label>
@@ -714,17 +720,18 @@ export default function ProgramRegistrationPage() {
             </div>
 
             {/* ===== القسم الرابع: الالتزام والاستعداد ===== */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 mb-8">
-              <h3 className="text-xl font-bold text-[#d4a574] mb-6 pb-3 border-b border-white/10">
+            <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
+              <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
                 القسم الرابع: الالتزام والاستعداد
               </h3>
               <div className="space-y-5">
                 {/* Can attend all */}
                 <div className="space-y-2">
-                  <Label className={labelClass}>
+                  <Label className={labelClass} id="commit-attend-label">
                     هل يمكنك الالتزام بحضور اللقاءات كاملة؟
                   </Label>
                   <RadioGroup
+                    aria-labelledby="commit-attend-label"
                     value={formData.canAttendAll}
                     onValueChange={(v) =>
                       handleSelectChange("canAttendAll", v)
@@ -737,11 +744,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="yes"
                         id="attend-yes"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="attend-yes"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         نعم
                       </Label>
@@ -750,11 +757,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="no"
                         id="attend-no"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="attend-no"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         لا
                       </Label>
@@ -764,11 +771,12 @@ export default function ProgramRegistrationPage() {
 
                 {/* Can design project */}
                 <div className="space-y-2">
-                  <Label className={labelClass}>
+                  <Label className={labelClass} id="graduation-project-label">
                     هل لديك القدرة على تصميم مشروع تخرج تطبيقي خلال مدة
                     البرنامج؟
                   </Label>
                   <RadioGroup
+                    aria-labelledby="graduation-project-label"
                     value={formData.canDesignProject}
                     onValueChange={(v) =>
                       handleSelectChange("canDesignProject", v)
@@ -781,11 +789,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="yes"
                         id="project-yes"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="project-yes"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         نعم
                       </Label>
@@ -794,11 +802,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="no"
                         id="project-no"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="project-no"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         لا
                       </Label>
@@ -808,10 +816,11 @@ export default function ProgramRegistrationPage() {
 
                 {/* Employer approval */}
                 <div className="space-y-2">
-                  <Label className={labelClass}>
+                  <Label className={labelClass} id="employer-approval-label">
                     هل حصلت على موافقة جهة عملك (إن لزم)؟
                   </Label>
                   <RadioGroup
+                    aria-labelledby="employer-approval-label"
                     value={formData.hasEmployerApproval}
                     onValueChange={(v) =>
                       handleSelectChange("hasEmployerApproval", v)
@@ -824,11 +833,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="yes"
                         id="approval-yes"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="approval-yes"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         نعم
                       </Label>
@@ -837,11 +846,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="no"
                         id="approval-no"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="approval-no"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         لا
                       </Label>
@@ -850,11 +859,11 @@ export default function ProgramRegistrationPage() {
                       <RadioGroupItem
                         value="na"
                         id="approval-na"
-                        className="border-white/40 text-[#d4a574]"
+                        className="border-input text-primary"
                       />
                       <Label
                         htmlFor="approval-na"
-                        className="text-white/80 cursor-pointer"
+                        className="text-muted-foreground cursor-pointer"
                       >
                         لا ينطبق
                       </Label>
@@ -865,8 +874,8 @@ export default function ProgramRegistrationPage() {
             </div>
 
             {/* ===== القسم الخامس: الأسئلة التقييمية ===== */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-white/10 mb-8">
-              <h3 className="text-xl font-bold text-[#d4a574] mb-6 pb-3 border-b border-white/10">
+            <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
+              <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
                 القسم الخامس: الأسئلة التقييمية
               </h3>
               <div className="space-y-5">
@@ -929,12 +938,12 @@ export default function ProgramRegistrationPage() {
             <Button
               type="submit"
               size="lg"
-              className="w-full h-14 text-lg font-semibold bg-[#d4a574] hover:bg-[#c49564] text-[#0f172a] rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-[#0f172a]/30 border-t-[#0f172a] rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                   جاري الإرسال...
                 </div>
               ) : (

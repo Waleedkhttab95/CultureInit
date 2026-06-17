@@ -93,11 +93,12 @@ export default function TracksSection() {
             >
               <CardHeader className="text-center pb-4">
                 {/* Track Icon */}
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white p-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <img 
-                    src={track.icon} 
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white p-4 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <img
+                    src={track.icon}
                     alt={`${track.title} icon`}
                     className="w-full h-full object-contain"
+                    loading="lazy"
                   />
                 </div>
                 

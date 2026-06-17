@@ -119,8 +119,9 @@ export default function AdminDashboard() {
               >
                 <img
                   src={a.image}
-                  alt=""
+                  alt={`صورة مقال: ${a.title}`}
                   className="w-20 h-14 object-cover rounded bg-muted shrink-0"
+                  loading="lazy"
                 />
                 <div className="flex-1 min-w-[200px]">
                   <div className="flex items-center gap-2">
@@ -147,20 +148,20 @@ export default function AdminDashboard() {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    <Button variant="ghost" size="icon" title="عرض">
-                      <ExternalLink className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" title="عرض" aria-label={`عرض المقال: ${a.title}`}>
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </a>
                 )}
                 <Link href={`/admin/articles/${a.id}/edit`}>
-                  <Button variant="ghost" size="icon" title="تعديل">
-                    <Pencil className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" title="تعديل" aria-label={`تعديل المقال: ${a.title}`}>
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" title="حذف">
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                    <Button variant="ghost" size="icon" title="حذف" aria-label={`حذف المقال: ${a.title}`}>
+                      <Trash2 className="h-4 w-4 text-destructive" aria-hidden="true" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent dir="rtl">
