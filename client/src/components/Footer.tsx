@@ -167,12 +167,12 @@ export default function Footer() {
                   <span className="text-sm" dir="ltr">info@cultural-managment.com</span>
                 </a>
                 <a
-                  href="tel:+966553392905"
+                  href="tel:+966590838771"
                   className="flex items-center gap-3 text-background/80 hover:text-background transition-colors"
                   data-testid="contact-phone"
                 >
                   <Phone className="h-4 w-4 text-primary" />
-                  <span className="text-sm" dir="ltr">+966 55 339 2905</span>
+                  <span className="text-sm" dir="ltr">+966 59 083 8771</span>
                 </a>
               </div>
             </div>
