@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest, type ProgramRegistration, type InsertProgramRegistration } from "@shared/schema";
+import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest, type ProgramRegistration, type InsertProgramRegistration, type ServiceRequest, type InsertServiceRequest } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -20,6 +20,9 @@ export interface IStorage {
   getProgramRegistrationByEmail(email: string): Promise<ProgramRegistration | undefined>;
   createProgramRegistration(registration: InsertProgramRegistration): Promise<ProgramRegistration>;
   updateProgramRegistrationBrevoId(email: string, brevoContactId: string): Promise<void>;
+  getServiceRequestByEmail(email: string): Promise<ServiceRequest | undefined>;
+  createServiceRequest(request: InsertServiceRequest): Promise<ServiceRequest>;
+  updateServiceRequestBrevoId(email: string, brevoContactId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -28,6 +31,7 @@ export class MemStorage implements IStorage {
   private pdfDownloadRequests: Map<string, PdfDownloadRequest>;
   private publishRequests: Map<string, PublishRequest>;
   private programRegistrations: Map<string, ProgramRegistration>;
+  private serviceRequests: Map<string, ServiceRequest>;
 
   constructor() {
     this.users = new Map();
@@ -35,6 +39,7 @@ export class MemStorage implements IStorage {
     this.pdfDownloadRequests = new Map();
     this.publishRequests = new Map();
     this.programRegistrations = new Map();
+    this.serviceRequests = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -182,6 +187,37 @@ export class MemStorage implements IStorage {
     if (reg) {
       reg.brevoContactId = brevoContactId;
       this.programRegistrations.set(reg.id, reg);
+    }
+  }
+
+  async getServiceRequestByEmail(email: string): Promise<ServiceRequest | undefined> {
+    return Array.from(this.serviceRequests.values()).find(
+      (request) => request.email === email,
+    );
+  }
+
+  async createServiceRequest(insertRequest: InsertServiceRequest): Promise<ServiceRequest> {
+    const id = randomUUID();
+    const request: ServiceRequest = {
+      id,
+      name: insertRequest.name,
+      email: insertRequest.email,
+      phone: insertRequest.phone,
+      organization: insertRequest.organization,
+      subject: insertRequest.subject,
+      message: insertRequest.message,
+      requestedAt: new Date(),
+      brevoContactId: null,
+    };
+    this.serviceRequests.set(id, request);
+    return request;
+  }
+
+  async updateServiceRequestBrevoId(email: string, brevoContactId: string): Promise<void> {
+    const request = await this.getServiceRequestByEmail(email);
+    if (request) {
+      request.brevoContactId = brevoContactId;
+      this.serviceRequests.set(request.id, request);
     }
   }
 }

@@ -4,7 +4,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertArticleSchema, updateArticleSchema, ARTICLE_SITES, type ArticleSite } from "@shared/schema";
+import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertServiceRequestSchema, insertArticleSchema, updateArticleSchema, ARTICLE_SITES, type ArticleSite } from "@shared/schema";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
@@ -586,6 +586,130 @@ ${message}
       return res.status(500).json({
         error: "Internal server error",
         message: "Failed to process publish request"
+      });
+    }
+  });
+
+  // Service request endpoint
+  app.post("/api/service-request", async (req, res) => {
+    try {
+      // Validate request body
+      const result = insertServiceRequestSchema.safeParse(req.body);
+
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({
+          error: "Validation failed",
+          message: validationError.message
+        });
+      }
+
+      const { name, email, phone, organization, subject, message } = result.data;
+
+      // Save to database
+      const request = await storage.createServiceRequest({ name, email, phone, organization, subject, message });
+
+      // Send email notification
+      if (await isBrevoConfigured()) {
+        const recipientEmail = process.env.ADMIN_EMAIL || 'admin@culturalinitiative.com';
+
+        await sendEmail({
+          to: [{ email: recipientEmail }],
+          subject: `طلب خدمة جديد: ${subject}`,
+          htmlContent: `
+            <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+              <div style="background-color: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="color: #1f2937; margin-bottom: 20px; border-bottom: 2px solid #FF971A; padding-bottom: 10px;">
+                  طلب خدمة جديد
+                </h2>
+
+                <div style="margin-bottom: 20px;">
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">الاسم:</strong> ${name}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">البريد الإلكتروني:</strong> ${email}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">رقم الجوال:</strong> ${phone}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">اسم الجهة:</strong> ${organization}
+                  </p>
+                  <p style="margin: 10px 0; color: #4b5563;">
+                    <strong style="color: #1f2937;">الموضوع:</strong> ${subject}
+                  </p>
+                </div>
+
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 15px; margin-top: 20px;">
+                  <p style="margin: 0 0 10px 0; color: #1f2937; font-weight: bold;">الطلب:</p>
+                  <p style="margin: 0; color: #4b5563; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+                  <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                    تم إرسال هذه الرسالة من نموذج "طلب الخدمات" في موقع مبادرة الإدارة الثقافية
+                  </p>
+                </div>
+              </div>
+            </div>
+          `,
+          textContent: `
+طلب خدمة جديد
+
+الاسم: ${name}
+البريد الإلكتروني: ${email}
+رقم الجوال: ${phone}
+اسم الجهة: ${organization}
+الموضوع: ${subject}
+
+الطلب:
+${message}
+
+---
+تم إرسال هذه الرسالة من نموذج "طلب الخدمات" في موقع مبادرة الإدارة الثقافية
+          `
+        });
+      }
+
+      // Add to Brevo contact list if configured
+      if (await isBrevoConfigured()) {
+        try {
+          const brevoResponse = await addContactToBrevo({
+            email,
+            listIds: process.env.BREVO_SERVICES_LIST_ID ? [parseInt(process.env.BREVO_SERVICES_LIST_ID)] : [],
+            attributes: {
+              NAME: name,
+              SIGNUP_SOURCE: 'services_request',
+              SIGNUP_DATE: new Date().toISOString(),
+              SERVICE_SUBJECT: subject,
+            },
+          });
+
+          if (brevoResponse) {
+            await storage.updateServiceRequestBrevoId(email, brevoResponse.id.toString());
+          }
+        } catch (brevoError) {
+          console.error("Brevo integration error:", brevoError);
+          // Don't fail the request if Brevo fails
+        }
+      }
+
+      return res.status(201).json({
+        success: true,
+        message: "Request processed successfully",
+        request: {
+          id: request.id,
+          name: request.name,
+          email: request.email,
+        }
+      });
+
+    } catch (error) {
+      console.error("Service request error:", error);
+      return res.status(500).json({
+        error: "Internal server error",
+        message: "Failed to process service request"
       });
     }
   });

@@ -143,6 +143,37 @@ export const insertProgramRegistrationSchema = z.object({
 export type InsertProgramRegistration = z.infer<typeof insertProgramRegistrationSchema>;
 export type ProgramRegistration = typeof programRegistrations.$inferSelect;
 
+export const serviceRequests = pgTable("service_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  organization: text("organization").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  requestedAt: timestamp("requested_at").notNull().defaultNow(),
+  brevoContactId: text("brevo_contact_id"),
+});
+
+export const insertServiceRequestSchema = createInsertSchema(serviceRequests).pick({
+  name: true,
+  email: true,
+  phone: true,
+  organization: true,
+  subject: true,
+  message: true,
+}).extend({
+  name: z.string().min(2, "الاسم مطلوب"),
+  email: z.string().email("البريد الإلكتروني غير صحيح"),
+  phone: z.string().min(9, "رقم الجوال مطلوب"),
+  organization: z.string().min(2, "اسم الجهة مطلوب"),
+  subject: z.string().min(2, "الموضوع مطلوب"),
+  message: z.string().min(10, "الطلب يجب ألا يقل عن 10 أحرف"),
+});
+
+export type InsertServiceRequest = z.infer<typeof insertServiceRequestSchema>;
+export type ServiceRequest = typeof serviceRequests.$inferSelect;
+
 // Articles managed via the admin CMS.
 // `content` holds sanitized HTML produced by the WYSIWYG editor.
 // `date` is kept as a string ("YYYY-MM-DD") to match the existing

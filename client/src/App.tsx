@@ -16,6 +16,7 @@ const ArticleDetailPage = lazy(() => import("@/pages/ArticleDetailPage"));
 const ResourcesPage = lazy(() => import("@/pages/ResourcesPage"));
 const ProgramsPage = lazy(() => import("@/pages/ProgramsPage"));
 const ProgramRegistrationPage = lazy(() => import("@/pages/ProgramRegistrationPage"));
+const ServicesPage = lazy(() => import("@/pages/ServicesPage"));
 const PublishingPolicyPage = lazy(() => import("@/pages/PublishingPolicyPage"));
 const PublishWithUsPage = lazy(() => import("@/pages/PublishWithUsPage"));
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -58,6 +59,7 @@ function Router() {
         <Route path="/resources" component={ResourcesPage} />
         <Route path="/programs" component={ProgramsPage} />
         <Route path="/programs/register" component={ProgramRegistrationPage} />
+        <Route path="/services" component={ServicesPage} />
         <Route path="/publishing-policy" component={PublishingPolicyPage} />
         <Route path="/publish-with-us" component={PublishWithUsPage} />
         {/* Admin CMS */}

@@ -122,6 +122,13 @@ export default function Footer() {
                     </a>
                   </Link>
                 </li>
+                <li>
+                  <Link href="/services">
+                    <a className="text-background/80 hover:text-background transition-colors" data-testid="footer-link-services">
+                      الخدمات
+                    </a>
+                  </Link>
+                </li>
               </ul>
             </div>
 

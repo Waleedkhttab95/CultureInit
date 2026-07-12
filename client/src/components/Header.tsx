@@ -55,6 +55,14 @@ export default function Header() {
                   البرامج
                 </a>
               </Link>
+              <Link href="/services">
+                <a
+                  className="text-foreground hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  data-testid="link-services"
+                >
+                  الخدمات
+                </a>
+              </Link>
               <Link href="/publish-with-us">
                 <a>
                   <Button size="sm" data-testid="button-contact">
@@ -113,6 +121,15 @@ export default function Header() {
                   data-testid="link-mobile-programs"
                 >
                   البرامج
+                </a>
+              </Link>
+              <Link href="/services">
+                <a
+                  className="text-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                  data-testid="link-mobile-services"
+                >
+                  الخدمات
                 </a>
               </Link>
               <Link href="/publish-with-us">
