@@ -18,17 +18,8 @@ import whiteIcon from "@assets/white-icon.png";
 import {
   Sparkles,
   BookOpen,
-  FileText,
-  ClipboardList,
-  NotebookPen,
-  Newspaper,
   Palette,
-  Layers,
-  BookMarked,
-  Briefcase,
-  Wrench,
   GraduationCap,
-  Presentation,
   Check,
   Send,
   User,
@@ -64,19 +55,19 @@ const PILLARS = [
 ] as const;
 
 const CONTENT_ITEMS = [
-  { text: "إعداد الدراسات والتقارير المعرفية", icon: FileText },
-  { text: "كتابة المقالات المتخصصة", icon: NotebookPen },
-  { text: "تطوير الأدلة والموارد المعرفية", icon: BookOpen },
-  { text: "توثيق التجارب والممارسات الثقافية", icon: ClipboardList },
-  { text: "إنتاج النشرات والمحتوى المهني المتخصص", icon: Newspaper },
+  { number: "01", text: "إعداد الدراسات والتقارير المعرفية" },
+  { number: "02", text: "كتابة المقالات المتخصصة" },
+  { number: "03", text: "تطوير الأدلة والموارد المعرفية" },
+  { number: "04", text: "توثيق التجارب والممارسات الثقافية" },
+  { number: "05", text: "إنتاج النشرات والمحتوى المهني المتخصص" },
 ];
 
 const DESIGN_ITEMS = [
-  { text: "تصميم البرامج والتجارب الثقافية", icon: Presentation },
-  { text: "تصميم المبادرات والحلول الثقافية", icon: Layers },
-  { text: "تصميم الأدلة المهنية والإجرائية", icon: BookMarked },
-  { text: "تصميم الحقائب التدريبية المتخصصة", icon: Briefcase },
-  { text: "تطوير النماذج والأدوات التشغيلية", icon: Wrench },
+  { number: "01", text: "تصميم البرامج والتجارب الثقافية" },
+  { number: "02", text: "تصميم المبادرات والحلول الثقافية" },
+  { number: "03", text: "تصميم الأدلة المهنية والإجرائية" },
+  { number: "04", text: "تصميم الحقائب التدريبية المتخصصة" },
+  { number: "05", text: "تطوير النماذج والأدوات التشغيلية" },
 ];
 
 const EDUCATION_ITEMS = [
@@ -324,13 +315,15 @@ export default function ServicesPage() {
                   تشمل الخدمة:
                 </h3>
                 <div className="space-y-3">
-                  {CONTENT_ITEMS.map((item, i) => (
+                  {CONTENT_ITEMS.map((item) => (
                     <div
-                      key={i}
+                      key={item.number}
                       className="flex items-center gap-4 p-4 rounded-xl bg-card border border-card-border hover:border-chart-3/40 hover:shadow-md transition-all duration-300"
                     >
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-3/10 flex items-center justify-center">
-                        <item.icon className="h-5 w-5 text-chart-3" />
+                        <span className="text-sm font-bold text-chart-3">
+                          {item.number}
+                        </span>
                       </div>
                       <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
                         {item.text}
@@ -358,13 +351,15 @@ export default function ServicesPage() {
                   تشمل الخدمة:
                 </h3>
                 <div className="space-y-3">
-                  {DESIGN_ITEMS.map((item, i) => (
+                  {DESIGN_ITEMS.map((item) => (
                     <div
-                      key={i}
+                      key={item.number}
                       className="flex items-center gap-4 p-4 rounded-xl bg-background border border-card-border hover:border-chart-4/40 hover:shadow-md transition-all duration-300"
                     >
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-4/10 flex items-center justify-center">
-                        <item.icon className="h-5 w-5 text-chart-4" />
+                        <span className="text-sm font-bold text-chart-4">
+                          {item.number}
+                        </span>
                       </div>
                       <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
                         {item.text}
