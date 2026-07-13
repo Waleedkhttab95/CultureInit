@@ -332,7 +332,7 @@ export default function ServicesPage() {
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-3/10 flex items-center justify-center">
                         <item.icon className="h-5 w-5 text-chart-3" />
                       </div>
-                      <p className="text-foreground font-medium leading-relaxed">
+                      <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
                         {item.text}
                       </p>
                     </div>
@@ -366,7 +366,7 @@ export default function ServicesPage() {
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-4/10 flex items-center justify-center">
                         <item.icon className="h-5 w-5 text-chart-4" />
                       </div>
-                      <p className="text-foreground font-medium leading-relaxed">
+                      <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
                         {item.text}
                       </p>
                     </div>
