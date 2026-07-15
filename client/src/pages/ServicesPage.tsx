@@ -314,20 +314,18 @@ export default function ServicesPage() {
                 <h3 className="text-lg font-bold text-foreground mb-5">
                   تشمل الخدمة:
                 </h3>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {CONTENT_ITEMS.map((item) => (
                     <div
                       key={item.number}
-                      className="flex items-center gap-4 p-4 rounded-xl bg-card border border-card-border hover:border-chart-3/40 hover:shadow-md transition-all duration-300"
+                      className="group p-6 rounded-xl bg-card border border-card-border hover:border-chart-3/40 hover:shadow-lg transition-all duration-300"
                     >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-3/10 flex items-center justify-center">
-                        <span className="text-sm font-bold text-chart-3">
-                          {item.number}
-                        </span>
-                      </div>
-                      <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
+                      <span className="block text-3xl font-bold text-chart-3/25 group-hover:text-chart-3/40 transition-colors mb-3">
+                        {item.number}
+                      </span>
+                      <h4 className="text-base font-bold text-foreground leading-relaxed">
                         {item.text}
-                      </p>
+                      </h4>
                     </div>
                   ))}
                 </div>
@@ -350,20 +348,18 @@ export default function ServicesPage() {
                 <h3 className="text-lg font-bold text-foreground mb-5">
                   تشمل الخدمة:
                 </h3>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {DESIGN_ITEMS.map((item) => (
                     <div
                       key={item.number}
-                      className="flex items-center gap-4 p-4 rounded-xl bg-background border border-card-border hover:border-chart-4/40 hover:shadow-md transition-all duration-300"
+                      className="group p-6 rounded-xl bg-background border border-card-border hover:border-chart-4/40 hover:shadow-lg transition-all duration-300"
                     >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-chart-4/10 flex items-center justify-center">
-                        <span className="text-sm font-bold text-chart-4">
-                          {item.number}
-                        </span>
-                      </div>
-                      <p className="flex-1 text-right text-foreground font-medium leading-relaxed">
+                      <span className="block text-3xl font-bold text-chart-4/25 group-hover:text-chart-4/40 transition-colors mb-3">
+                        {item.number}
+                      </span>
+                      <h4 className="text-base font-bold text-foreground leading-relaxed">
                         {item.text}
-                      </p>
+                      </h4>
                     </div>
                   ))}
                 </div>
