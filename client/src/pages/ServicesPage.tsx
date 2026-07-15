@@ -397,11 +397,11 @@ export default function ServicesPage() {
           }`}
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-14">
+            <div className="max-w-2xl mb-14">
               <span className="inline-flex items-center gap-2 text-sm font-bold text-chart-2 bg-chart-2/10 px-4 py-1.5 rounded-full mb-6">
                 الخدمة 03
               </span>
-              <div className="w-16 h-16 rounded-2xl bg-chart-2/10 flex items-center justify-center mb-6 mx-auto">
+              <div className="w-16 h-16 rounded-2xl bg-chart-2/10 flex items-center justify-center mb-6">
                 <GraduationCap className="h-8 w-8 text-chart-2" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-5">
@@ -416,7 +416,7 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            <h3 className="text-lg font-bold text-foreground text-center mb-8">
+            <h3 className="text-lg font-bold text-foreground mb-8">
               تشمل الخدمة:
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
