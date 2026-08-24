@@ -14,5 +14,13 @@
     "image": "/attached_assets/resource2.png",
     "file": "/attached_assets/volunteer-management-guide.pdf",
     "type": "pdf"
+  },
+  {
+    "id": "ai-in-cultural-sector-guide",
+    "title": "الذكاء الاصطناعي في القطاع الثقافي",
+    "description": "يقدم هذا الدليل إطارًا معرفيًّا ومهنيًّا يساعد الممارسين الثقافيين على فهم الذكاء الاصطناعي واستكشاف فرص الاستفادة منه في عملهم. ويستعرض التقنيات والمفاهيم الأساسية، ويضع مبادئ الاستخدام المسؤول، وتطبيقات الذكاء الاصطناعي في ستة عشر قطاعًا ثقافيًا، مدعومة بالأمثلة وحالات الاستخدام التي تقرّب إمكاناته من واقع الممارسة، ويرسم خارطة طريق للفاعل الثقافي في تطبيق الذكاء الاصطناعي على الواقع الثقافي.",
+    "image": "/attached_assets/ai-in-cultural-sector-guide-thumbnail.jpeg",
+    "file": "/attached_assets/ai-in-cultural-sector-guide.pdf",
+    "type": "pdf"
   }
 ]
