@@ -86,23 +86,23 @@ const TOOLS = [
 ];
 
 const TIMELINE_STEPS = [
-  { step: 1, phase: "التسجيل", date: "1 مارس – 4 أبريل" },
-  { step: 2, phase: "الفرز", date: "5 أبريل – 10 أبريل" },
-  { step: 3, phase: "المقابلات", date: "12 أبريل – 23 أبريل" },
-  { step: 4, phase: "إعلان المقبولين", date: "26 أبريل" },
-  { step: 5, phase: "مرحلة المقررات", date: "مايو – يونيو", hasCourses: true },
-  { step: 6, phase: "تطوير مشروع التخرج", date: "يوليو" },
-  { step: 7, phase: "التحكيم والتخرج", date: "أغسطس" },
+  { step: 1, phase: "فتح التسجيل", date: "8 سبتمبر" },
+  { step: 2, phase: "إغلاق التسجيل", date: "22 سبتمبر" },
+  { step: 3, phase: "فرز الطلبات والمقابلات", date: "22 سبتمبر – 6 أكتوبر" },
+  { step: 4, phase: "استكمال السداد وتأكيد القبول", date: "7 – 12 أكتوبر" },
+  { step: 5, phase: "مرحلة المقررات", date: "أكتوبر – نوفمبر", hasCourses: true },
+  { step: 6, phase: "مناقشة مشاريع التخرج", date: "12 ديسمبر" },
+  { step: 7, phase: "الحفل الختامي", date: "30 ديسمبر" },
 ];
 
 const COURSES_SCHEDULE = [
-  { name: "مدخل الإدارة الثقافية", date: "8-9 مايو" },
-  { name: "اقتصاديات الثقافة", date: "15-16 مايو" },
-  { name: "علم النفس الثقافي", date: "22-23 مايو" },
-  { name: "إدارة المشاريع الثقافية", date: "5-6 يونيو" },
-  { name: "تسويق وتمويل الثقافة", date: "12-13 يونيو" },
-  { name: "الوساطة الثقافية", date: "19-20 يونيو" },
-  { name: "إدارة المواهب الثقافية", date: "26-27 يونيو" },
+  { name: "مدخل إلى الإدارة الثقافية", instructor: "طارق الخواجي", date: "16-17 أكتوبر" },
+  { name: "اقتصاديات الثقافة", instructor: "د. علي الحازمي", date: "23-24 أكتوبر" },
+  { name: "الوساطة الثقافية", instructor: "عبد الرحمن لاهي", date: "30-31 أكتوبر" },
+  { name: "إدارة المشاريع الثقافية", instructor: "عبدالكريم الخليفي", date: "6-7 نوفمبر" },
+  { name: "تسويق وتمويل الثقافة", instructor: "تركي عبدالرحمن الخلف", date: "13-14 نوفمبر" },
+  { name: "علم النفس الثقافي", instructor: "د. هيلة السليم", date: "20-21 نوفمبر" },
+  { name: "إدارة المواهب الثقافية", instructor: "د. علا العلوان", date: "27-28 نوفمبر" },
 ];
 
 const AUDIENCE = [
@@ -193,7 +193,7 @@ export default function ProgramsPage() {
             <div className="inline-block mb-8 animate-fade-in-down">
               <span className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-medium bg-primary/15 text-primary border border-primary/30 backdrop-blur-sm">
                 <Sparkles className="h-4 w-4 ml-2" />
-                الدفعة الرائدة – أول شهادة مهنية متخصصة في الإدارة الثقافية في
+                الدفعة الثانية – أول شهادة مهنية متخصصة في الإدارة الثقافية في
                 المملكة
               </span>
             </div>
@@ -245,10 +245,10 @@ export default function ProgramsPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:360ms]">
               <Button
                 size="lg"
-                disabled
-                className="h-14 px-8 text-lg font-semibold bg-white/20 text-white/70 rounded-xl cursor-not-allowed"
+                className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                asChild
               >
-                تم إغلاق التسجيل
+                <a href="/programs/register">قدّم طلبك الآن</a>
               </Button>
               <Button
                 variant="outline"
@@ -481,7 +481,8 @@ export default function ProgramsPage() {
                             </caption>
                             <thead>
                               <tr className="bg-slate text-slate-foreground">
-                                <th scope="col" className="py-3 px-4 text-right font-semibold">المادة</th>
+                                <th scope="col" className="py-3 px-4 text-right font-semibold">المقرر</th>
+                                <th scope="col" className="py-3 px-4 text-right font-semibold">الأستاذ</th>
                                 <th scope="col" className="py-3 px-4 text-right font-semibold">التاريخ</th>
                               </tr>
                             </thead>
@@ -493,6 +494,9 @@ export default function ProgramsPage() {
                                 >
                                   <td className="py-3 px-4 text-foreground font-medium">
                                     {course.name}
+                                  </td>
+                                  <td className="py-3 px-4 text-muted-foreground">
+                                    {course.instructor}
                                   </td>
                                   <td className="py-3 px-4 text-muted-foreground">
                                     {idx === 0 && (
@@ -523,7 +527,7 @@ export default function ProgramsPage() {
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-slate/5 border border-slate/10">
                 <Clock className="h-5 w-5 text-slate" />
                 <span className="text-foreground font-semibold">
-                  مدة البرنامج: مايو – أغسطس 2026
+                  مدة البرنامج: أكتوبر – ديسمبر 2026
                 </span>
               </div>
             </div>
@@ -608,17 +612,20 @@ export default function ProgramsPage() {
         >
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              تم إغلاق التسجيل
+              قدّم طلبك الآن
             </h2>
             <p className="text-white/70 mb-10 text-lg">
-              شكراً لاهتمامكم، تم إغلاق باب التسجيل في البرنامج. ترقبوا البرامج القادمة
+              سجّل الآن وانضم للدفعة الثانية من قادة الإدارة الثقافية
             </p>
             <Button
               size="lg"
-              disabled
-              className="h-14 px-12 text-lg font-semibold bg-white/20 text-white/70 rounded-xl cursor-not-allowed"
+              className="h-14 px-12 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              asChild
             >
-              التسجيل مغلق
+              <a href="/programs/register">
+                <Send className="h-5 w-5" />
+                سجّل الآن
+              </a>
             </Button>
           </div>
         </section>
