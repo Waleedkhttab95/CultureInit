@@ -90,7 +90,7 @@ const TIMELINE_STEPS = [
   { step: 2, phase: "إغلاق التسجيل", date: "22 سبتمبر" },
   { step: 3, phase: "فرز الطلبات والمقابلات", date: "22 سبتمبر – 6 أكتوبر" },
   { step: 4, phase: "استكمال السداد وتأكيد القبول", date: "7 – 12 أكتوبر" },
-  { step: 5, phase: "مرحلة المقررات", date: "أكتوبر – نوفمبر", hasCourses: true },
+  { step: 5, phase: "مرحلة المقررات", date: "أكتوبر – نوفمبر" },
   { step: 6, phase: "مناقشة مشاريع التخرج", date: "12 ديسمبر" },
   { step: 7, phase: "الحفل الختامي", date: "30 ديسمبر" },
 ];
@@ -470,55 +470,56 @@ export default function ProgramsPage() {
                         </span>
                       </div>
                     </div>
-
-                    {/* Courses table for step 5 */}
-                    {item.hasCourses && (
-                      <div className="mt-6 mr-14 sm:mr-20">
-                        <div className="overflow-x-auto rounded-xl border border-card-border">
-                          <table className="w-full text-sm">
-                            <caption className="sr-only">
-                              جدول مواد البرنامج ومواعيدها
-                            </caption>
-                            <thead>
-                              <tr className="bg-slate text-slate-foreground">
-                                <th scope="col" className="py-3 px-4 text-right font-semibold">المقرر</th>
-                                <th scope="col" className="py-3 px-4 text-right font-semibold">الأستاذ</th>
-                                <th scope="col" className="py-3 px-4 text-right font-semibold">التاريخ</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {COURSES_SCHEDULE.map((course, idx) => (
-                                <tr
-                                  key={idx}
-                                  className={idx % 2 === 0 ? "bg-background" : "bg-slate/[0.03]"}
-                                >
-                                  <td className="py-3 px-4 text-foreground font-medium">
-                                    {course.name}
-                                  </td>
-                                  <td className="py-3 px-4 text-muted-foreground">
-                                    {course.instructor}
-                                  </td>
-                                  <td className="py-3 px-4 text-muted-foreground">
-                                    {idx === 0 && (
-                                      <span className="block text-primary text-xs font-medium mb-1">
-                                        الجمعة والسبت
-                                      </span>
-                                    )}
-                                    {course.date}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 text-primary" />
-                          <span>حضوريًا في الرياض</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Courses schedule */}
+            <div className="mt-14">
+              <h3 className="text-center text-xl sm:text-2xl font-bold text-foreground mb-6">
+                جدول المقررات
+              </h3>
+              <div className="overflow-x-auto rounded-xl border border-card-border">
+                <table className="w-full text-sm min-w-[560px]">
+                  <caption className="sr-only">
+                    جدول مواد البرنامج والأساتذة ومواعيدها
+                  </caption>
+                  <thead>
+                    <tr className="bg-slate text-slate-foreground">
+                      <th scope="col" className="py-3 px-4 text-right font-semibold">المقرر</th>
+                      <th scope="col" className="py-3 px-4 text-right font-semibold">الأستاذ</th>
+                      <th scope="col" className="py-3 px-4 text-right font-semibold whitespace-nowrap">التاريخ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {COURSES_SCHEDULE.map((course, idx) => (
+                      <tr
+                        key={idx}
+                        className={idx % 2 === 0 ? "bg-background" : "bg-slate/[0.03]"}
+                      >
+                        <td className="py-3 px-4 text-foreground font-medium">
+                          {course.name}
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">
+                          {course.instructor}
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground whitespace-nowrap">
+                          {idx === 0 && (
+                            <span className="block text-primary text-xs font-medium mb-1">
+                              الجمعة والسبت
+                            </span>
+                          )}
+                          {course.date}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span>حضوريًا في الرياض</span>
               </div>
             </div>
 
