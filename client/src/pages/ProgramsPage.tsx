@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import whiteIcon from "@assets/white-icon.png";
-import pdfFile from "@assets/program-brochure.pdf";
+import pdfFile from "@assets/program-guide-batch-2.pdf";
 import pearsonLogo from "@assets/pearson-logo.jpg";
 import cmprBadge from "@assets/cmp-accreditation-logo.png";
 import aljaziraLogo from "@assets/aljazira-bank-logo.jpeg";
-import alrajhiLogo from "@assets/alrajhi-humanitarian-logo.png";
+import kaplLogo from "@assets/kapl-library-logo.webp";
 import {
   BookOpen,
   Award,
@@ -257,7 +257,7 @@ export default function ProgramsPage() {
                 className="h-14 px-8 text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 rounded-xl transition-all duration-300"
                 asChild
               >
-                <a href={pdfFile} download="دليل_ممارس_الإدارة_الثقافية.pdf">
+                <a href={pdfFile} download="دليل الدفعة الثانية لبرنامج ممارس الإدارة الثقافية.pdf">
                   <Download className="h-5 w-5" />
                   تحميل الدليل التعريفي
                 </a>
@@ -596,12 +596,12 @@ export default function ProgramsPage() {
                 />
               </div>
               <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-semibold text-primary">الشريك الماسي</span>
+                <span className="text-sm font-semibold text-primary">شريك الاستضافة</span>
                 <div className="bg-white rounded-2xl px-6 py-4 shadow-sm border border-slate/10">
                   <img
-                    src={alrajhiLogo}
-                    alt="الراجحي الإنسانية"
-                    className="h-10 sm:h-12 w-auto"
+                    src={kaplLogo}
+                    alt="مكتبة الملك عبدالعزيز العامة"
+                    className="h-12 sm:h-16 w-auto"
                     loading="lazy"
                   />
                 </div>

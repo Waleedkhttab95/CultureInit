@@ -79,6 +79,39 @@ export async function isGoogleSheetsConfigured(): Promise<boolean> {
   return !!(process.env.GOOGLE_SERVICE_ACCOUNT_KEY && process.env.GOOGLE_SHEET_ID);
 }
 
+// Which tab inside the spreadsheet receives new program registrations.
+// Batch 2 onward is written to a dedicated tab so batch 1 data stays intact.
+function getSheetTab(): string {
+  return process.env.GOOGLE_SHEET_TAB || "الدفعة الثانية";
+}
+
+// A1 notation requires the tab name wrapped in single quotes when it
+// contains spaces or non-Latin characters.
+function tabRange(tab: string, cells: string): string {
+  return `'${tab.replace(/'/g, "''")}'!${cells}`;
+}
+
+// Creates the target tab if the spreadsheet does not have it yet.
+async function ensureSheetTabExists(
+  sheets: ReturnType<typeof google.sheets>,
+  spreadsheetId: string,
+  tab: string,
+): Promise<void> {
+  const meta = await sheets.spreadsheets.get({ spreadsheetId });
+  const exists = (meta.data.sheets || []).some(
+    (s) => s.properties?.title === tab,
+  );
+  if (exists) return;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [{ addSheet: { properties: { title: tab } } }],
+    },
+  });
+  console.log(`Created Google Sheet tab "${tab}"`);
+}
+
 export async function appendRegistrationToSheet(
   data: InsertProgramRegistration,
   resumeUrl?: string
@@ -149,15 +182,17 @@ export async function appendRegistrationToSheet(
   ];
 
   try {
+    const tab = getSheetTab();
+    await ensureSheetTabExists(sheets, spreadsheetId, tab);
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: "Sheet1!A:Y",
+      range: tabRange(tab, "A:Y"),
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [row],
       },
     });
-    console.log("Registration appended to Google Sheet");
+    console.log(`Registration appended to Google Sheet tab "${tab}"`);
     return true;
   } catch (err) {
     console.error("Failed to append to Google Sheet:", err);
@@ -172,11 +207,14 @@ export async function initSheetHeaders(): Promise<void> {
   if (!auth || !spreadsheetId) return;
 
   const sheets = google.sheets({ version: "v4", auth });
+  const tab = getSheetTab();
 
   try {
+    await ensureSheetTabExists(sheets, spreadsheetId, tab);
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A1:Y1",
+      range: tabRange(tab, "A1:Y1"),
     });
 
     if (response.data.values && response.data.values.length > 0) return;
@@ -211,13 +249,13 @@ export async function initSheetHeaders(): Promise<void> {
 
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: "Sheet1!A1:Y1",
+      range: tabRange(tab, "A1:Y1"),
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [headers],
       },
     });
-    console.log("Google Sheet headers initialized");
+    console.log(`Google Sheet headers initialized on tab "${tab}"`);
   } catch (err) {
     console.error("Failed to init sheet headers:", err);
   }
