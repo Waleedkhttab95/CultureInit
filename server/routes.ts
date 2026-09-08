@@ -27,7 +27,11 @@ import {
   deleteArticle,
 } from "./article-store";
 
-const uploadsDir = "/uploads";
+// CVs and editor images are written here. On Render this must point at a
+// mounted persistent disk (set UPLOADS_DIR to the disk's mount path), otherwise
+// files are lost on every restart/deploy. Defaults to /uploads for production
+// and can be overridden locally (e.g. ./uploads) for development.
+export const uploadsDir = process.env.UPLOADS_DIR || "/uploads";
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }

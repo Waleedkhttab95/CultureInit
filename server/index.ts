@@ -2,7 +2,7 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import helmet from "helmet";
-import { registerRoutes } from "./routes";
+import { registerRoutes, uploadsDir } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { buildSessionMiddleware } from "./auth";
@@ -70,10 +70,10 @@ app.use((req, res, next) => {
     express.static(path.resolve(import.meta.dirname, "..", "attached_assets")),
   );
 
-  // Serve uploaded CVs/resumes from persistent disk
+  // Serve uploaded CVs/resumes from the persistent disk (see uploadsDir)
   app.use(
     "/uploads",
-    express.static("/uploads"),
+    express.static(uploadsDir),
   );
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
