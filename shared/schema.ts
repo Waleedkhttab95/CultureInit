@@ -137,7 +137,7 @@ export const insertProgramRegistrationSchema = z.object({
   gapQuestion: z.string().min(10, "الإجابة مطلوبة"),
   initiativeQuestion: z.string().min(10, "الإجابة مطلوبة"),
   experienceQuestion: z.string().min(10, "الإجابة مطلوبة"),
-  resumeFileName: z.string().optional(),
+  resumeFileName: z.string().min(1, "السيرة الذاتية مطلوبة"),
 });
 
 export type InsertProgramRegistration = z.infer<typeof insertProgramRegistrationSchema>;

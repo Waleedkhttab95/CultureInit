@@ -118,6 +118,10 @@ export default function ProgramRegistrationPage() {
     if (formData.email && !emailRegex.test(formData.email.trim())) {
       missing.push("البريد الإلكتروني (صيغة غير صحيحة)");
     }
+    // Resume is required
+    if (!resumeFile) {
+      missing.push("السيرة الذاتية");
+    }
     return missing;
   };
 
@@ -580,7 +584,7 @@ export default function ProgramRegistrationPage() {
                 <div className="space-y-2">
                   <Label htmlFor="resume" className={labelClass}>
                     <Upload className="h-4 w-4 text-primary" />
-                    أرفق سيرتك الذاتية
+                    أرفق سيرتك الذاتية <span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
                     <input

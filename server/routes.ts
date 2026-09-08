@@ -724,11 +724,16 @@ ${message}
       const body = { ...req.body };
       let resumeUrl: string | undefined;
 
-      if (req.file) {
-        body.resumeFileName = req.file.filename;
-        const baseUrl = `${req.protocol}://${req.get("host")}`;
-        resumeUrl = `${baseUrl}/uploads/${req.file.filename}`;
+      if (!req.file) {
+        return res.status(400).json({
+          error: "Validation failed",
+          message: "السيرة الذاتية مطلوبة (PDF أو DOC)",
+        });
       }
+
+      body.resumeFileName = req.file.filename;
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      resumeUrl = `${baseUrl}/uploads/${req.file.filename}`;
 
       const result = insertProgramRegistrationSchema.safeParse(body);
 
