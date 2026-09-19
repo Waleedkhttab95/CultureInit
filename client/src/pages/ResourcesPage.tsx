@@ -1,25 +1,38 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { useEffect, useState, useRef } from "react";
 import whiteIcon from "@assets/white-icon.png";
 import resourcesIcon from "@assets/Asset7@4x.png";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Download, FileText, User, Mail, Check } from "lucide-react";
+import { Download } from "lucide-react";
+import { Link } from "wouter";
+import ResourceDownloadDialog from "@/components/ResourceDownloadDialog";
 import resourcesData from "@/data/resources.json";
-import { useToast } from "@/hooks/use-toast";
+import { PAGES } from "@shared/seo";
+import { useCopy, resourceHref } from "@/i18n/locale";
+
+const COPY = {
+  ar: {
+    title: "الموارد",
+    intro: PAGES.resources.meta.ar.description,
+    arabicNote: "",
+    download: "تحميل الدليل",
+  },
+  en: {
+    title: "Resources",
+    intro: PAGES.resources.meta.en.description,
+    arabicNote: "Our guides are published in Arabic.",
+    download: "Download the guide",
+  },
+};
 
 export default function ResourcesPage() {
-  const { toast } = useToast();
+  const c = useCopy(COPY);
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '' });
   const [activeResource, setActiveResource] = useState<typeof resourcesData[number] | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     // Respect reduced motion
@@ -51,59 +64,6 @@ export default function ResourcesPage() {
     };
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch('/api/pdf/download-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit request');
-      }
-
-      setIsSubmitted(true);
-
-      if (activeResource) {
-        const link = document.createElement('a');
-        link.href = activeResource.file;
-        link.download = `${activeResource.title.replace(/\s+/g, '_')}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      setTimeout(() => {
-        setIsDialogOpen(false);
-        setIsSubmitted(false);
-        setFormData({ name: '', email: '' });
-        setActiveResource(null);
-      }, 2000);
-    } catch (error) {
-      toast({
-        title: "خطأ",
-        description: 'حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.',
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDownloadClick = (resource: typeof resourcesData[number]) => {
     setActiveResource(resource);
     setIsDialogOpen(true);
@@ -111,6 +71,7 @@ export default function ResourcesPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
+      <SEO page="resources" />
       <Header />
       <main
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -139,12 +100,13 @@ export default function ResourcesPage() {
 
         {/* White logo watermark as background */}
         <div
-          className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start pl-8 sm:pl-12 lg:pl-20"
+          className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start pe-8 sm:pe-12 lg:pe-20"
           style={{ transform: `translateY(${parallaxY}px)` }}
         >
           <img
             src={whiteIcon}
-            alt="Background watermark icon"
+            alt=""
+            aria-hidden="true"
             className="select-none opacity-10 mix-blend-soft-light w-[35vw] max-w-[450px] drop-shadow-[0_0_24px_rgba(255,255,255,0.25)] animate-fade-in-down-soft [animation-delay:150ms] motion-reduce:animate-none"
           />
         </div>
@@ -155,7 +117,8 @@ export default function ResourcesPage() {
             <div className="w-24 h-24 rounded-full bg-white/15 p-5 shadow-md">
               <img
                 src={resourcesIcon}
-                alt="الموارد"
+                alt=""
+                aria-hidden="true"
                 className="w-full h-full object-contain"
               />
             </div>
@@ -163,10 +126,12 @@ export default function ResourcesPage() {
 
           {/* Resources Title */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            الموارد
+            {c.title}
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:180ms]">
-          أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.          </p>
+            {c.intro}
+            {c.arabicNote && <span className="mt-2 block text-base text-white/70">{c.arabicNote}</span>}
+          </p>
 
           {/* Resource Cards */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto animate-fade-in-up [animation-delay:240ms]">
@@ -181,10 +146,15 @@ export default function ResourcesPage() {
                   />
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                  <h3 className="text-xl font-bold text-white mb-4 text-right">
-                    {resource.title}
+                  <h3 lang="ar" dir="rtl" className="text-xl font-bold text-white mb-4 text-start">
+                    <Link
+                      href={resourceHref(resource.id)}
+                      className="hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 rounded-sm"
+                    >
+                      {resource.title}
+                    </Link>
                   </h3>
-                  <p className="text-white/90 text-sm leading-relaxed text-right mb-6 flex-1">
+                  <p lang="ar" dir="rtl" className="text-white/90 text-sm leading-relaxed text-start mb-6 flex-1">
                     {resource.description}
                   </p>
                   <div className="flex justify-center">
@@ -193,8 +163,8 @@ export default function ResourcesPage() {
                       size="lg"
                       className="bg-white text-primary hover:bg-white/90 font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     >
-                      <Download className="ml-2 h-5 w-5" />
-                      تحميل الدليل
+                      <Download className="h-5 w-5" />
+                      {c.download}
                     </Button>
                   </div>
                 </div>
@@ -206,90 +176,11 @@ export default function ResourcesPage() {
       </main>
       <Footer />
 
-      {/* Download Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">
-              تحميل {activeResource?.title ?? ''}
-            </DialogTitle>
-            <DialogDescription className="text-center text-base">
-              يرجى تعبئة البيانات التالية لتحميل الدليل
-            </DialogDescription>
-          </DialogHeader>
-
-          {isSubmitted ? (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-chart-2/10 rounded-full mb-4 motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:fade-in motion-safe:duration-500">
-                <Check className="h-10 w-10 text-chart-2" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-2">
-                جاري تحميل الدليل...
-              </h3>
-              <p className="text-muted-foreground">
-                شكراً لك!
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <User className="h-4 w-4 text-primary" />
-                  الاسم الكامل
-                </Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="أدخل اسمك الكامل"
-                  required
-                  className="h-12 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-primary" />
-                  البريد الإلكتروني
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="أدخل بريدك الإلكتروني"
-                  required
-                  className="h-12 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-xl shadow-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    جاري المعالجة...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Download className="h-5 w-5" />
-                    تحميل الدليل
-                  </div>
-                )}
-              </Button>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ResourceDownloadDialog
+        resource={activeResource}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </div>
   );
 }

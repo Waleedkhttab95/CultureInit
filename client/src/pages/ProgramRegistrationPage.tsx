@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useLocation } from "wouter";
+import { useLocale, useT } from "@/i18n/locale";
 import {
   User,
   Mail,
@@ -29,6 +32,89 @@ import {
   Calendar,
 } from "lucide-react";
 
+const EN: Record<string, string> = {
+  "تم إرسال طلبك بنجاح!": "Your application was submitted successfully!",
+  "شكراً لك، سنراجع طلبك ونتواصل معك قريباً": "Thank you — we will review your application and contact you soon",
+  "العودة لصفحة البرنامج": "Back to the program page",
+  "نموذج التسجيل": "Registration form",
+  "برنامج ممارس الإدارة الثقافية": "Cultural Management Practitioner Program",
+  "يرجى تعبئة الحقول التالية:": "Please complete the following fields:",
+  "القسم الأول: البيانات الأساسية": "Section 1: Basic information",
+  "الاسم الرباعي": "Full name (four parts)",
+  "رقم الهوية / الإقامة": "National ID / Iqama number",
+  "الجنس": "Gender",
+  "ذكر": "Male",
+  "أنثى": "Female",
+  "رقم الجوال": "Mobile number",
+  "البريد الإلكتروني": "Email address",
+  "المدينة": "City",
+  "العمر": "Age",
+  "الحساب المهني (LinkedIn إن وجد)": "Professional profile (LinkedIn, if available)",
+  "القسم الثاني: الخلفية التعليمية والمهنية": "Section 2: Educational and professional background",
+  "أعلى مؤهل علمي": "Highest academic qualification",
+  "بكالوريوس": "Bachelor's degree",
+  "ماجستير": "Master's degree",
+  "دكتوراه": "Doctorate",
+  "أخرى": "Other",
+  "التخصص": "Major",
+  "جهة الدراسة": "Institution of study",
+  "جهة العمل": "Employer",
+  "نوع جهة العمل": "Employer type",
+  "حكومية": "Government",
+  "خاصة": "Private",
+  "غير ربحية": "Non-profit",
+  "مستقل": "Freelancer",
+  "عدد سنوات الخبرة": "Years of experience",
+  "المسمى الوظيفي الحالي": "Current job title",
+  "أرفق سيرتك الذاتية": "Attach your CV",
+  "القسم الثالث: الخبرة في القطاع الثقافي": "Section 3: Experience in the cultural sector",
+  "هل تعمل حاليًا في القطاع الثقافي؟": "Do you currently work in the cultural sector?",
+  "نعم": "Yes",
+  "لا": "No",
+  "بشكل جزئي": "Partially",
+  "صف خبرتك في المجال الثقافي (حد أقصى 300 كلمة)": "Describe your experience in the cultural field (maximum 300 words)",
+  "القسم الرابع: الالتزام والاستعداد": "Section 4: Commitment and readiness",
+  "هل يمكنك الالتزام بحضور اللقاءات كاملة؟": "Can you commit to attending all of the sessions?",
+  "هل لديك القدرة على تصميم مشروع تخرج تطبيقي خلال مدة البرنامج؟": "Are you able to design an applied graduation project within the program's duration?",
+  "هل حصلت على موافقة جهة عملك (إن لزم)؟": "Have you obtained your employer's approval (if required)?",
+  "لا ينطبق": "Not applicable",
+  "القسم الخامس: الأسئلة التقييمية": "Section 5: Assessment questions",
+  "برأيك، ما أبرز فجوة في إدارة المشاريع الثقافية في المملكة اليوم؟": "In your view, what is the most significant gap in managing cultural projects in the Kingdom today?",
+  "لو طُلب منك تطوير مبادرة ثقافية مستدامة، ما أول 3 عناصر ستبني عليها خطتك؟": "If you were asked to develop a sustainable cultural initiative, what are the first 3 elements you would build your plan on?",
+  "صف تجربة فشل أو نجاح مهني مررت بها، وماذا تعلمت منها؟": "Describe a professional failure or success you experienced, and what you learned from it.",
+  "جاري الإرسال...": "Sending...",
+  "إرسال الطلب": "Submit request",
+  "أدخل اسمك الرباعي": "Enter your full name (four parts)",
+  "أدخل رقم الهوية أو الإقامة": "Enter your national ID or Iqama number",
+  "أدخل بريدك الإلكتروني": "Enter your email address",
+  "أدخل مدينتك": "Enter your city",
+  "أدخل عمرك": "Enter your age",
+  "اختر المؤهل العلمي": "Select your qualification",
+  "أدخل تخصصك": "Enter your major",
+  "أدخل جهة دراستك": "Enter your institution of study",
+  "أدخل جهة عملك": "Enter your employer",
+  "اختر نوع الجهة": "Select the employer type",
+  "عدد السنوات": "Number of years",
+  "أدخل مسماك الوظيفي": "Enter your job title",
+  "صف خبرتك ومشاركاتك في القطاع الثقافي...": "Describe your experience and involvement in the cultural sector...",
+  "اكتب إجابتك هنا...": "Write your answer here...",
+  "المؤهل العلمي": "Academic qualification",
+  "المسمى الوظيفي": "Job title",
+  "هل تعمل في القطاع الثقافي": "Works in the cultural sector",
+  "وصف الخبرة الثقافية": "Description of cultural experience",
+  "الالتزام بحضور اللقاءات": "Commitment to attend the sessions",
+  "القدرة على تصميم مشروع التخرج": "Ability to design the graduation project",
+  "موافقة جهة العمل": "Employer approval",
+  "سؤال فجوة إدارة المشاريع الثقافية": "Question: gap in cultural project management",
+  "سؤال المبادرة الثقافية المستدامة": "Question: sustainable cultural initiative",
+  "سؤال تجربة الفشل أو النجاح": "Question: experience of failure or success",
+  "البريد الإلكتروني (صيغة غير صحيحة)": "Email address (invalid format)",
+  "السيرة الذاتية": "CV",
+  "حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.": "Something went wrong while sending your details. Please try again.",
+  "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.": "A connection error occurred. Please try again.",
+  "اضغط لرفع الملف (PDF, DOC)": "Click to upload your file (PDF, DOC)",
+};
+
 const inputClass =
   "h-12 text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl";
 const labelClass =
@@ -39,6 +125,9 @@ const selectTriggerClass =
   "h-12 text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl [&>span]:text-foreground data-[placeholder]:text-muted-foreground";
 
 export default function ProgramRegistrationPage() {
+  const t = useT(EN);
+  const { isEn, dir } = useLocale();
+  const [, navigate] = useLocation();
   const [formData, setFormData] = useState({
     fullName: "",
     idNumber: "",
@@ -70,28 +159,28 @@ export default function ProgramRegistrationPage() {
   const [errors, setErrors] = useState<string[]>([]);
 
   const FIELD_LABELS: Record<string, string> = {
-    fullName: "الاسم الرباعي",
-    idNumber: "رقم الهوية / الإقامة",
-    gender: "الجنس",
-    phone: "رقم الجوال",
-    email: "البريد الإلكتروني",
-    city: "المدينة",
-    age: "العمر",
-    qualification: "المؤهل العلمي",
-    major: "التخصص",
-    studyInstitution: "جهة الدراسة",
-    organization: "جهة العمل",
-    orgType: "نوع جهة العمل",
-    yearsOfExperience: "عدد سنوات الخبرة",
-    jobTitle: "المسمى الوظيفي",
-    worksInCulture: "هل تعمل في القطاع الثقافي",
-    cultureExperience: "وصف الخبرة الثقافية",
-    canAttendAll: "الالتزام بحضور اللقاءات",
-    canDesignProject: "القدرة على تصميم مشروع التخرج",
-    hasEmployerApproval: "موافقة جهة العمل",
-    gapQuestion: "سؤال فجوة إدارة المشاريع الثقافية",
-    initiativeQuestion: "سؤال المبادرة الثقافية المستدامة",
-    experienceQuestion: "سؤال تجربة الفشل أو النجاح",
+    fullName: t("الاسم الرباعي"),
+    idNumber: t("رقم الهوية / الإقامة"),
+    gender: t("الجنس"),
+    phone: t("رقم الجوال"),
+    email: t("البريد الإلكتروني"),
+    city: t("المدينة"),
+    age: t("العمر"),
+    qualification: t("المؤهل العلمي"),
+    major: t("التخصص"),
+    studyInstitution: t("جهة الدراسة"),
+    organization: t("جهة العمل"),
+    orgType: t("نوع جهة العمل"),
+    yearsOfExperience: t("عدد سنوات الخبرة"),
+    jobTitle: t("المسمى الوظيفي"),
+    worksInCulture: t("هل تعمل في القطاع الثقافي"),
+    cultureExperience: t("وصف الخبرة الثقافية"),
+    canAttendAll: t("الالتزام بحضور اللقاءات"),
+    canDesignProject: t("القدرة على تصميم مشروع التخرج"),
+    hasEmployerApproval: t("موافقة جهة العمل"),
+    gapQuestion: t("سؤال فجوة إدارة المشاريع الثقافية"),
+    initiativeQuestion: t("سؤال المبادرة الثقافية المستدامة"),
+    experienceQuestion: t("سؤال تجربة الفشل أو النجاح"),
   };
 
   const validateForm = (): string[] => {
@@ -109,18 +198,22 @@ export default function ProgramRegistrationPage() {
         if (value.length === 0) {
           missing.push(FIELD_LABELS[field] || field);
         } else {
-          missing.push(`${FIELD_LABELS[field] || field} (يجب ألا يقل عن ${minLen} أحرف)`);
+          missing.push(
+            isEn
+              ? `${FIELD_LABELS[field] || field} (must be at least ${minLen} characters)`
+              : `${FIELD_LABELS[field] || field} (يجب ألا يقل عن ${minLen} أحرف)`,
+          );
         }
       }
     }
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (formData.email && !emailRegex.test(formData.email.trim())) {
-      missing.push("البريد الإلكتروني (صيغة غير صحيحة)");
+      missing.push(t("البريد الإلكتروني (صيغة غير صحيحة)"));
     }
     // Resume is required
     if (!resumeFile) {
-      missing.push("السيرة الذاتية");
+      missing.push(t("السيرة الذاتية"));
     }
     return missing;
   };
@@ -172,12 +265,12 @@ export default function ProgramRegistrationPage() {
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        setErrors(["حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى."]);
+        setErrors([t("حدث خطأ أثناء إرسال البيانات. يرجى المحاولة مرة أخرى.")]);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      setErrors(["حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى."]);
+      setErrors([t("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.")]);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
@@ -194,16 +287,16 @@ export default function ProgramRegistrationPage() {
               <Check className="h-12 w-12 text-chart-2" />
             </div>
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              تم إرسال طلبك بنجاح!
+              {t("تم إرسال طلبك بنجاح!")}
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
-              شكراً لك، سنراجع طلبك ونتواصل معك قريباً
+              {t("شكراً لك، سنراجع طلبك ونتواصل معك قريباً")}
             </p>
             <Button
-              onClick={() => (window.location.href = "/programs")}
+              onClick={() => navigate("/programs")}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl px-8 h-12"
             >
-              العودة لصفحة البرنامج
+              {t("العودة لصفحة البرنامج")}
             </Button>
           </div>
         </main>
@@ -214,16 +307,17 @@ export default function ProgramRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
+      <SEO page="programRegister" />
       <Header />
       <main className="flex-1 py-16 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              نموذج التسجيل
+              {t("نموذج التسجيل")}
             </h1>
             <p className="text-muted-foreground text-lg">
-              برنامج ممارس الإدارة الثقافية
+              {t("برنامج ممارس الإدارة الثقافية")}
             </p>
           </div>
 
@@ -235,7 +329,7 @@ export default function ProgramRegistrationPage() {
               className="bg-destructive/10 border border-destructive/30 rounded-2xl p-6 mb-8 animate-in fade-in slide-in-from-top-2"
             >
               <h4 className="text-destructive font-bold text-lg mb-3">
-                يرجى تعبئة الحقول التالية:
+                {t("يرجى تعبئة الحقول التالية:")}
               </h4>
               <ul className="space-y-1.5 list-disc list-inside">
                 {errors.map((error, index) => (
@@ -251,14 +345,14 @@ export default function ProgramRegistrationPage() {
             {/* ===== القسم الأول: البيانات الأساسية ===== */}
             <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
               <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
-                القسم الأول: البيانات الأساسية
+                {t("القسم الأول: البيانات الأساسية")}
               </h3>
               <div className="space-y-5">
                 {/* Full Name */}
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className={labelClass}>
                     <User className="h-4 w-4 text-primary" />
-                    الاسم الرباعي
+                    {t("الاسم الرباعي")}
                   </Label>
                   <Input
                     id="fullName"
@@ -266,7 +360,7 @@ export default function ProgramRegistrationPage() {
                     type="text"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="أدخل اسمك الرباعي"
+                    placeholder={t("أدخل اسمك الرباعي")}
                     required
                     className={inputClass}
                     disabled={isSubmitting}
@@ -277,7 +371,7 @@ export default function ProgramRegistrationPage() {
                 <div className="space-y-2">
                   <Label htmlFor="idNumber" className={labelClass}>
                     <CreditCard className="h-4 w-4 text-primary" />
-                    رقم الهوية / الإقامة
+                    {t("رقم الهوية / الإقامة")}
                   </Label>
                   <Input
                     id="idNumber"
@@ -285,7 +379,7 @@ export default function ProgramRegistrationPage() {
                     type="text"
                     value={formData.idNumber}
                     onChange={handleInputChange}
-                    placeholder="أدخل رقم الهوية أو الإقامة"
+                    placeholder={t("أدخل رقم الهوية أو الإقامة")}
                     required
                     className={inputClass}
                     disabled={isSubmitting}
@@ -296,14 +390,14 @@ export default function ProgramRegistrationPage() {
                 <div className="space-y-2">
                   <Label className={labelClass} id="gender-label">
                     <User className="h-4 w-4 text-primary" />
-                    الجنس
+                    {t("الجنس")}
                   </Label>
                   <RadioGroup
                     aria-labelledby="gender-label"
                     value={formData.gender}
                     onValueChange={(v) => handleSelectChange("gender", v)}
                     className="flex gap-6 pt-1"
-                    dir="rtl"
+                    dir={dir}
                     disabled={isSubmitting}
                   >
                     <div className="flex items-center gap-2">
@@ -316,7 +410,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="male"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        ذكر
+                        {t("ذكر")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -329,7 +423,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="female"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        أنثى
+                        {t("أنثى")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -340,7 +434,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="phone" className={labelClass}>
                       <Phone className="h-4 w-4 text-primary" />
-                      رقم الجوال
+                      {t("رقم الجوال")}
                     </Label>
                     <Input
                       id="phone"
@@ -357,7 +451,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="email" className={labelClass}>
                       <Mail className="h-4 w-4 text-primary" />
-                      البريد الإلكتروني
+                      {t("البريد الإلكتروني")}
                     </Label>
                     <Input
                       id="email"
@@ -365,7 +459,7 @@ export default function ProgramRegistrationPage() {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="أدخل بريدك الإلكتروني"
+                      placeholder={t("أدخل بريدك الإلكتروني")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -378,7 +472,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="city" className={labelClass}>
                       <MapPin className="h-4 w-4 text-primary" />
-                      المدينة
+                      {t("المدينة")}
                     </Label>
                     <Input
                       id="city"
@@ -386,7 +480,7 @@ export default function ProgramRegistrationPage() {
                       type="text"
                       value={formData.city}
                       onChange={handleInputChange}
-                      placeholder="أدخل مدينتك"
+                      placeholder={t("أدخل مدينتك")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -395,7 +489,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="age" className={labelClass}>
                       <Calendar className="h-4 w-4 text-primary" />
-                      العمر
+                      {t("العمر")}
                     </Label>
                     <Input
                       id="age"
@@ -403,7 +497,7 @@ export default function ProgramRegistrationPage() {
                       type="number"
                       value={formData.age}
                       onChange={handleInputChange}
-                      placeholder="أدخل عمرك"
+                      placeholder={t("أدخل عمرك")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -415,7 +509,7 @@ export default function ProgramRegistrationPage() {
                 <div className="space-y-2">
                   <Label htmlFor="linkedin" className={labelClass}>
                     <Linkedin className="h-4 w-4 text-primary" />
-                    الحساب المهني (LinkedIn إن وجد)
+                    {t("الحساب المهني (LinkedIn إن وجد)")}
                   </Label>
                   <Input
                     id="linkedin"
@@ -434,14 +528,14 @@ export default function ProgramRegistrationPage() {
             {/* ===== القسم الثاني: الخلفية التعليمية والمهنية ===== */}
             <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
               <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
-                القسم الثاني: الخلفية التعليمية والمهنية
+                {t("القسم الثاني: الخلفية التعليمية والمهنية")}
               </h3>
               <div className="space-y-5">
                 {/* Qualification */}
                 <div className="space-y-2">
                   <Label className={labelClass}>
                     <GraduationCap className="h-4 w-4 text-primary" />
-                    أعلى مؤهل علمي
+                    {t("أعلى مؤهل علمي")}
                   </Label>
                   <Select
                     value={formData.qualification}
@@ -451,13 +545,13 @@ export default function ProgramRegistrationPage() {
                     disabled={isSubmitting}
                   >
                     <SelectTrigger className={selectTriggerClass}>
-                      <SelectValue placeholder="اختر المؤهل العلمي" />
+                      <SelectValue placeholder={t("اختر المؤهل العلمي")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="bachelor">بكالوريوس</SelectItem>
-                      <SelectItem value="master">ماجستير</SelectItem>
-                      <SelectItem value="phd">دكتوراه</SelectItem>
-                      <SelectItem value="other">أخرى</SelectItem>
+                      <SelectItem value="bachelor">{t("بكالوريوس")}</SelectItem>
+                      <SelectItem value="master">{t("ماجستير")}</SelectItem>
+                      <SelectItem value="phd">{t("دكتوراه")}</SelectItem>
+                      <SelectItem value="other">{t("أخرى")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -467,7 +561,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="major" className={labelClass}>
                       <GraduationCap className="h-4 w-4 text-primary" />
-                      التخصص
+                      {t("التخصص")}
                     </Label>
                     <Input
                       id="major"
@@ -475,7 +569,7 @@ export default function ProgramRegistrationPage() {
                       type="text"
                       value={formData.major}
                       onChange={handleInputChange}
-                      placeholder="أدخل تخصصك"
+                      placeholder={t("أدخل تخصصك")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -484,7 +578,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="studyInstitution" className={labelClass}>
                       <Building2 className="h-4 w-4 text-primary" />
-                      جهة الدراسة
+                      {t("جهة الدراسة")}
                     </Label>
                     <Input
                       id="studyInstitution"
@@ -492,7 +586,7 @@ export default function ProgramRegistrationPage() {
                       type="text"
                       value={formData.studyInstitution}
                       onChange={handleInputChange}
-                      placeholder="أدخل جهة دراستك"
+                      placeholder={t("أدخل جهة دراستك")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -505,7 +599,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="organization" className={labelClass}>
                       <Building2 className="h-4 w-4 text-primary" />
-                      جهة العمل
+                      {t("جهة العمل")}
                     </Label>
                     <Input
                       id="organization"
@@ -513,7 +607,7 @@ export default function ProgramRegistrationPage() {
                       type="text"
                       value={formData.organization}
                       onChange={handleInputChange}
-                      placeholder="أدخل جهة عملك"
+                      placeholder={t("أدخل جهة عملك")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -522,7 +616,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label className={labelClass}>
                       <Building2 className="h-4 w-4 text-primary" />
-                      نوع جهة العمل
+                      {t("نوع جهة العمل")}
                     </Label>
                     <Select
                       value={formData.orgType}
@@ -530,13 +624,13 @@ export default function ProgramRegistrationPage() {
                       disabled={isSubmitting}
                     >
                       <SelectTrigger className={selectTriggerClass}>
-                        <SelectValue placeholder="اختر نوع الجهة" />
+                        <SelectValue placeholder={t("اختر نوع الجهة")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="government">حكومية</SelectItem>
-                        <SelectItem value="private">خاصة</SelectItem>
-                        <SelectItem value="nonprofit">غير ربحية</SelectItem>
-                        <SelectItem value="freelance">مستقل</SelectItem>
+                        <SelectItem value="government">{t("حكومية")}</SelectItem>
+                        <SelectItem value="private">{t("خاصة")}</SelectItem>
+                        <SelectItem value="nonprofit">{t("غير ربحية")}</SelectItem>
+                        <SelectItem value="freelance">{t("مستقل")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -547,7 +641,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="yearsOfExperience" className={labelClass}>
                       <Briefcase className="h-4 w-4 text-primary" />
-                      عدد سنوات الخبرة
+                      {t("عدد سنوات الخبرة")}
                     </Label>
                     <Input
                       id="yearsOfExperience"
@@ -555,7 +649,7 @@ export default function ProgramRegistrationPage() {
                       type="number"
                       value={formData.yearsOfExperience}
                       onChange={handleInputChange}
-                      placeholder="عدد السنوات"
+                      placeholder={t("عدد السنوات")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -564,7 +658,7 @@ export default function ProgramRegistrationPage() {
                   <div className="space-y-2">
                     <Label htmlFor="jobTitle" className={labelClass}>
                       <Briefcase className="h-4 w-4 text-primary" />
-                      المسمى الوظيفي الحالي
+                      {t("المسمى الوظيفي الحالي")}
                     </Label>
                     <Input
                       id="jobTitle"
@@ -572,7 +666,7 @@ export default function ProgramRegistrationPage() {
                       type="text"
                       value={formData.jobTitle}
                       onChange={handleInputChange}
-                      placeholder="أدخل مسماك الوظيفي"
+                      placeholder={t("أدخل مسماك الوظيفي")}
                       required
                       className={inputClass}
                       disabled={isSubmitting}
@@ -584,7 +678,7 @@ export default function ProgramRegistrationPage() {
                 <div className="space-y-2">
                   <Label htmlFor="resume" className={labelClass}>
                     <Upload className="h-4 w-4 text-primary" />
-                    أرفق سيرتك الذاتية <span className="text-destructive">*</span>
+                    {t("أرفق سيرتك الذاتية")}{" "}<span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
                     <input
@@ -605,7 +699,7 @@ export default function ProgramRegistrationPage() {
                           {resumeFile.name}
                         </span>
                       ) : (
-                        "اضغط لرفع الملف (PDF, DOC)"
+                        t("اضغط لرفع الملف (PDF, DOC)")
                       )}
                     </label>
                   </div>
@@ -616,13 +710,13 @@ export default function ProgramRegistrationPage() {
             {/* ===== القسم الثالث: الخبرة في القطاع الثقافي ===== */}
             <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
               <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
-                القسم الثالث: الخبرة في القطاع الثقافي
+                {t("القسم الثالث: الخبرة في القطاع الثقافي")}
               </h3>
               <div className="space-y-5">
                 {/* Works in culture */}
                 <div className="space-y-2">
                   <Label className={labelClass} id="works-culture-label">
-                    هل تعمل حاليًا في القطاع الثقافي؟
+                    {t("هل تعمل حاليًا في القطاع الثقافي؟")}
                   </Label>
                   <RadioGroup
                     aria-labelledby="works-culture-label"
@@ -631,7 +725,7 @@ export default function ProgramRegistrationPage() {
                       handleSelectChange("worksInCulture", v)
                     }
                     className="flex flex-wrap gap-6 pt-1"
-                    dir="rtl"
+                    dir={dir}
                     disabled={isSubmitting}
                   >
                     <div className="flex items-center gap-2">
@@ -644,7 +738,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="culture-yes"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        نعم
+                        {t("نعم")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -657,7 +751,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="culture-no"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        لا
+                        {t("لا")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -670,7 +764,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="culture-partial"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        بشكل جزئي
+                        {t("بشكل جزئي")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -679,14 +773,14 @@ export default function ProgramRegistrationPage() {
                 {/* Culture experience */}
                 <div className="space-y-2">
                   <Label htmlFor="cultureExperience" className={labelClass}>
-                    صف خبرتك في المجال الثقافي (حد أقصى 300 كلمة)
+                    {t("صف خبرتك في المجال الثقافي (حد أقصى 300 كلمة)")}
                   </Label>
                   <Textarea
                     id="cultureExperience"
                     name="cultureExperience"
                     value={formData.cultureExperience}
                     onChange={handleInputChange}
-                    placeholder="صف خبرتك ومشاركاتك في القطاع الثقافي..."
+                    placeholder={t("صف خبرتك ومشاركاتك في القطاع الثقافي...")}
                     required
                     rows={5}
                     className={textareaClass}
@@ -699,13 +793,13 @@ export default function ProgramRegistrationPage() {
             {/* ===== القسم الرابع: الالتزام والاستعداد ===== */}
             <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
               <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
-                القسم الرابع: الالتزام والاستعداد
+                {t("القسم الرابع: الالتزام والاستعداد")}
               </h3>
               <div className="space-y-5">
                 {/* Can attend all */}
                 <div className="space-y-2">
                   <Label className={labelClass} id="commit-attend-label">
-                    هل يمكنك الالتزام بحضور اللقاءات كاملة؟
+                    {t("هل يمكنك الالتزام بحضور اللقاءات كاملة؟")}
                   </Label>
                   <RadioGroup
                     aria-labelledby="commit-attend-label"
@@ -714,7 +808,7 @@ export default function ProgramRegistrationPage() {
                       handleSelectChange("canAttendAll", v)
                     }
                     className="flex gap-6 pt-1"
-                    dir="rtl"
+                    dir={dir}
                     disabled={isSubmitting}
                   >
                     <div className="flex items-center gap-2">
@@ -727,7 +821,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="attend-yes"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        نعم
+                        {t("نعم")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -740,7 +834,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="attend-no"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        لا
+                        {t("لا")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -749,8 +843,7 @@ export default function ProgramRegistrationPage() {
                 {/* Can design project */}
                 <div className="space-y-2">
                   <Label className={labelClass} id="graduation-project-label">
-                    هل لديك القدرة على تصميم مشروع تخرج تطبيقي خلال مدة
-                    البرنامج؟
+                    {t("هل لديك القدرة على تصميم مشروع تخرج تطبيقي خلال مدة البرنامج؟")}
                   </Label>
                   <RadioGroup
                     aria-labelledby="graduation-project-label"
@@ -759,7 +852,7 @@ export default function ProgramRegistrationPage() {
                       handleSelectChange("canDesignProject", v)
                     }
                     className="flex gap-6 pt-1"
-                    dir="rtl"
+                    dir={dir}
                     disabled={isSubmitting}
                   >
                     <div className="flex items-center gap-2">
@@ -772,7 +865,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="project-yes"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        نعم
+                        {t("نعم")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -785,7 +878,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="project-no"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        لا
+                        {t("لا")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -794,7 +887,7 @@ export default function ProgramRegistrationPage() {
                 {/* Employer approval */}
                 <div className="space-y-2">
                   <Label className={labelClass} id="employer-approval-label">
-                    هل حصلت على موافقة جهة عملك (إن لزم)؟
+                    {t("هل حصلت على موافقة جهة عملك (إن لزم)؟")}
                   </Label>
                   <RadioGroup
                     aria-labelledby="employer-approval-label"
@@ -803,7 +896,7 @@ export default function ProgramRegistrationPage() {
                       handleSelectChange("hasEmployerApproval", v)
                     }
                     className="flex flex-wrap gap-6 pt-1"
-                    dir="rtl"
+                    dir={dir}
                     disabled={isSubmitting}
                   >
                     <div className="flex items-center gap-2">
@@ -816,7 +909,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="approval-yes"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        نعم
+                        {t("نعم")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -829,7 +922,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="approval-no"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        لا
+                        {t("لا")}
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
@@ -842,7 +935,7 @@ export default function ProgramRegistrationPage() {
                         htmlFor="approval-na"
                         className="text-muted-foreground cursor-pointer"
                       >
-                        لا ينطبق
+                        {t("لا ينطبق")}
                       </Label>
                     </div>
                   </RadioGroup>
@@ -853,20 +946,19 @@ export default function ProgramRegistrationPage() {
             {/* ===== القسم الخامس: الأسئلة التقييمية ===== */}
             <div className="bg-muted/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-border mb-8">
               <h3 className="text-xl font-bold text-primary mb-6 pb-3 border-b border-border">
-                القسم الخامس: الأسئلة التقييمية
+                {t("القسم الخامس: الأسئلة التقييمية")}
               </h3>
               <div className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="gapQuestion" className={labelClass}>
-                    برأيك، ما أبرز فجوة في إدارة المشاريع الثقافية في المملكة
-                    اليوم؟
+                    {t("برأيك، ما أبرز فجوة في إدارة المشاريع الثقافية في المملكة اليوم؟")}
                   </Label>
                   <Textarea
                     id="gapQuestion"
                     name="gapQuestion"
                     value={formData.gapQuestion}
                     onChange={handleInputChange}
-                    placeholder="اكتب إجابتك هنا..."
+                    placeholder={t("اكتب إجابتك هنا...")}
                     required
                     rows={4}
                     className={textareaClass}
@@ -876,15 +968,14 @@ export default function ProgramRegistrationPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="initiativeQuestion" className={labelClass}>
-                    لو طُلب منك تطوير مبادرة ثقافية مستدامة، ما أول 3 عناصر
-                    ستبني عليها خطتك؟
+                    {t("لو طُلب منك تطوير مبادرة ثقافية مستدامة، ما أول 3 عناصر ستبني عليها خطتك؟")}
                   </Label>
                   <Textarea
                     id="initiativeQuestion"
                     name="initiativeQuestion"
                     value={formData.initiativeQuestion}
                     onChange={handleInputChange}
-                    placeholder="اكتب إجابتك هنا..."
+                    placeholder={t("اكتب إجابتك هنا...")}
                     required
                     rows={4}
                     className={textareaClass}
@@ -894,14 +985,14 @@ export default function ProgramRegistrationPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="experienceQuestion" className={labelClass}>
-                    صف تجربة فشل أو نجاح مهني مررت بها، وماذا تعلمت منها؟
+                    {t("صف تجربة فشل أو نجاح مهني مررت بها، وماذا تعلمت منها؟")}
                   </Label>
                   <Textarea
                     id="experienceQuestion"
                     name="experienceQuestion"
                     value={formData.experienceQuestion}
                     onChange={handleInputChange}
-                    placeholder="اكتب إجابتك هنا..."
+                    placeholder={t("اكتب إجابتك هنا...")}
                     required
                     rows={4}
                     className={textareaClass}
@@ -921,12 +1012,12 @@ export default function ProgramRegistrationPage() {
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                  جاري الإرسال...
+                  {t("جاري الإرسال...")}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <Send className="h-5 w-5" />
-                  إرسال الطلب
+                  {t("إرسال الطلب")}
                 </div>
               )}
             </Button>

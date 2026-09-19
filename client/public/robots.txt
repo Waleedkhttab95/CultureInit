@@ -1,15 +1,14 @@
-# Robots.txt for مبادرة الإدارة الثقافية
 # https://cultural-managment.com
-
 User-agent: *
 Allow: /
 
-# Disallow admin or private paths if any
+# App back-end and CMS: not for search results.
 Disallow: /api/
-Disallow: /_next/
+Disallow: /admin
 
-# Sitemap location
+# Uploaded CVs / documents. (Editor images at /uploads/img-* stay crawlable.)
+Disallow: /uploads/*.pdf$
+Disallow: /uploads/*.doc$
+Disallow: /uploads/*.docx$
+
 Sitemap: https://cultural-managment.com/sitemap.xml
-
-# Crawl delay (optional, in seconds)
-Crawl-delay: 1

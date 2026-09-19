@@ -9,6 +9,8 @@ export interface PublicArticle {
   excerpt: string;
   image: string;
   content: string;
+  /** ISO timestamp of the last edit (present on the API response). */
+  updatedAt?: string;
 }
 
 export async function fetchArticles(): Promise<PublicArticle[]> {

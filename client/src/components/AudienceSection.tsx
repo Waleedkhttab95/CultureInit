@@ -20,10 +20,62 @@ import {
   Send,
   Check
 } from "lucide-react";
+import { useCopy, useServerMessage } from "@/i18n/locale";
+
+const COPY = {
+  ar: {
+    values: [
+      { title: "سد الفجوة المعرفية", description: "سد فجوة معرفية كبيرة في المحتوى العربي حول الإدارة الثقافية" },
+      { title: "تعزيز الكفاءات المحلية", description: "تعزيز الكفاءات المحلية بما يتماشى مع التطلعات الوطنية والتحولات الثقافية" },
+      { title: "موارد عملية", description: "تجاوز التنظير المجرد إلى تقديم موارد عملية وأدوات تمكينية" },
+      { title: "الاحترافية والاستدامة", description: "تمكين القطاع الثقافي من أدوات تساعده على الاحترافية والاستدامة" },
+    ],
+    valueHeading: "القيمة المضافة",
+    valueIntro: "ما الذي تقدمه مبادرة الإدارة الثقافية للمجتمع والقطاع الثقافي؟",
+    joinHeading: "انضم إلى مجتمعنا المعرفي",
+    joinIntro: "اترك بياناتك وسنتواصل معك قريباً لنشاركك أحدث المحتويات والبرامج",
+    sentTitle: "تم إرسال طلبك بنجاح!",
+    sentBody: "شكراً لك، سنتواصل معك قريباً",
+    nameLabel: "الاسم الكامل",
+    namePlaceholder: "أدخل اسمك الكامل",
+    emailLabel: "البريد الإلكتروني",
+    emailPlaceholder: "أدخل بريدك الإلكتروني",
+    sending: "جاري الإرسال...",
+    join: "انضم الآن",
+    errorTitle: "خطأ",
+    failed: "حدث خطأ أثناء إرسال البيانات",
+    network: "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+  },
+  en: {
+    values: [
+      { title: "Closing the knowledge gap", description: "Closing a major gap in Arabic-language content on cultural management" },
+      { title: "Strengthening local capabilities", description: "Strengthening local capabilities in line with national aspirations and cultural transformations" },
+      { title: "Practical resources", description: "Moving beyond abstract theory to provide practical resources and enabling tools" },
+      { title: "Professionalism and sustainability", description: "Equipping the cultural sector with tools that support professionalism and sustainability" },
+    ],
+    valueHeading: "Added value",
+    valueIntro: "What does the Cultural Management Initiative offer society and the cultural sector?",
+    joinHeading: "Join our knowledge community",
+    joinIntro: "Leave your details and we will be in touch soon to share our latest content and programs",
+    sentTitle: "Your request was sent successfully!",
+    sentBody: "Thank you — we will be in touch soon",
+    nameLabel: "Full name",
+    namePlaceholder: "Enter your full name",
+    emailLabel: "Email address",
+    emailPlaceholder: "Enter your email address",
+    sending: "Sending...",
+    join: "Join now",
+    errorTitle: "Error",
+    failed: "Something went wrong while sending your details",
+    network: "A connection error occurred. Please try again.",
+  },
+};
 
 export default function AudienceSection() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
   const { toast } = useToast();
+  const c = useCopy(COPY);
+  const serverMessage = useServerMessage();
 
   //todo: remove mock functionality - these will be real data from the initiative content
   const audiences = [
@@ -57,28 +109,8 @@ export default function AudienceSection() {
     }
   ];
 
-  const values = [
-    {
-      icon: TrendingUp,
-      title: "سد الفجوة المعرفية",
-      description: "سد فجوة معرفية كبيرة في المحتوى العربي حول الإدارة الثقافية"
-    },
-    {
-      icon: Target,
-      title: "تعزيز الكفاءات المحلية",
-      description: "تعزيز الكفاءات المحلية بما يتماشى مع التطلعات الوطنية والتحولات الثقافية"
-    },
-    {
-      icon: CheckCircle,
-      title: "موارد عملية",
-      description: "تجاوز التنظير المجرد إلى تقديم موارد عملية وأدوات تمكينية"
-    },
-    {
-      icon: Sparkles,
-      title: "الاحترافية والاستدامة",
-      description: "تمكين القطاع الثقافي من أدوات تساعده على الاحترافية والاستدامة"
-    }
-  ];
+  const valueIcons = [TrendingUp, Target, CheckCircle, Sparkles];
+  const values = c.values.map((v, i) => ({ icon: valueIcons[i], ...v }));
 
   const [formData, setFormData] = useState({
     name: '',
@@ -123,16 +155,16 @@ export default function AudienceSection() {
         }, 3000);
       } else {
         toast({
-          title: "خطأ",
-          description: data.message || 'حدث خطأ أثناء إرسال البيانات',
+          title: c.errorTitle,
+          description: serverMessage(data.message, c.failed),
           variant: "destructive",
         });
         setIsSubmitting(false);
       }
     } catch (error) {
       toast({
-        title: "خطأ",
-        description: 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
+        title: c.errorTitle,
+        description: c.network,
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -192,10 +224,10 @@ export default function AudienceSection() {
         <div className="bg-card border border-card-border rounded-2xl p-8 lg:p-12 mb-8">
           <div className="text-center mb-12">
             <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-              القيمة المضافة
+              {c.valueHeading}
             </h3>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              ما الذي تقدمه مبادرة الإدارة الثقافية للمجتمع والقطاع الثقافي؟
+              {c.valueIntro}
             </p>
           </div>
 
@@ -230,10 +262,10 @@ export default function AudienceSection() {
         <div className="bg-card border border-card-border rounded-2xl p-8 lg:p-12">
           <div className="text-center mb-12">
             <h4 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-              انضم إلى مجتمعنا المعرفي
+              {c.joinHeading}
             </h4>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-              اترك بياناتك وسنتواصل معك قريباً لنشاركك أحدث المحتويات والبرامج
+              {c.joinIntro}
             </p>
           </div>
 
@@ -243,10 +275,10 @@ export default function AudienceSection() {
                 <Check className="h-10 w-10 text-chart-2" />
               </div>
               <h5 className="text-xl font-bold text-foreground mb-2">
-                تم إرسال طلبك بنجاح!
+                {c.sentTitle}
               </h5>
               <p className="text-muted-foreground">
-                شكراً لك، سنتواصل معك قريباً
+                {c.sentBody}
               </p>
             </div>
           ) : (
@@ -256,7 +288,7 @@ export default function AudienceSection() {
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <User className="h-4 w-4 text-primary" />
-                      الاسم الكامل
+                      {c.nameLabel}
                     </Label>
                     <div className="relative">
                       <Input
@@ -265,9 +297,9 @@ export default function AudienceSection() {
                         type="text"
                         value={formData.name}
                         onChange={handleInputChange}
-                        placeholder="أدخل اسمك الكامل"
+                        placeholder={c.namePlaceholder}
                         required
-                        className="h-12 pl-4 pr-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                        className="h-12 px-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -276,7 +308,7 @@ export default function AudienceSection() {
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <Mail className="h-4 w-4 text-primary" />
-                      البريد الإلكتروني
+                      {c.emailLabel}
                     </Label>
                     <div className="relative">
                       <Input
@@ -285,9 +317,9 @@ export default function AudienceSection() {
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="أدخل بريدك الإلكتروني"
+                        placeholder={c.emailPlaceholder}
                         required
-                        className="h-12 pl-4 pr-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                        className="h-12 px-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -303,12 +335,12 @@ export default function AudienceSection() {
                     {isSubmitting ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        جاري الإرسال...
+                        {c.sending}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
                         <Send className="h-5 w-5" />
-                        انضم الآن
+                        {c.join}
                       </div>
                     )}
                   </Button>

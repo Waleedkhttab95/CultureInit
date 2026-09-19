@@ -1,4 +1,6 @@
 import Header from "@/components/Header";
+import SEO from "@/components/SEO";
+import { useCopy, useServerMessage } from "@/i18n/locale";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +19,50 @@ import {
   MessageSquare
 } from "lucide-react";
 
+const COPY = {
+  ar: {
+    heading: "انشر معنا",
+    intro: "اترك بياناتك ومحتواك وسنتواصل معك قريباً لمراجعة طلبك",
+    sentTitle: "تم إرسال طلبك بنجاح!",
+    sentBody: "شكراً لك، سنتواصل معك قريباً",
+    name: "الاسم الثلاثي",
+    namePlaceholder: "أدخل اسمك الثلاثي",
+    email: "البريد الإلكتروني",
+    emailPlaceholder: "أدخل بريدك الإلكتروني",
+    title: "العنوان",
+    titlePlaceholder: "أدخل عنوان المحتوى",
+    message: "الرسالة",
+    messagePlaceholder: "اكتب رسالتك أو وصف المحتوى",
+    sending: "جاري الإرسال...",
+    submit: "إرسال الطلب",
+    errorTitle: "خطأ",
+    failed: "حدث خطأ أثناء إرسال البيانات",
+    network: "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+  },
+  en: {
+    heading: "Publish with us",
+    intro: "Leave your details and your content, and we will get back to you soon to review your request",
+    sentTitle: "Your request was sent successfully!",
+    sentBody: "Thank you — we will be in touch soon",
+    name: "Full name",
+    namePlaceholder: "Enter your full name",
+    email: "Email address",
+    emailPlaceholder: "Enter your email address",
+    title: "Title",
+    titlePlaceholder: "Enter the title of your content",
+    message: "Message",
+    messagePlaceholder: "Write your message or describe your content",
+    sending: "Sending...",
+    submit: "Submit request",
+    errorTitle: "Error",
+    failed: "Something went wrong while sending your details",
+    network: "A connection error occurred. Please try again.",
+  },
+};
+
 export default function PublishWithUsPage() {
+  const c = useCopy(COPY);
+  const serverMessage = useServerMessage();
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
   const { toast } = useToast();
 
@@ -68,16 +113,16 @@ export default function PublishWithUsPage() {
         }, 3000);
       } else {
         toast({
-          title: "خطأ",
-          description: data.message || 'حدث خطأ أثناء إرسال البيانات',
+          title: c.errorTitle,
+          description: serverMessage(data.message, c.failed),
           variant: "destructive",
         });
         setIsSubmitting(false);
       }
     } catch (error) {
       toast({
-        title: "خطأ",
-        description: 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
+        title: c.errorTitle,
+        description: c.network,
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -86,6 +131,7 @@ export default function PublishWithUsPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans">
+      <SEO page="publishWithUs" />
       <Header />
       <main>
         <section
@@ -102,10 +148,10 @@ export default function PublishWithUsPage() {
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                  انشر معنا
+                  {c.heading}
                 </h1>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-                  اترك بياناتك ومحتواك وسنتواصل معك قريباً لمراجعة طلبك
+                  {c.intro}
                 </p>
               </div>
 
@@ -115,10 +161,10 @@ export default function PublishWithUsPage() {
                     <Check className="h-10 w-10 text-chart-2" />
                   </div>
                   <h5 className="text-xl font-bold text-foreground mb-2">
-                    تم إرسال طلبك بنجاح!
+                    {c.sentTitle}
                   </h5>
                   <p className="text-muted-foreground">
-                    شكراً لك، سنتواصل معك قريباً
+                    {c.sentBody}
                   </p>
                 </div>
               ) : (
@@ -128,7 +174,7 @@ export default function PublishWithUsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-sm font-semibold text-foreground flex items-center gap-2">
                           <User className="h-4 w-4 text-primary" />
-                          الاسم الثلاثي
+                          {c.name}
                         </Label>
                         <div className="relative">
                           <Input
@@ -137,9 +183,9 @@ export default function PublishWithUsPage() {
                             type="text"
                             value={formData.name}
                             onChange={handleInputChange}
-                            placeholder="أدخل اسمك الثلاثي"
+                            placeholder={c.namePlaceholder}
                             required
-                            className="h-12 pl-4 pr-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                            className="h-12 px-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
                             disabled={isSubmitting}
                           />
                         </div>
@@ -148,7 +194,7 @@ export default function PublishWithUsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
                           <Mail className="h-4 w-4 text-primary" />
-                          البريد الإلكتروني
+                          {c.email}
                         </Label>
                         <div className="relative">
                           <Input
@@ -157,9 +203,9 @@ export default function PublishWithUsPage() {
                             type="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            placeholder="أدخل بريدك الإلكتروني"
+                            placeholder={c.emailPlaceholder}
                             required
-                            className="h-12 pl-4 pr-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                            className="h-12 px-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
                             disabled={isSubmitting}
                           />
                         </div>
@@ -168,7 +214,7 @@ export default function PublishWithUsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="title" className="text-sm font-semibold text-foreground flex items-center gap-2">
                           <FileText className="h-4 w-4 text-primary" />
-                          العنوان
+                          {c.title}
                         </Label>
                         <div className="relative">
                           <Input
@@ -177,9 +223,9 @@ export default function PublishWithUsPage() {
                             type="text"
                             value={formData.title}
                             onChange={handleInputChange}
-                            placeholder="أدخل عنوان المحتوى"
+                            placeholder={c.titlePlaceholder}
                             required
-                            className="h-12 pl-4 pr-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
+                            className="h-12 px-4 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl"
                             disabled={isSubmitting}
                           />
                         </div>
@@ -188,7 +234,7 @@ export default function PublishWithUsPage() {
                       <div className="space-y-2">
                         <Label htmlFor="message" className="text-sm font-semibold text-foreground flex items-center gap-2">
                           <MessageSquare className="h-4 w-4 text-primary" />
-                          الرسالة
+                          {c.message}
                         </Label>
                         <div className="relative">
                           <Textarea
@@ -196,10 +242,10 @@ export default function PublishWithUsPage() {
                             name="message"
                             value={formData.message}
                             onChange={handleInputChange}
-                            placeholder="اكتب رسالتك أو وصف المحتوى"
+                            placeholder={c.messagePlaceholder}
                             required
                             rows={6}
-                            className="pl-4 pr-4 pt-3 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl resize-none"
+                            className="px-4 pt-3 text-base border-2 border-card-border focus:border-primary transition-colors rounded-xl resize-none"
                             disabled={isSubmitting}
                           />
                         </div>
@@ -214,12 +260,12 @@ export default function PublishWithUsPage() {
                         {isSubmitting ? (
                           <div className="flex items-center gap-2">
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            جاري الإرسال...
+                            {c.sending}
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
                             <Send className="h-5 w-5" />
-                            إرسال الطلب
+                            {c.submit}
                           </div>
                         )}
                       </Button>

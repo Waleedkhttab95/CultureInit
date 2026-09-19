@@ -26,3 +26,15 @@ Soft orange→green hero gradients; calm tinted backgrounds from the identity; s
 3. **Identity-driven color** — use the five identity colors via design tokens; no hard-coded hexes; tint neutrals toward the brand.
 4. **Calm, purposeful motion** — gentle staggered fade-ins and soft hover; no bounce, no excess; respect reduced-motion.
 5. **Both themes, equally cared for** — every surface must read clearly and warmly in light and dark, meeting WCAG AA (4.5:1 text).
+
+## SEO & Languages
+
+Arabic is the default (un-prefixed URLs); English lives under `/en`. Articles are Arabic-only (`/en/articles/:slug` 301s to the Arabic URL); the UI and page metadata exist in both languages.
+
+- **Single source of truth:** `shared/seo.ts` — per-page title/description (ar + en), URL/hreflang helpers, JSON-LD builders. Never hard-code SEO tags elsewhere.
+- **Server injects the `<head>`** (`server/seo.ts`, wired in `server/vite.ts`) so crawlers/scrapers see real tags, correct status codes (200/301/404) and a `<noscript>` fallback. The client `<SEO>` component only keeps the head in sync during SPA navigation.
+- **Sitemap is generated** (`GET /sitemap.xml`) from `PAGES` + published articles — do not add a static one.
+- **New page:** add to `PAGES`, add the route in `App.tsx` `AppRoutes`, render `<SEO page="…" />`, and write copy with `useCopy({ ar, en })` (or `useT` for long forms).
+- **RTL/LTR:** use logical utilities (`ms-/me-/ps-/pe-/text-start/end`), not `ml/mr/pl/pr/text-left/right`, so both directions work. Inside `/en` wouter prefixes `<Link href="/x">` with `/en` automatically; use `~/x` for an absolute link (e.g. Arabic-only articles).
+- **Guides (PDFs)** in `client/src/data/resources.json` each get an indexable Arabic-only page at `/resources/:id` (server head + sitemap are automatic). PDF files are `noindex` via `X-Robots-Tag`; downloads stay behind the shared `ResourceDownloadDialog` form.
+- Arabic content shown on an English page (article titles, guides, instructor names) must carry `lang="ar" dir="rtl"`.

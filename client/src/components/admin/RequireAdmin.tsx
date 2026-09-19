@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
+import SEO from "@/components/SEO";
 
 // Client-side guard. Server routes independently enforce auth, so this is
 // purely UX — it redirects unauthenticated visitors to the login screen.
@@ -24,5 +25,10 @@ export default function RequireAdmin({
     );
   }
   if (!isAuthenticated) return null;
-  return <>{children}</>;
+  return (
+    <>
+      <SEO noindex alternates={false} locale="ar" path="/admin" title="إدارة المحتوى | منصة الإدارة الثقافية" />
+      {children}
+    </>
+  );
 }

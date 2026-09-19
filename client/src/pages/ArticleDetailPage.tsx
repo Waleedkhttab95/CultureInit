@@ -5,6 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchArticle, type PublicArticle } from "@/lib/articles";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SEO from "@/components/SEO";
+import {
+  ARTICLES_PATH,
+  BRAND,
+  absoluteAsset,
+  absoluteUrl,
+  articleLd,
+  breadcrumbLd,
+  truncateDescription,
+} from "@shared/seo";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -31,6 +41,7 @@ export default function ArticleDetailPage() {
   if (isError || !article) {
     return (
       <div className="min-h-screen bg-background font-sans flex flex-col">
+        <SEO notFound locale="ar" />
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -47,8 +58,27 @@ export default function ArticleDetailPage() {
     );
   }
 
+  const articleUrl = absoluteUrl("ar", `${ARTICLES_PATH}/${article.slug}`);
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
+      <SEO
+        locale="ar"
+        title={`${article.title} | ${BRAND.ar}`}
+        description={truncateDescription(article.excerpt)}
+        path={`${ARTICLES_PATH}/${article.slug}`}
+        image={absoluteAsset(article.image)}
+        type="article"
+        alternates={false}
+        article={{ published: article.date, modified: article.updatedAt, author: article.author }}
+        jsonLd={[
+          articleLd({ ...article, modified: article.updatedAt }),
+          breadcrumbLd([
+            { name: BRAND.ar, url: absoluteUrl("ar", "/") },
+            { name: "المقالات", url: absoluteUrl("ar", ARTICLES_PATH) },
+            { name: article.title, url: articleUrl },
+          ]),
+        ]}
+      />
       <Header />
 
       <main className="flex-1 py-12 bg-background">

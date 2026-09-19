@@ -9,7 +9,7 @@ import SEO from "@/components/SEO";
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background font-sans">
-      <SEO />
+      <SEO page="home" />
       <Header />
       <main>
         <HeroSection />

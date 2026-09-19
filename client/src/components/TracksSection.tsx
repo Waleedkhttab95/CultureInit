@@ -1,67 +1,87 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ForwardArrow } from "@/components/DirectionalIcons";
 import { useLocation } from "wouter";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import articlesIcon from "@assets/Asset13@4x.png";
 import resourcesIcon from "@assets/Asset7@4x.png";  
 import programsIcon from "@assets/Asset25@4x.png";
+import { useCopy } from "@/i18n/locale";
+
+const COPY = {
+  ar: {
+    badge: "المسارات الرئيسية",
+    heading: "ثلاثة مسارات متكاملة لتطوير الإدارة الثقافية",
+    intro: "نقدم محتوى متنوعًا ومتخصصًا يلبي احتياجات الفاعلين بالقطاع الثقافي",
+    explore: (title: string) => `استكشف ${title}`,
+    articles: {
+      title: "المقالات",
+      description:
+        "مقالات تعريفية وتحليلية عن مفاهيم الإدارة الثقافية، وتجارب عربية وعالمية في إدارة البرامج الثقافية.",
+    },
+    resources: {
+      title: "الموارد",
+      description:
+        "أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.",
+    },
+    programs: {
+      title: "البرامج",
+      description:
+        "ورش عمل تدريبية قصيرة، وبرامج تأهيلية، وحوارات إثرائية في موضوعات الإدارة الثقافية.",
+    },
+  },
+  en: {
+    badge: "Core tracks",
+    heading: "Three integrated tracks to advance cultural management",
+    intro: "Diverse, specialized content that meets the needs of professionals across the cultural sector.",
+    explore: (title: string) => `Explore ${title}`,
+    articles: {
+      title: "Articles",
+      description:
+        "Introductory and analytical articles on cultural management concepts, plus Arab and international experiences in running cultural programs.",
+    },
+    resources: {
+      title: "Resources",
+      description:
+        "Practical guides and professional handbooks in cultural management, with hands-on tools for designing cultural programs.",
+    },
+    programs: {
+      title: "Programs",
+      description:
+        "Short training workshops, qualification programs and enriching dialogues on cultural management topics.",
+    },
+  },
+};
 
 export default function TracksSection() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
   
-  //todo: remove mock functionality - these will be real data from the initiative content
+  const c = useCopy(COPY);
+
+  // Icons are decorative (the card title already names the track).
   const tracks = [
     {
-      icon:programsIcon ,
-      title: "المقالات",
-      // subtitle: "Articles",
-      description: "مقالات تعريفية وتحليلية عن مفاهيم الإدارة الثقافية، وتجارب عربية وعالمية في إدارة البرامج الثقافية.",
-      features: [
-
-      ],
+      icon: programsIcon,
+      href: "/articles",
+      ...c.articles,
       color: "from-primary/20 to-primary/5",
     },
     {
-      icon: articlesIcon ,
-      title: "الموارد",
-      // subtitle: "Resources", 
-      description: "أدلة تطبيقية وكتيبات مهنية في الإدارة الثقافية، وأدوات عملية لتصميم البرامج الثقافية.",
-      features: [
-
-      ],
+      icon: articlesIcon,
+      href: "/resources",
+      ...c.resources,
       color: "from-chart-2/20 to-chart-2/5",
     },
     {
       icon: resourcesIcon,
-      title: "البرامج",
-      // subtitle: "Programs",
-      description: "ورش عمل تدريبية قصيرة، وبرامج تأهيلية، وحوارات إثرائية في موضوعات الإدارة الثقافية.",
-      features: [
-
-      ],
+      href: "/programs",
+      ...c.programs,
       color: "from-chart-3/20 to-chart-3/5",
-    }
+    },
   ];
 
   const [, navigate] = useLocation();
-
-  const handleTrackClick = (trackTitle: string) => {
-    if (trackTitle === "المقالات") {
-      navigate("/articles");
-      return;
-    }
-    if (trackTitle === "الموارد") {
-      navigate("/resources");
-      return;
-    }
-    if (trackTitle === "البرامج") {
-      navigate("/programs");
-      return;
-    }
-    console.log(`${trackTitle} track clicked`);
-  };
 
   return (
     <section 
@@ -75,13 +95,14 @@ export default function TracksSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <Badge variant="secondary" className="mb-4 px-4 py-2">
-            المسارات الرئيسية
+            {c.badge}
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
-            ثلاثة مسارات متكاملة لتطوير الإدارة الثقافية
+            {c.heading}
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          نقدم محتوى متنوعًا ومتخصصًا يلبي احتياجات الفاعلين بالقطاع الثقافي          </p>
+            {c.intro}
+          </p>
         </div>
 
         {/* Tracks Grid */}
@@ -96,7 +117,8 @@ export default function TracksSection() {
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white p-4 shadow-sm group-hover:scale-105 transition-transform duration-300">
                   <img
                     src={track.icon}
-                    alt={`${track.title} icon`}
+                    alt=""
+                    aria-hidden="true"
                     className="w-full h-full object-contain"
                     loading="lazy"
                   />
@@ -112,31 +134,18 @@ export default function TracksSection() {
 
               <CardContent className="flex-1 flex flex-col space-y-4">
                 {/* Description */}
-                <p className="text-muted-foreground leading-relaxed text-sm flex-1 text-justify">
+                <p className="text-muted-foreground leading-relaxed text-sm flex-1 rtl:text-justify ltr:text-start">
                   {track.description}
                 </p>
-
-                {/* Features */}
-                <div className="space-y-2">
-                  {track.features.map((feature, featureIndex) => (
-                    <div
-                      key={featureIndex}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                      <span className="text-foreground">{feature}</span>
-                    </div>
-                  ))}
-                </div>
 
                 {/* CTA Button */}
                 <Button
                   className="w-full mt-6 bg-foreground text-background hover:bg-foreground/90 border-0"
-                  onClick={() => handleTrackClick(track.title)}
+                  onClick={() => navigate(track.href)}
                   data-testid={`button-track-${index}`}
                 >
-                  استكشف {track.title}
-                  <ArrowLeft className="ml-2 h-4 w-4" />
+                  {c.explore(track.title)}
+                  <ForwardArrow className="h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>

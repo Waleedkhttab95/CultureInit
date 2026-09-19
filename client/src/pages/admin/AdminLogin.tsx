@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "@/components/SEO";
 import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { login } from "@/lib/adminApi";
@@ -35,6 +36,8 @@ export default function AdminLogin() {
   };
 
   return (
+    <>
+    <SEO noindex alternates={false} locale="ar" path="/admin/login" title="تسجيل الدخول | إدارة المحتوى" />
     <div
       className="min-h-screen flex items-center justify-center bg-muted/30 p-4"
       dir="rtl"
@@ -73,5 +76,6 @@ export default function AdminLogin() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

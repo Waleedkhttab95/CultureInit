@@ -3,8 +3,26 @@ import { ArrowLeft, Sparkles, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import whiteLogo from "@assets/white-logo.png";
 import whiteIcon from "@assets/white-icon.png";
+import { PAGES } from "@shared/seo";
+import { useCopy } from "@/i18n/locale";
+
+const COPY = {
+  ar: {
+    h1: "منصة الإدارة الثقافية — منصة معرفية متخصصة في الإدارة الثقافية",
+    logoAlt: "منصة الإدارة الثقافية",
+    description: PAGES.home.meta.ar.description,
+    scroll: "انتقل إلى المحتوى",
+  },
+  en: {
+    h1: "Cultural Management Platform — a specialist knowledge platform for cultural management",
+    logoAlt: "Cultural Management Platform",
+    description: PAGES.home.meta.en.description,
+    scroll: "Scroll to content",
+  },
+};
 
 export default function HeroSection() {
+  const c = useCopy(COPY);
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
 
@@ -84,19 +102,20 @@ export default function HeroSection() {
 
       {/* White logo watermark as background */}
       <div
-        className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start pl-8 sm:pl-12 lg:pl-20"
+        className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start pe-8 sm:pe-12 lg:pe-20"
         style={{ transform: `translateY(${parallaxY}px)` }}
       >
         <img
           src={whiteIcon}
-          alt="Background watermark icon"
+          alt=""
+          aria-hidden="true"
           className="select-none opacity-10 mix-blend-soft-light w-[35vw] max-w-[450px] drop-shadow-[0_0_24px_rgba(255,255,255,0.25)] animate-fade-in-down-soft [animation-delay:150ms] motion-reduce:animate-none"
         />
       </div>
       
       <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
         {/* Primary page heading — visually carried by the logo, exposed here for a11y/SEO */}
-        <h1 className="sr-only">منصة الإدارة الثقافية — منصة معرفية متخصصة في الإدارة الثقافية</h1>
+        <h1 className="sr-only">{c.h1}</h1>
 
         {/* Animated badge */}
         {/* <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6 hover-elevate">
@@ -108,7 +127,7 @@ export default function HeroSection() {
         <div className="flex justify-center mb-8">
           <img 
             src={whiteLogo} 
-            alt="منصة الإدارة الثقافية" 
+            alt={c.logoAlt}
             className="h-16 sm:h-20 lg:h-24 w-auto"
             data-testid="logo-hero"
           />
@@ -122,7 +141,7 @@ export default function HeroSection() {
 
         {/* Description */}
         <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:120ms]">
-          منصة معرفية متخصصة في نشر وتعزيز مفاهيم الإدارة الثقافية، تستهدف الممارسين والمهتمين والجهات العاملة في القطاع الثقافي
+          {c.description}
         </p>
 
         {/* CTA Buttons */}
@@ -169,7 +188,7 @@ export default function HeroSection() {
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30">
         <button
           onClick={handleScrollDown}
-          aria-label="انتقل إلى المحتوى"
+          aria-label={c.scroll}
           className="group flex items-center justify-center rounded-full text-white/80 hover:text-white transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         >
           <div className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition-colors duration-300 group-hover:border-white/60 animate-float motion-reduce:animate-none">

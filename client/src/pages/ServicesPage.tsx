@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
 import { useToast } from "@/hooks/use-toast";
+import { useCopy, useServerMessage } from "@/i18n/locale";
 import whiteIcon from "@assets/white-icon.png";
 import {
   Sparkles,
@@ -33,50 +35,98 @@ import {
 const PILLARS = [
   {
     id: "content",
-    label: "المحتوى الثقافي",
     icon: BookOpen,
     bgClass: "bg-chart-3/20",
     textClass: "text-chart-3",
   },
   {
     id: "design",
-    label: "التصميم الثقافي",
     icon: Palette,
     bgClass: "bg-chart-4/20",
     textClass: "text-chart-4",
   },
   {
     id: "education",
-    label: "التعليم الثقافي",
     icon: GraduationCap,
     bgClass: "bg-chart-2/20",
     textClass: "text-chart-2",
   },
 ] as const;
 
-const CONTENT_ITEMS = [
-  { number: "01", text: "إعداد الدراسات والتقارير المعرفية" },
-  { number: "02", text: "كتابة المقالات المتخصصة" },
-  { number: "03", text: "تطوير الأدلة والموارد المعرفية" },
-  { number: "04", text: "توثيق التجارب والممارسات الثقافية" },
-  { number: "05", text: "إنتاج النشرات والمحتوى المهني المتخصص" },
-];
-
-const DESIGN_ITEMS = [
-  { number: "01", text: "تصميم البرامج والتجارب الثقافية" },
-  { number: "02", text: "تصميم المبادرات والحلول الثقافية" },
-  { number: "03", text: "تصميم الأدلة المهنية والإجرائية" },
-  { number: "04", text: "تصميم الحقائب التدريبية المتخصصة" },
-  { number: "05", text: "تطوير النماذج والأدوات التشغيلية" },
-];
-
-const EDUCATION_ITEMS = [
-  { number: "01", text: "البرامج المهنية المتخصصة" },
-  { number: "02", text: "الدورات التدريبية" },
-  { number: "03", text: "ورش العمل التطبيقية" },
-  { number: "04", text: "برامج التأهيل والتطوير المهني" },
-  { number: "05", text: "اللقاءات والجلسات المعرفية المتخصصة" },
-];
+const COPY = {
+  ar: {
+    pillars: { content: "المحتوى الثقافي", design: "التصميم الثقافي", education: "التعليم الثقافي" },
+    badge: "المساهمة في بناء القدرات الثقافية",
+    heading: "الخدمات",
+    heroSub: "نرافق الجهات والأفراد العاملين في القطاع الثقافي عبر ثلاثة مسارات متكاملة: المحتوى، والتصميم، والتعليم.",
+    cta: "اطلب الخدمة",
+    serviceN: (n: string) => `الخدمة ${n}`,
+    includes: "تشمل الخدمة:",
+    pContent: "نُنتج محتوى معرفيًا متخصصًا يسهم في تطوير الممارسات المهنية في القطاع الثقافي، من خلال إعداد المقالات والدراسات والتقارير والأدلة والموارد المرجعية. وتركز الخدمة على نقل المعرفة، وتوثيق التجارب، وتحويل الخبرات والممارسات إلى محتوى مهني يدعم التعلم واتخاذ القرار وتطوير العمل الثقافي.",
+    pDesign: "نساعد الجهات على تحويل الأفكار والطموحات الثقافية إلى برامج ومبادرات ومنتجات قابلة للتنفيذ والأثر. تشمل الخدمة تصميم البرامج الثقافية والفعاليات النوعية، وتطوير المبادرات والحلول الثقافية، وإعداد الأدلة المهنية والحقائب التدريبية، وبناء النماذج التشغيلية التي تضمن وضوح الرؤية وجودة التنفيذ واستدامة النتائج.",
+    pEdu: "نعمل على تنمية القدرات المهنية للعاملين في القطاع الثقافي من خلال برامج تدريبية متخصصة وتجارب تعليمية تطبيقية تربط المعرفة بالممارسة. وتركز الخدمة على تأهيل الأفراد والفرق وتمكينهم من اكتساب المهارات والأدوات اللازمة لإدارة المشاريع والبرامج والمبادرات الثقافية بكفاءة واحترافية.",
+    contentItems: ["إعداد الدراسات والتقارير المعرفية", "كتابة المقالات المتخصصة", "تطوير الأدلة والموارد المعرفية", "توثيق التجارب والممارسات الثقافية", "إنتاج النشرات والمحتوى المهني المتخصص"],
+    designItems: ["تصميم البرامج والتجارب الثقافية", "تصميم المبادرات والحلول الثقافية", "تصميم الأدلة المهنية والإجرائية", "تصميم الحقائب التدريبية المتخصصة", "تطوير النماذج والأدوات التشغيلية"],
+    educationItems: ["البرامج المهنية المتخصصة", "الدورات التدريبية", "ورش العمل التطبيقية", "برامج التأهيل والتطوير المهني", "اللقاءات والجلسات المعرفية المتخصصة"],
+    formHeading: "نموذج طلب الخدمات",
+    formIntro: "عرّفنا بطلبك وسيتواصل معك فريقنا لمناقشة التفاصيل والخطوات القادمة",
+    sentTitle: "تم إرسال طلبك بنجاح!",
+    sentBody: "شكراً لك، سنتواصل معك قريباً",
+    name: "الاسم",
+    namePlaceholder: "أدخل اسمك",
+    email: "البريد الإلكتروني",
+    emailPlaceholder: "أدخل بريدك الإلكتروني",
+    phone: "رقم الجوال",
+    organization: "اسم الجهة",
+    organizationPlaceholder: "أدخل اسم جهتك",
+    subject: "الموضوع",
+    subjectPlaceholder: "اختر الخدمة المطلوبة",
+    other: "أخرى",
+    request: "الطلب",
+    requestPlaceholder: "صف طلبك أو احتياجك بالتفصيل",
+    sending: "جاري الإرسال...",
+    submit: "إرسال الطلب",
+    errorTitle: "خطأ",
+    failed: "حدث خطأ أثناء إرسال البيانات",
+    network: "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+  },
+  en: {
+    pillars: { content: "Cultural Content", design: "Cultural Design", education: "Cultural Education" },
+    badge: "Contributing to cultural capacity building",
+    heading: "Services",
+    heroSub: "We support organizations and individuals in the cultural sector through three integrated tracks: content, design and education.",
+    cta: "Request a service",
+    serviceN: (n: string) => `Service ${n}`,
+    includes: "The service includes:",
+    pContent: "We produce specialized knowledge content that helps develop professional practice in the cultural sector, through articles, studies, reports, guides and reference resources. The service focuses on transferring knowledge, documenting experiences, and turning expertise and practice into professional content that supports learning, decision-making and the development of cultural work.",
+    pDesign: "We help organizations turn cultural ideas and ambitions into programs, initiatives and products that can be delivered and make an impact. The service covers designing cultural programs and distinctive events, developing cultural initiatives and solutions, preparing professional guides and training kits, and building operating models that ensure a clear vision, quality delivery and sustainable results.",
+    pEdu: "We develop the professional capabilities of people working in the cultural sector through specialized training programs and applied learning experiences that connect knowledge with practice. The service focuses on qualifying individuals and teams and equipping them with the skills and tools needed to manage cultural projects, programs and initiatives efficiently and professionally.",
+    contentItems: ["Preparing knowledge studies and reports", "Writing specialized articles", "Developing guides and knowledge resources", "Documenting cultural experiences and practices", "Producing newsletters and specialized professional content"],
+    designItems: ["Designing cultural programs and experiences", "Designing cultural initiatives and solutions", "Designing professional and procedural guides", "Designing specialized training kits", "Developing operational templates and tools"],
+    educationItems: ["Specialized professional programs", "Training courses", "Applied workshops", "Professional qualification and development programs", "Specialized knowledge meetups and sessions"],
+    formHeading: "Service request form",
+    formIntro: "Tell us about your request and our team will contact you to discuss the details and next steps",
+    sentTitle: "Your request was sent successfully!",
+    sentBody: "Thank you — we will be in touch soon",
+    name: "Name",
+    namePlaceholder: "Enter your name",
+    email: "Email address",
+    emailPlaceholder: "Enter your email address",
+    phone: "Mobile number",
+    organization: "Organization name",
+    organizationPlaceholder: "Enter your organization's name",
+    subject: "Subject",
+    subjectPlaceholder: "Select the service you need",
+    other: "Other",
+    request: "Request",
+    requestPlaceholder: "Describe your request or need in detail",
+    sending: "Sending...",
+    submit: "Submit request",
+    errorTitle: "Error",
+    failed: "Something went wrong while sending your details",
+    network: "A connection error occurred. Please try again.",
+  },
+};
 
 const inputClass =
   "h-12 text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl";
@@ -89,6 +139,8 @@ export default function ServicesPage() {
   const [parallaxY, setParallaxY] = useState(0);
   const reduceMotionRef = useRef(false);
   const { toast } = useToast();
+  const c = useCopy(COPY);
+  const serverMessage = useServerMessage();
 
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
   const { ref: designRef, isVisible: designVisible } = useScrollAnimation();
@@ -184,16 +236,16 @@ export default function ServicesPage() {
         }, 3000);
       } else {
         toast({
-          title: "خطأ",
-          description: data.message || "حدث خطأ أثناء إرسال البيانات",
+          title: c.errorTitle,
+          description: serverMessage(data.message, c.failed),
           variant: "destructive",
         });
         setIsSubmitting(false);
       }
     } catch (error) {
       toast({
-        title: "خطأ",
-        description: "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+        title: c.errorTitle,
+        description: c.network,
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -202,6 +254,7 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-background font-sans flex flex-col">
+      <SEO page="services" />
       <Header />
       <main>
         {/* ===== HERO SECTION ===== */}
@@ -219,7 +272,7 @@ export default function ServicesPage() {
           />
 
           <div
-            className="absolute inset-0 z-[1] pointer-events-none flex items-center justify-start pl-8 sm:pl-12 lg:pl-20"
+            className="absolute inset-0 z-[1] pointer-events-none flex items-center justify-start pe-8 sm:pe-12 lg:pe-20"
             style={{ transform: `translateY(${parallaxY}px)` }}
           >
             <img
@@ -235,18 +288,17 @@ export default function ServicesPage() {
           <div className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-24 sm:py-32">
             <div className="inline-block mb-8 animate-fade-in-down">
               <span className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-medium bg-primary/15 text-primary border border-primary/30 backdrop-blur-sm">
-                <Sparkles className="h-4 w-4 ml-2" />
-                المساهمة في بناء القدرات الثقافية
+                <Sparkles className="h-4 w-4 me-2" />
+                {c.badge}
               </span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight animate-fade-in-up">
-              الخدمات
+              {c.heading}
             </h1>
 
             <p className="text-lg sm:text-xl lg:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:120ms]">
-              نرافق الجهات والأفراد العاملين في القطاع الثقافي عبر ثلاثة مسارات
-              متكاملة: المحتوى، والتصميم، والتعليم.
+              {c.heroSub}
             </p>
 
             {/* Pillar quick-nav */}
@@ -263,7 +315,7 @@ export default function ServicesPage() {
                     <pillar.icon className={`h-6 w-6 ${pillar.textClass}`} />
                   </div>
                   <span className="text-white/90 text-sm font-semibold leading-snug">
-                    {pillar.label}
+                    {c.pillars[pillar.id]}
                   </span>
                 </button>
               ))}
@@ -275,7 +327,7 @@ export default function ServicesPage() {
                 className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl transition-all duration-300"
                 onClick={() => scrollToId("service-request-form")}
               >
-                اطلب الخدمة
+                {c.cta}
               </Button>
             </div>
           </div>
@@ -293,38 +345,34 @@ export default function ServicesPage() {
             <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-start">
               <div>
                 <span className="inline-flex items-center gap-2 text-sm font-bold text-chart-3 bg-chart-3/10 px-4 py-1.5 rounded-full mb-6">
-                  الخدمة 01
+                  {c.serviceN("01")}
                 </span>
                 <div className="w-16 h-16 rounded-2xl bg-chart-3/10 flex items-center justify-center mb-6">
                   <BookOpen className="h-8 w-8 text-chart-3" />
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-5">
-                  المحتوى الثقافي
+                  {c.pillars.content}
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  نُنتج محتوى معرفيًا متخصصًا يسهم في تطوير الممارسات المهنية في
-                  القطاع الثقافي، من خلال إعداد المقالات والدراسات والتقارير
-                  والأدلة والموارد المرجعية. وتركز الخدمة على نقل المعرفة،
-                  وتوثيق التجارب، وتحويل الخبرات والممارسات إلى محتوى مهني
-                  يدعم التعلم واتخاذ القرار وتطوير العمل الثقافي.
+                  {c.pContent}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold text-foreground mb-5">
-                  تشمل الخدمة:
+                  {c.includes}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {CONTENT_ITEMS.map((item) => (
+                  {c.contentItems.map((text, i) => (
                     <div
-                      key={item.number}
+                      key={i}
                       className="group p-6 rounded-xl bg-card border border-card-border hover:border-chart-3/40 hover:shadow-lg transition-all duration-300"
                     >
                       <span className="block text-3xl font-bold text-chart-3/25 group-hover:text-chart-3/40 transition-colors mb-3">
-                        {item.number}
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                       <h4 className="text-base font-bold text-foreground leading-relaxed">
-                        {item.text}
+                        {text}
                       </h4>
                     </div>
                   ))}
@@ -346,19 +394,19 @@ export default function ServicesPage() {
             <div className="grid lg:grid-cols-[1.1fr_1fr] gap-12 items-start">
               <div className="order-2 lg:order-1">
                 <h3 className="text-lg font-bold text-foreground mb-5">
-                  تشمل الخدمة:
+                  {c.includes}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {DESIGN_ITEMS.map((item) => (
+                  {c.designItems.map((text, i) => (
                     <div
-                      key={item.number}
+                      key={i}
                       className="group p-6 rounded-xl bg-background border border-card-border hover:border-chart-4/40 hover:shadow-lg transition-all duration-300"
                     >
                       <span className="block text-3xl font-bold text-chart-4/25 group-hover:text-chart-4/40 transition-colors mb-3">
-                        {item.number}
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                       <h4 className="text-base font-bold text-foreground leading-relaxed">
-                        {item.text}
+                        {text}
                       </h4>
                     </div>
                   ))}
@@ -367,21 +415,16 @@ export default function ServicesPage() {
 
               <div className="order-1 lg:order-2">
                 <span className="inline-flex items-center gap-2 text-sm font-bold text-chart-4 bg-chart-4/10 px-4 py-1.5 rounded-full mb-6">
-                  الخدمة 02
+                  {c.serviceN("02")}
                 </span>
                 <div className="w-16 h-16 rounded-2xl bg-chart-4/10 flex items-center justify-center mb-6">
                   <Palette className="h-8 w-8 text-chart-4" />
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-5">
-                  التصميم الثقافي
+                  {c.pillars.design}
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  نساعد الجهات على تحويل الأفكار والطموحات الثقافية إلى برامج
-                  ومبادرات ومنتجات قابلة للتنفيذ والأثر. تشمل الخدمة تصميم
-                  البرامج الثقافية والفعاليات النوعية، وتطوير المبادرات
-                  والحلول الثقافية، وإعداد الأدلة المهنية والحقائب التدريبية،
-                  وبناء النماذج التشغيلية التي تضمن وضوح الرؤية وجودة التنفيذ
-                  واستدامة النتائج.
+                  {c.pDesign}
                 </p>
               </div>
             </div>
@@ -399,37 +442,33 @@ export default function ServicesPage() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mb-14">
               <span className="inline-flex items-center gap-2 text-sm font-bold text-chart-2 bg-chart-2/10 px-4 py-1.5 rounded-full mb-6">
-                الخدمة 03
+                {c.serviceN("03")}
               </span>
               <div className="w-16 h-16 rounded-2xl bg-chart-2/10 flex items-center justify-center mb-6">
                 <GraduationCap className="h-8 w-8 text-chart-2" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-5">
-                التعليم الثقافي
+                {c.pillars.education}
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                نعمل على تنمية القدرات المهنية للعاملين في القطاع الثقافي من
-                خلال برامج تدريبية متخصصة وتجارب تعليمية تطبيقية تربط المعرفة
-                بالممارسة. وتركز الخدمة على تأهيل الأفراد والفرق وتمكينهم من
-                اكتساب المهارات والأدوات اللازمة لإدارة المشاريع والبرامج
-                والمبادرات الثقافية بكفاءة واحترافية.
-              </p>
+                  {c.pEdu}
+                </p>
             </div>
 
             <h3 className="text-lg font-bold text-foreground mb-8">
-              تشمل الخدمة:
+              {c.includes}
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {EDUCATION_ITEMS.map((item) => (
+              {c.educationItems.map((text, i) => (
                 <div
-                  key={item.number}
+                  key={i}
                   className="group p-6 rounded-xl bg-background border border-card-border hover:border-chart-2/40 hover:shadow-lg transition-all duration-300"
                 >
                   <span className="block text-3xl font-bold text-chart-2/25 group-hover:text-chart-2/40 transition-colors mb-3">
-                    {item.number}
+                    {String(i + 1).padStart(2, "0")}
                   </span>
                   <h4 className="text-base font-bold text-foreground leading-relaxed">
-                    {item.text}
+                    {text}
                   </h4>
                 </div>
               ))}
@@ -452,11 +491,10 @@ export default function ServicesPage() {
                   <Sparkles className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-                  نموذج طلب الخدمات
+                  {c.formHeading}
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-                  عرّفنا بطلبك وسيتواصل معك فريقنا لمناقشة التفاصيل والخطوات
-                  القادمة
+                  {c.formIntro}
                 </p>
               </div>
 
@@ -466,10 +504,10 @@ export default function ServicesPage() {
                     <Check className="h-10 w-10 text-chart-2" />
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">
-                    تم إرسال طلبك بنجاح!
+                    {c.sentTitle}
                   </h3>
                   <p className="text-muted-foreground">
-                    شكراً لك، سنتواصل معك قريباً
+                    {c.sentBody}
                   </p>
                 </div>
               ) : (
@@ -478,7 +516,7 @@ export default function ServicesPage() {
                     <div className="space-y-2">
                       <Label htmlFor="name" className={labelClass}>
                         <User className="h-4 w-4 text-primary" />
-                        الاسم
+                        {c.name}
                       </Label>
                       <Input
                         id="name"
@@ -486,7 +524,7 @@ export default function ServicesPage() {
                         type="text"
                         value={formData.name}
                         onChange={handleInputChange}
-                        placeholder="أدخل اسمك"
+                        placeholder={c.namePlaceholder}
                         required
                         className={inputClass}
                         disabled={isSubmitting}
@@ -496,7 +534,7 @@ export default function ServicesPage() {
                     <div className="space-y-2">
                       <Label htmlFor="email" className={labelClass}>
                         <Mail className="h-4 w-4 text-primary" />
-                        البريد الإلكتروني
+                        {c.email}
                       </Label>
                       <Input
                         id="email"
@@ -504,7 +542,7 @@ export default function ServicesPage() {
                         type="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        placeholder="أدخل بريدك الإلكتروني"
+                        placeholder={c.emailPlaceholder}
                         required
                         className={inputClass}
                         disabled={isSubmitting}
@@ -516,7 +554,7 @@ export default function ServicesPage() {
                     <div className="space-y-2">
                       <Label htmlFor="phone" className={labelClass}>
                         <Phone className="h-4 w-4 text-primary" />
-                        رقم الجوال
+                        {c.phone}
                       </Label>
                       <Input
                         id="phone"
@@ -534,7 +572,7 @@ export default function ServicesPage() {
                     <div className="space-y-2">
                       <Label htmlFor="organization" className={labelClass}>
                         <Building2 className="h-4 w-4 text-primary" />
-                        اسم الجهة
+                        {c.organization}
                       </Label>
                       <Input
                         id="organization"
@@ -542,7 +580,7 @@ export default function ServicesPage() {
                         type="text"
                         value={formData.organization}
                         onChange={handleInputChange}
-                        placeholder="أدخل اسم جهتك"
+                        placeholder={c.organizationPlaceholder}
                         required
                         className={inputClass}
                         disabled={isSubmitting}
@@ -553,7 +591,7 @@ export default function ServicesPage() {
                   <div className="space-y-2">
                     <Label htmlFor="subject" className={labelClass}>
                       <Tag className="h-4 w-4 text-primary" />
-                      الموضوع
+                      {c.subject}
                     </Label>
                     <Select
                       value={formData.subject}
@@ -561,13 +599,13 @@ export default function ServicesPage() {
                       disabled={isSubmitting}
                     >
                       <SelectTrigger className={selectTriggerClass} id="subject">
-                        <SelectValue placeholder="اختر الخدمة المطلوبة" />
+                        <SelectValue placeholder={c.subjectPlaceholder} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="المحتوى الثقافي">المحتوى الثقافي</SelectItem>
-                        <SelectItem value="التصميم الثقافي">التصميم الثقافي</SelectItem>
-                        <SelectItem value="التعليم الثقافي">التعليم الثقافي</SelectItem>
-                        <SelectItem value="أخرى">أخرى</SelectItem>
+                        <SelectItem value="المحتوى الثقافي">{c.pillars.content}</SelectItem>
+                        <SelectItem value="التصميم الثقافي">{c.pillars.design}</SelectItem>
+                        <SelectItem value="التعليم الثقافي">{c.pillars.education}</SelectItem>
+                        <SelectItem value="أخرى">{c.other}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -575,14 +613,14 @@ export default function ServicesPage() {
                   <div className="space-y-2">
                     <Label htmlFor="message" className={labelClass}>
                       <MessageSquare className="h-4 w-4 text-primary" />
-                      الطلب
+                      {c.request}
                     </Label>
                     <Textarea
                       id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
-                      placeholder="صف طلبك أو احتياجك بالتفصيل"
+                      placeholder={c.requestPlaceholder}
                       required
                       rows={5}
                       className="text-base bg-card border-input text-foreground placeholder:text-muted-foreground focus:border-ring rounded-xl resize-none"
@@ -599,12 +637,12 @@ export default function ServicesPage() {
                     {isSubmitting ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                        جاري الإرسال...
+                        {c.sending}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
                         <Send className="h-5 w-5" />
-                        إرسال الطلب
+                        {c.submit}
                       </div>
                     )}
                   </Button>

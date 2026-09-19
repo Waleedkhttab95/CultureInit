@@ -6,6 +6,7 @@ import { registerRoutes, uploadsDir } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { buildSessionMiddleware } from "./auth";
+import { buildSitemap } from "./seo";
 
 const app = express();
 
@@ -24,6 +25,21 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   }),
 );
+
+// Keep the API, admin, PDFs and uploaded documents (CVs) out of search indexes.
+// Editor images (img-*) live in the same /uploads dir and stay indexable so
+// article images can show in image search.
+app.use((req, res, next) => {
+  if (
+    req.path.startsWith("/api/") ||
+    // The guide PDFs are gated behind a form; each has its own indexable page.
+    /\.pdf$/i.test(req.path) ||
+    (req.path.startsWith("/uploads/") && !/^\/uploads\/img-/.test(req.path))
+  ) {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  }
+  next();
+});
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
@@ -64,6 +80,19 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Generated from the DB so new/updated articles appear without a redeploy.
+  app.get("/sitemap.xml", async (_req, res) => {
+    try {
+      res
+        .type("application/xml")
+        .set("Cache-Control", "public, max-age=3600")
+        .send(await buildSitemap());
+    } catch (err) {
+      console.error("[sitemap] build failed:", err);
+      res.status(500).type("text/plain").send("Sitemap unavailable");
+    }
+  });
+
   // Serve project assets (PDFs, images) for downloads
   app.use(
     "/attached_assets",
@@ -84,6 +113,11 @@ app.use((req, res, next) => {
     const message =
       status >= 500 ? "Internal Server Error" : err.message || "Request failed";
     res.status(status).json({ error: message });
+  });
+
+  // Unknown API routes must answer JSON 404, not the SPA shell.
+  app.all("/api/*", (_req, res) => {
+    res.status(404).json({ error: "Not found" });
   });
 
   // importantly only setup vite in development and after

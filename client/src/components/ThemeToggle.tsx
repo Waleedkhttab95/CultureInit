@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCopy } from "@/i18n/locale";
+
+const COPY = {
+  ar: { toLight: "تفعيل الوضع الفاتح", toDark: "تفعيل الوضع الداكن" },
+  en: { toLight: "Switch to light mode", toDark: "Switch to dark mode" },
+};
 
 /**
  * Accessible light/dark toggle. Crossfades the sun/moon icons using only
@@ -9,13 +15,14 @@ import { Button } from "@/components/ui/button";
  */
 export default function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
+  const c = useCopy(COPY);
   const [mounted, setMounted] = useState(false);
 
   // Avoid rendering the wrong icon before the theme is resolved on the client.
   useEffect(() => setMounted(true), []);
 
   const isDark = resolvedTheme === "dark";
-  const label = isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن";
+  const label = isDark ? c.toLight : c.toDark;
 
   return (
     <Button

@@ -1,128 +1,70 @@
-# دليل تحسين محركات البحث (SEO Guide)
+# دليل تحسين محركات البحث (SEO)
 
-## ما تم إضافته
+الموقع يعمل بلغتين: العربية (المسار الافتراضي بدون بادئة) والإنجليزية (بادئة `/en`).
+المقالات بالعربية فقط، أما واجهة الموقع وبياناته الوصفية فمتوفرة باللغتين.
 
-تم تحسين الموقع لمحركات البحث من خلال:
+## أين يوجد كل شيء
 
-### 1. **Meta Tags الأساسية** (client/index.html)
-- عنوان الصفحة (Title)
-- الوصف (Description)
-- الكلمات المفتاحية (Keywords)
-- معلومات المؤلف (Author)
-- تعليمات الروبوتات (Robots)
+| الملف | الدور |
+|---|---|
+| `shared/seo.ts` | **المصدر الوحيد** للعناوين والأوصاف (عربي/إنجليزي) لكل صفحة، ودوال الروابط، وبيانات JSON-LD |
+| `server/seo.ts` | يولّد وسوم `<head>` لكل رابط ويحقنها في `index.html`، ويحدد رمز الاستجابة (200 / 301 / 404)، ويبني `sitemap.xml` |
+| `server/vite.ts` | يربط ما سبق بوضعَي التطوير والإنتاج (وأي ملف غير موجود يرجع 404 حقيقي) |
+| `client/src/components/SEO.tsx` | يحدّث الوسوم أثناء التنقل داخل الموقع (بدون إعادة تحميل)، بنفس بيانات `shared/seo.ts` |
+| `client/src/i18n/locale.tsx` | سياق اللغة (`useLocale`, `useCopy`, `useT`) |
+| `client/index.html` | قالب الصفحة؛ ما بين `<!--seo:start-->` و`<!--seo:end-->` يُستبدل عند كل طلب |
+| `client/public/robots.txt` | قواعد الزواحف |
 
-### 2. **Open Graph Tags**
-لتحسين مظهر الموقع عند المشاركة على:
-- Facebook
-- LinkedIn
-- WhatsApp
+## كيف تعمل اللغتان
 
-### 3. **Twitter Cards**
-لتحسين مظهر الموقع عند المشاركة على Twitter/X
+- `/articles` عربي، و`/en/articles` إنجليزي. كل رابط له لغة واحدة فقط.
+- كل صفحة مزدوجة اللغة تحمل `hreflang` (ar / en / x-default) وتظهر في `sitemap.xml` بنسختيها.
+- صفحات المقالات (`/articles/:slug`) عربية فقط: الرابط `/en/articles/:slug` يُحوَّل 301 إلى النسخة العربية.
+- زر تبديل اللغة (`LanguageSwitcher`) رابط حقيقي إلى نفس الصفحة باللغة الأخرى.
+- الاتجاه (`rtl`/`ltr`) واللغة على وسم `<html>` تُضبط من الخادم ثم من العميل.
 
-### 4. **JSON-LD Structured Data**
-بيانات منظمة لمساعدة Google على فهم الموقع بشكل أفضل:
-- معلومات المنظمة
-- معلومات الاتصال
-- الموقع الجغرافي
-- روابط مواقع التواصل الاجتماعي
+## إضافة صفحة جديدة
 
-### 5. **robots.txt** (client/public/robots.txt)
-ملف لتوجيه محركات البحث حول الصفحات المسموح والممنوع الوصول إليها
+1. أضف مدخلاً في `PAGES` داخل `shared/seo.ts` (المسار، العنوان والوصف بالعربية والإنجليزية، `index: true/false`).
+2. أضف المسار في `client/src/App.tsx` (داخل `AppRoutes`).
+3. ضع `<SEO page="مفتاح_الصفحة" />` في الصفحة.
+4. اجعل النصوص ثنائية اللغة عبر `useCopy({ ar: {...}, en: {...} })`.
 
-### 6. **sitemap.xml** (client/public/sitemap.xml)
-خريطة الموقع التي تساعد محركات البحث على اكتشاف جميع الصفحات
+لا تحتاج إلى تعديل `sitemap.xml`؛ يُبنى تلقائياً من `PAGES` ومن المقالات المنشورة في قاعدة البيانات.
 
-### 7. **SEO Component** (client/src/components/SEO.tsx)
-مكون React قابل لإعادة الاستخدام لتحديث Meta Tags ديناميكياً
+## المقالات
 
-## كيفية استخدام مكون SEO
+- العنوان والوصف والصورة تُؤخذ من المقال نفسه (`title`, `excerpt`, `image`) وتُحقن في الـ`<head>` من الخادم، مع بيانات `Article` و`BreadcrumbList`.
+- الوصف يُقتطع تلقائياً إلى ~160 حرفاً، فاكتب `excerpt` واضحاً في أول جملتين.
+- الروابط بحروف كبيرة/صغيرة مختلفة تُحوَّل 301 إلى الصيغة المخزنة.
+- رابط مقال غير موجود أو غير منشور يرجع 404 حقيقي.
 
-يمكنك استخدام مكون SEO في أي صفحة لتخصيص المعلومات الخاصة بها:
+## الأدلة (ملفات PDF)
 
-```tsx
-import SEO from "@/components/SEO";
+- لكل دليل في `client/src/data/resources.json` صفحة مستقلة قابلة للفهرسة: `/resources/:id` (عربية فقط؛ `/en/resources/:id` يُحوَّل 301).
+- الصفحة تحمل العنوان والوصف وصورة الغلاف وبيانات `DigitalDocument` + `BreadcrumbList`، وتظهر في `sitemap.xml` وفي قائمة `/resources`.
+- ملف الـPDF نفسه غير مفهرس (`X-Robots-Tag: noindex` لكل `.pdf`) ورابطه غير منشور في البيانات المنظمة؛ التنزيل يمر عبر نموذج الاسم والبريد (`ResourceDownloadDialog`).
+- **إضافة دليل جديد:** أضف عنصراً في `resources.json` (`id` بحروف لاتينية صغيرة وشرطات، `title`, `description`, `image`, `file`) — الصفحة والـsitemap تُبنى تلقائياً.
+- الوصف يُقتطع إلى ~160 حرفاً، فاجعل أول جملتين في `description` هما الأهم.
+- تنبيه: مسار ملف الـPDF مضمَّن في حزمة JavaScript، فالبوابة هي حماية "عرض" لا حماية وصول حقيقية.
 
-export default function MyPage() {
-  return (
-    <div>
-      <SEO
-        title="عنوان الصفحة - مبادرة الإدارة الثقافية"
-        description="وصف مختصر للصفحة"
-        keywords="كلمات, مفتاحية, مخصصة"
-        url="https://cultural-managment.com/my-page"
-        image="https://cultural-managment.com/my-image.jpg"
-      />
-      {/* محتوى الصفحة */}
-    </div>
-  );
-}
-```
+## معايير العناوين والأوصاف
 
-### مثال: صفحة مقالة
+- العنوان: حتى ~60 حرفاً، فريد لكل صفحة.
+- الوصف: 120–160 حرفاً، واضح ويحمل الكلمات المهمة.
+- صورة المشاركة الافتراضية: `client/public/og-image.png` (1200×630).
 
-```tsx
-<SEO
-  title={article.title + " - مبادرة الإدارة الثقافية"}
-  description={article.excerpt}
-  keywords={article.tags.join(", ")}
-  url={`https://cultural-managment.com/articles/${article.id}`}
-  image={article.coverImage}
-  type="article"
-  author={article.author}
-/>
-```
+## التحقق بعد النشر
 
-## نصائح إضافية
+1. `https://cultural-managment.com/sitemap.xml` يعمل ويحتوي الصفحات بالنسختين + المقالات.
+2. أضف الموقع إلى **Google Search Console** وأرسل `sitemap.xml` (يُفضَّل إضافة `/en` ضمن نفس الخاصية).
+3. اختبر صفحة مقال ومقالاً غير موجود (يجب 404):  
+   `curl -I https://cultural-managment.com/articles/does-not-exist`
+4. اختبر المشاركة: [Facebook Debugger](https://developers.facebook.com/tools/debug/) و[LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/).
+5. اختبر البيانات المنظمة: [Rich Results Test](https://search.google.com/test/rich-results).
+6. راجع تقرير **Pages** و**International targeting** في Search Console بعد أسبوعين.
 
-### 1. تحديث sitemap.xml
-عند إضافة صفحات جديدة، يجب تحديث ملف `client/public/sitemap.xml`
+## ملاحظات
 
-### 2. الكلمات المفتاحية
-استخدم كلمات مفتاحية ذات صلة بالمحتوى:
-- الإدارة الثقافية
-- إدارة المشاريع الثقافية
-- الابتكار الثقافي
-- الاقتصاد الثقافي
-- التسويق الثقافي
-- وغيرها...
-
-### 3. الأوصاف
-- يجب أن يكون الوصف بين 150-160 حرف
-- واضح وجذاب
-- يحتوي على كلمات مفتاحية مهمة
-
-### 4. العناوين
-- يجب أن يكون العنوان أقل من 60 حرف
-- فريد لكل صفحة
-- يحتوي على الكلمات المفتاحية الأساسية
-
-### 5. الصور
-- استخدم صور بجودة عالية (1200x630 بكسل للـ Open Graph)
-- تأكد من وجود نص بديل (alt text) للصور
-- استخدم أسماء ملفات وصفية
-
-## التحقق من التحسينات
-
-### 1. Google Search Console
-- أضف الموقع إلى Google Search Console
-- قم برفع ملف sitemap.xml
-
-### 2. اختبار Rich Results
-استخدم أداة Google لاختبار البيانات المنظمة:
-https://search.google.com/test/rich-results
-
-### 3. Facebook Debugger
-اختبر كيف يظهر الموقع على Facebook:
-https://developers.facebook.com/tools/debug/
-
-### 4. Twitter Card Validator
-اختبر كيف يظهر الموقع على Twitter:
-https://cards-dev.twitter.com/validator
-
-## المراجع
-
-- [Google SEO Starter Guide](https://developers.google.com/search/docs/beginner/seo-starter-guide)
-- [Open Graph Protocol](https://ogp.me/)
-- [Schema.org](https://schema.org/)
-- [Twitter Cards](https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards)
+- رقم الهاتف في بيانات المنظمة (`shared/seo.ts`) يجب أن يطابق الموجود في `Footer.tsx`؛ عدم التطابق يضعف إشارات الكيان.
+- ملفات السير الذاتية في `/uploads` (PDF/DOC) محجوبة عن الفهرسة برأس `X-Robots-Tag` وقاعدة في `robots.txt`، لكنها ما زالت متاحة لمن يعرف الرابط.

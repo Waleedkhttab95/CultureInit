@@ -5,25 +5,49 @@ import whiteIcon from "@assets/white-icon.png";
 import asset2 from "@assets/Asset2@4x.png";
 import asset6 from "@assets/Asset6@4x.png";
 import { useScrollAnimation } from "@/hooks/use-scroll-animation";
+import { useCopy } from "@/i18n/locale";
+
+const COPY = {
+  ar: {
+    iconAlt: "منصة الإدارة الثقافية",
+    heading: "الرؤية والرسالة",
+    intro: "ننطلق من الرياض إلى العالم العربي لنقدّم مرجعاً مهنياً متكاملاً في الإدارة الثقافية.",
+    vision: "الرؤية",
+    visionText: "الممكّن المعرفي للقطاع الثقافي.",
+    mission: "الرسالة",
+    missionText:
+      "تمكين القطاع الثقافي العربي عبر محتوى علمي وتطبيقي يربط النظرية بالممارسة، ويبني كفاءات قادرة على إدارة البرامج والمشاريع بكفاءة وابتكار.",
+  },
+  en: {
+    iconAlt: "Cultural Management Platform",
+    heading: "Vision & Mission",
+    intro:
+      "From Riyadh to the wider Arab world, we offer a complete professional reference for cultural management.",
+    vision: "Vision",
+    visionText: "The knowledge enabler of the cultural sector.",
+    mission: "Mission",
+    missionText:
+      "To empower the Arab cultural sector through scholarly, practical content that connects theory to practice and builds the capabilities to manage programs and projects with efficiency and innovation.",
+  },
+};
 
 export default function AboutSection() {
   const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation();
+  const c = useCopy(COPY);
   
   //todo: replace with CMS-driven content
   const visionMissionData = [
     {
       icon: Eye,
-      title: "الرؤية",
-      description:
-"الممكّن المعرفي للقطاع الثقافي.",
+      title: c.vision,
+      description: c.visionText,
       ring: "ring-primary/25",
       backgroundImage: asset2
     },
     {
       icon: MessageSquare,
-      title: "الرسالة",
-      description:
-        "تمكين القطاع الثقافي العربي عبر محتوى علمي وتطبيقي يربط النظرية بالممارسة، ويبني كفاءات قادرة على إدارة البرامج والمشاريع بكفاءة وابتكار.",
+      title: c.mission,
+      description: c.missionText,
       ring: "ring-chart-2/25",
       backgroundImage: asset6
     }
@@ -43,17 +67,17 @@ export default function AboutSection() {
           <div className="flex justify-center mb-4">
             <img
               src={initiativeIcon}
-              alt="منصة الإدارة الثقافية"
+              alt={c.iconAlt}
               className="h-14 w-14"
               loading="lazy"
               data-testid="icon-initiative"
             />
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-3">
-            الرؤية والرسالة
+            {c.heading}
           </h2>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            ننطلق من الرياض إلى العالم العربي لنقدّم مرجعاً مهنياً متكاملاً في الإدارة الثقافية.
+            {c.intro}
           </p>
         </div>
 
