@@ -103,6 +103,9 @@ const COPY = {
     ctaH: "قدّم طلبك الآن",
     ctaP: "سجّل الآن وانضم للدفعة الثانية من قادة الإدارة الثقافية",
     ctaBtn: "سجّل الآن",
+    closed: "التسجيل مغلق",
+    ctaClosedH: "اكتمل التسجيل",
+    ctaClosedP: "أُغلق باب التسجيل في الدفعة الثانية، ترقّبوا الإعلان عن الدفعة القادمة",
   },
   en: {
     badge: "Second cohort – the first specialized professional certificate in cultural management in the Kingdom",
@@ -173,8 +176,14 @@ const COPY = {
     ctaH: "Apply now",
     ctaP: "Register now and join the second cohort of cultural management leaders",
     ctaBtn: "Register now",
+    closed: "Registration closed",
+    ctaClosedH: "Registration is closed",
+    ctaClosedP: "Registration for the second cohort has closed — stay tuned for the next cohort",
   },
 };
+
+// Set to true to reopen registration for the next cohort.
+const REGISTRATION_OPEN = false;
 
 const COURSE_ICONS = [BookOpen, TrendingUp, Lightbulb, Briefcase, Megaphone, Users, Star];
 const TOOL_ICONS = [Users, BookOpen, Headphones, Award, FileText, Target];
@@ -294,13 +303,23 @@ export default function ProgramsPage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:360ms]">
-              <Button
-                size="lg"
-                className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                asChild
-              >
-                <Link href="/programs/register">{c.apply}</Link>
-              </Button>
+              {REGISTRATION_OPEN ? (
+                <Button
+                  size="lg"
+                  className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  asChild
+                >
+                  <Link href="/programs/register">{c.apply}</Link>
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  disabled
+                  className="h-14 px-8 text-lg font-semibold bg-primary text-primary-foreground rounded-xl"
+                >
+                  {c.closed}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="lg"
@@ -666,21 +685,31 @@ export default function ProgramsPage() {
         >
           <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {c.ctaH}
+              {REGISTRATION_OPEN ? c.ctaH : c.ctaClosedH}
             </h2>
             <p className="text-white/70 mb-10 text-lg">
-              {c.ctaP}
+              {REGISTRATION_OPEN ? c.ctaP : c.ctaClosedP}
             </p>
-            <Button
-              size="lg"
-              className="h-14 px-12 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              asChild
-            >
-              <Link href="/programs/register">
-                <Send className="h-5 w-5" />
-                {c.ctaBtn}
-              </Link>
-            </Button>
+            {REGISTRATION_OPEN ? (
+              <Button
+                size="lg"
+                className="h-14 px-12 text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                asChild
+              >
+                <Link href="/programs/register">
+                  <Send className="h-5 w-5" />
+                  {c.ctaBtn}
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                disabled
+                className="h-14 px-12 text-lg font-semibold bg-primary text-primary-foreground rounded-xl"
+              >
+                {c.closed}
+              </Button>
+            )}
           </div>
         </section>
       </main>
