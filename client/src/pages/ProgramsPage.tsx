@@ -11,7 +11,6 @@ import pdfFile from "@assets/program-guide-batch-2.pdf";
 import pearsonLogo from "@assets/pearson-logo.jpg";
 import cmprBadge from "@assets/cmp-accreditation-logo.png";
 import aljaziraLogo from "@assets/aljazira-bank-logo.jpeg";
-import kaplLogo from "@assets/kapl-library-logo.webp";
 import {
   BookOpen,
   Award,
@@ -97,9 +96,7 @@ const COPY = {
     badgeAlt: "شارة ممارس الإدارة الثقافية المعتمدة — Cultural Management Practitioner (CMPr)",
     partnersH: "شركاء البرنامج",
     strategic: "الشريك الاستراتيجي",
-    hosting: "شريك الاستضافة",
     aljaziraAlt: "بنك الجزيرة",
-    kaplAlt: "مكتبة الملك عبدالعزيز العامة",
     ctaH: "قدّم طلبك الآن",
     ctaP: "سجّل الآن وانضم للدفعة الثانية من قادة الإدارة الثقافية",
     ctaBtn: "سجّل الآن",
@@ -170,9 +167,7 @@ const COPY = {
     badgeAlt: "Accredited Cultural Management Practitioner (CMPr) badge",
     partnersH: "Program partners",
     strategic: "Strategic partner",
-    hosting: "Hosting partner",
     aljaziraAlt: "Bank AlJazira",
-    kaplAlt: "King Abdulaziz Public Library",
     ctaH: "Apply now",
     ctaP: "Register now and join the second cohort of cultural management leaders",
     ctaBtn: "Register now",
@@ -658,17 +653,6 @@ export default function ProgramsPage() {
                   className="h-40 sm:h-52 w-auto"
                   loading="lazy"
                 />
-              </div>
-              <div className="flex flex-col items-center gap-3">
-                <span className="text-sm font-semibold text-primary">{c.hosting}</span>
-                <div className="bg-white rounded-2xl px-6 py-4 shadow-sm border border-slate/10">
-                  <img
-                    src={kaplLogo}
-                    alt={c.kaplAlt}
-                    className="h-12 sm:h-16 w-auto"
-                    loading="lazy"
-                  />
-                </div>
               </div>
             </div>
           </div>
