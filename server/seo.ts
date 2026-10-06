@@ -19,6 +19,7 @@ import {
   findPage,
   localePath,
   organizationLd,
+  fitTitle,
   pageBreadcrumbs,
   parseLocale,
   resourceIdFromPath,
@@ -32,6 +33,7 @@ import {
 } from "@shared/seo";
 import type { Article } from "@shared/schema";
 import { getPublishedArticleBySlug, listPublishedArticles } from "./article-store";
+import { staticBody } from "./page-body";
 import resourcesData from "../client/src/data/resources.json";
 
 interface ResourceEntry {
@@ -40,6 +42,9 @@ interface ResourceEntry {
   description: string;
   image: string;
   file: string;
+  pages?: number;
+  contents?: string[];
+  summary?: string;
 }
 // Bundled at build time (esbuild inlines the JSON), same file the Resources page reads.
 const RESOURCES = resourcesData as ResourceEntry[];
@@ -49,7 +54,6 @@ const RESOURCES = resourcesData as ResourceEntry[];
 // right title/description/canonical/OG/JSON-LD for the URL they asked for.
 const HEAD_START = "<!--seo:start-->";
 const HEAD_END = "<!--seo:end-->";
-const NOSCRIPT_MARKER = "<!--seo:noscript-->";
 
 export interface PageHead {
   status: number;
@@ -57,8 +61,8 @@ export interface PageHead {
   redirect?: string;
   locale: Locale;
   head: string;
-  /** Crawler-readable fallback content, rendered inside <noscript>. */
-  noscript: string;
+  /** Crawler-readable content, rendered into #root (the React app replaces it on load). */
+  body: string;
 }
 
 // ---- HTML helpers --------------------------------------------------------
@@ -147,7 +151,7 @@ function renderHead(i: HeadInput): string {
   return lines.map((l) => `    ${l}`).join("\n");
 }
 
-// ---- Crawler-readable fallback (<noscript>) -------------------------------
+// ---- Crawler-readable body (rendered into #root) ---------------------------
 
 const NAV_LABELS: Record<Locale, Array<[PageKey, string]>> = {
   ar: [
@@ -177,17 +181,17 @@ function navHtml(locale: Locale): string {
   return `<nav><ul>${links}</ul></nav>`;
 }
 
-function wrapNoscript(locale: Locale, body: string): string {
-  return `<noscript><div lang="${locale}" dir="${DIR[locale]}">${body}${navHtml(locale)}</div></noscript>`;
+function wrapBody(locale: Locale, inner: string): string {
+  return `<div lang="${locale}" dir="${DIR[locale]}">${inner}${navHtml(locale)}</div>`;
 }
 
-function pageNoscript(locale: Locale, title: string, description: string, extra = ""): string {
-  return wrapNoscript(locale, `<h1>${esc(title)}</h1><p>${esc(description)}</p>${extra}`);
+function pageBody(locale: Locale, title: string, description: string, extra = ""): string {
+  return wrapBody(locale, `<h1>${esc(title)}</h1><p>${esc(description)}</p>${extra}`);
 }
 
-function articleNoscript(a: Article): string {
+function articleBody(a: Article): string {
   // `content` is sanitized HTML (see sanitize.ts) — safe to embed as-is.
-  return wrapNoscript(
+  return wrapBody(
     "ar",
     `<article><h1>${esc(a.title)}</h1><p>${esc(a.author)} — ${esc(a.date)}</p>` +
       `<p>${esc(a.excerpt)}</p>${a.content}</article>`,
@@ -196,9 +200,19 @@ function articleNoscript(a: Article): string {
 
 function articleListHtml(list: Article[]): string {
   const items = list
-    .map((a) => `<li><a href="${ARTICLES_PATH}/${encodeURIComponent(a.slug)}">${esc(a.title)}</a></li>`)
+    .map(
+      (a) =>
+        `<li><a href="${ARTICLES_PATH}/${encodeURIComponent(a.slug)}">${esc(a.title)}</a><p>${esc(a.excerpt)}</p></li>`,
+    )
     .join("");
   return `<ul>${items}</ul>`;
+}
+
+function guideContentsHtml(r: ResourceEntry): string {
+  const summary = r.summary ? `<h2>نبذة عن الدليل</h2><p>${esc(r.summary)}</p>` : "";
+  if (!r.contents?.length) return summary;
+  const pages = r.pages ? `<p>عدد صفحات الدليل: ${r.pages}</p>` : "";
+  return `${summary}${pages}<h2>محتويات الدليل</h2><ul>${r.contents.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>`;
 }
 
 // ---- Route resolution ----------------------------------------------------
@@ -218,7 +232,7 @@ function notFound(locale: Locale): PageHead {
       description: meta.description,
       robots: "noindex, follow",
     }),
-    noscript: pageNoscript(locale, meta.title, meta.description),
+    body: pageBody(locale, meta.title, meta.description),
   };
 }
 
@@ -229,7 +243,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
   const canonicalPath = localePath(locale, path);
   // "/articles/" and "//articles" are the same page as "/articles": one URL each.
   if (rawPathname !== canonicalPath) {
-    return { status: 301, redirect: canonicalPath, locale, head: "", noscript: "" };
+    return { status: 301, redirect: canonicalPath, locale, head: "", body: "" };
   }
 
   // Admin CMS: never indexed, Arabic-only.
@@ -245,7 +259,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
         description: meta.description,
         robots: "noindex, nofollow",
       }),
-      noscript: "",
+      body: "",
     };
   }
 
@@ -264,12 +278,13 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
       try {
         extra = articleListHtml(await listPublishedArticles("cultural"));
       } catch (err) {
-        console.error("[seo] failed to list articles for noscript:", err);
+        console.error("[seo] failed to list articles for body:", err);
       }
     }
     if (key === "resources") {
       extra = `<ul>${RESOURCES.map(
-        (r) => `<li><a href="${RESOURCES_PATH}/${encodeURIComponent(r.id)}">${esc(r.title)}</a></li>`,
+        (r) =>
+          `<li><a href="${RESOURCES_PATH}/${encodeURIComponent(r.id)}">${esc(r.title)}</a><p>${esc(r.description)}</p></li>`,
       ).join("")}</ul>`;
     }
 
@@ -285,49 +300,37 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
         alternates: def.index ? alternatesFor(def.path) : undefined,
         jsonLd: ld,
       }),
-      noscript: pageNoscript(locale, meta.title, meta.description, extra),
+      body: wrapBody(
+        locale,
+        `${staticBody(key, locale) ?? `<h1>${esc(meta.title)}</h1><p>${esc(meta.description)}</p>`}${extra}`,
+      ),
     };
   }
 
   // Article detail. Articles exist in Arabic only, so the English path 301s to
   // the Arabic URL rather than serving duplicate Arabic content under /en.
+  // Cultural-site slugs are lowercase: any other spelling 301s to that form.
   const slug = articleSlugFromPath(path);
   if (slug) {
-    if (locale === "en") {
+    const canonicalSlug = slug.toLowerCase();
+    if (locale === "en" || slug !== canonicalSlug) {
       return {
         status: 301,
-        redirect: `${ARTICLES_PATH}/${encodeURIComponent(slug)}`,
-        locale,
+        redirect: `${ARTICLES_PATH}/${encodeURIComponent(canonicalSlug)}`,
+        locale: "ar",
         head: "",
-        noscript: "",
+        body: "",
       };
     }
 
     let article: Article | undefined;
     try {
       article = await getPublishedArticleBySlug(slug);
-      if (!article) {
-        // Slugs are case-sensitive; fold near-duplicates (e.g. "Systems-…" vs
-        // "systems-…") into the stored spelling with a permanent redirect.
-        const lower = slug.toLowerCase();
-        const match = (await listPublishedArticles("cultural")).find(
-          (a) => a.slug.toLowerCase() === lower,
-        );
-        if (match && match.slug !== slug) {
-          return {
-            status: 301,
-            redirect: `${ARTICLES_PATH}/${encodeURIComponent(match.slug)}`,
-            locale,
-            head: "",
-            noscript: "",
-          };
-        }
-      }
     } catch (err) {
       // DB hiccup: serve the app shell (200) rather than a false 404, and let
       // the client fetch retry. Default head keeps the page valid.
       console.error("[seo] article lookup failed:", err);
-      return { status: 200, locale, head: "", noscript: "" };
+      return { status: 200, locale, head: "", body: "" };
     }
 
     if (!article) return notFound("ar");
@@ -340,7 +343,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
       locale: "ar",
       head: renderHead({
         locale: "ar",
-        title: `${article.title} | ${BRAND.ar}`,
+        title: fitTitle(article.title, "ar"),
         description: truncateDescription(article.excerpt),
         robots: robotsFor(true),
         canonical: url,
@@ -364,7 +367,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
           ]),
         ],
       }),
-      noscript: articleNoscript(article),
+      body: articleBody(article),
     };
   }
 
@@ -378,7 +381,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
         redirect: `${RESOURCES_PATH}/${encodeURIComponent(resourceId)}`,
         locale,
         head: "",
-        noscript: "",
+        body: "",
       };
     }
     const resource = RESOURCES.find((r) => r.id === resourceId);
@@ -404,7 +407,7 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
           ]),
         ],
       }),
-      noscript: pageNoscript("ar", resource.title, resource.description),
+      body: pageBody("ar", resource.title, resource.description, guideContentsHtml(resource)),
     };
   }
 
@@ -430,7 +433,9 @@ export function injectHead(template: string, result: PageHead): string {
     }
   }
 
-  return html.replace(NOSCRIPT_MARKER, result.noscript);
+  // Real content goes inside #root so crawlers that never run JS still see it.
+  // createRoot in main.tsx replaces it once the app loads.
+  return html.replace('<div id="root"></div>', `<div id="root">${result.body}</div>`);
 }
 
 // ---- Sitemap ---------------------------------------------------------------

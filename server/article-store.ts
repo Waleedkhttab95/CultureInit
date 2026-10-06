@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { getDb, isDbConfigured } from "./db";
 import {
   articles,
@@ -38,7 +38,7 @@ function loadJsonFallback(): Article[] {
     jsonFallbackCache = raw.map((a) => ({
       id: a.id,
       site: "cultural",
-      slug: a.id,
+      slug: lowerSlug(a.id),
       title: a.title,
       author: a.author,
       date: a.date,
@@ -54,6 +54,18 @@ function loadJsonFallback(): Article[] {
     jsonFallbackCache = [];
   }
   return jsonFallbackCache;
+}
+
+// Cultural-site slugs are served lowercase: mixed-case URLs are duplicates to
+// search engines. Lookups ignore case, so older links still resolve (the server
+// 301s them to the lowercase form). write-community slugs are left untouched
+// because its static build derives URLs from them directly.
+function lowerSlug(slug: string): string {
+  return slug.toLowerCase();
+}
+
+function canonicalSlugRow(site: ArticleSite, row: Article): Article {
+  return site === "cultural" ? { ...row, slug: lowerSlug(row.slug) } : row;
 }
 
 // Map Arabic letters/digits to Latin so slugs are always URL-safe ASCII.
@@ -100,11 +112,12 @@ export async function listPublishedArticles(
   if (!isDbConfigured()) {
     return site === "cultural" ? loadJsonFallback() : [];
   }
-  return getDb()
+  const rows = await getDb()
     .select()
     .from(articles)
     .where(and(eq(articles.site, site), eq(articles.published, true)))
     .orderBy(desc(articles.date));
+  return rows.map((r) => canonicalSlugRow(site, r));
 }
 
 export async function getPublishedArticleBySlug(
@@ -113,7 +126,7 @@ export async function getPublishedArticleBySlug(
 ): Promise<Article | undefined> {
   if (!isDbConfigured()) {
     return site === "cultural"
-      ? loadJsonFallback().find((a) => a.slug === slug)
+      ? loadJsonFallback().find((a) => a.slug === lowerSlug(slug))
       : undefined;
   }
   const rows = await getDb()
@@ -122,12 +135,12 @@ export async function getPublishedArticleBySlug(
     .where(
       and(
         eq(articles.site, site),
-        eq(articles.slug, slug),
+        sql`lower(${articles.slug}) = ${lowerSlug(slug)}`,
         eq(articles.published, true),
       ),
     )
     .limit(1);
-  return rows[0];
+  return rows[0] ? canonicalSlugRow(site, rows[0]) : undefined;
 }
 
 // ---- Admin reads/writes (DB required) -----------------------------------

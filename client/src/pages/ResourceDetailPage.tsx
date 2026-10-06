@@ -97,6 +97,25 @@ export default function ResourceDetailPage() {
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 {resource.description}
               </p>
+              {resource.summary && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-foreground mb-3">نبذة عن الدليل</h2>
+                  <p className="text-base text-muted-foreground leading-relaxed">{resource.summary}</p>
+                </div>
+              )}
+              {resource.contents && resource.contents.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="text-xl font-bold text-foreground mb-3">محتويات الدليل</h2>
+                  {resource.pages && (
+                    <p className="text-sm text-muted-foreground mb-3">عدد الصفحات: {resource.pages}</p>
+                  )}
+                  <ul className="space-y-2 list-disc ps-6 text-foreground">
+                    {resource.contents.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <Button
                 size="lg"
                 onClick={() => setOpen(true)}

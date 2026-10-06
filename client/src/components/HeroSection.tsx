@@ -5,21 +5,8 @@ import whiteLogo from "@assets/white-logo.png";
 import whiteIcon from "@assets/white-icon.png";
 import { PAGES } from "@shared/seo";
 import { useCopy } from "@/i18n/locale";
+import { COPY } from "@shared/copy/home-hero";
 
-const COPY = {
-  ar: {
-    h1: "منصة الإدارة الثقافية — منصة معرفية متخصصة في الإدارة الثقافية",
-    logoAlt: "منصة الإدارة الثقافية",
-    description: PAGES.home.meta.ar.description,
-    scroll: "انتقل إلى المحتوى",
-  },
-  en: {
-    h1: "Cultural Management Platform — a specialist knowledge platform for cultural management",
-    logoAlt: "Cultural Management Platform",
-    description: PAGES.home.meta.en.description,
-    scroll: "Scroll to content",
-  },
-};
 
 export default function HeroSection() {
   const c = useCopy(COPY);

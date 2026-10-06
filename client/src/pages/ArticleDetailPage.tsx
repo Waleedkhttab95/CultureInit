@@ -10,6 +10,7 @@ import {
   ARTICLES_PATH,
   BRAND,
   absoluteAsset,
+  fitTitle,
   absoluteUrl,
   articleLd,
   breadcrumbLd,
@@ -63,7 +64,7 @@ export default function ArticleDetailPage() {
     <div className="min-h-screen bg-background font-sans flex flex-col">
       <SEO
         locale="ar"
-        title={`${article.title} | ${BRAND.ar}`}
+        title={fitTitle(article.title, "ar")}
         description={truncateDescription(article.excerpt)}
         path={`${ARTICLES_PATH}/${article.slug}`}
         image={absoluteAsset(article.image)}

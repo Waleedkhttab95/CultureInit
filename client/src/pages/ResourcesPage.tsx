@@ -11,21 +11,8 @@ import ResourceDownloadDialog from "@/components/ResourceDownloadDialog";
 import resourcesData from "@/data/resources.json";
 import { PAGES } from "@shared/seo";
 import { useCopy, resourceHref } from "@/i18n/locale";
+import { COPY } from "@shared/copy/resources";
 
-const COPY = {
-  ar: {
-    title: "الموارد",
-    intro: PAGES.resources.meta.ar.description,
-    arabicNote: "",
-    download: "تحميل الدليل",
-  },
-  en: {
-    title: "Resources",
-    intro: PAGES.resources.meta.en.description,
-    arabicNote: "Our guides are published in Arabic.",
-    download: "Download the guide",
-  },
-};
 
 export default function ResourcesPage() {
   const c = useCopy(COPY);

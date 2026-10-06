@@ -11,25 +11,8 @@ import { PAGES } from "@shared/seo";
 import { ForwardArrow } from "@/components/DirectionalIcons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, User } from "lucide-react";
+import { COPY } from "@shared/copy/articles";
 
-const COPY = {
-  ar: {
-    title: "المقالات",
-    intro: PAGES.articles.meta.ar.description,
-    loading: "جارٍ التحميل...",
-    error: "تعذّر تحميل المقالات. حاول لاحقًا.",
-    empty: "لا توجد مقالات منشورة حاليًا.",
-    readMore: "اقرأ المزيد",
-  },
-  en: {
-    title: "Articles",
-    intro: PAGES.articles.meta.en.description,
-    loading: "Loading...",
-    error: "We couldn't load the articles. Please try again later.",
-    empty: "No articles have been published yet.",
-    readMore: "Read more",
-  },
-};
 
 export default function ArticlesPage() {
   const c = useCopy(COPY);

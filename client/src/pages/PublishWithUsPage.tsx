@@ -18,47 +18,8 @@ import {
   FileText,
   MessageSquare
 } from "lucide-react";
+import { COPY } from "@shared/copy/publish-with-us";
 
-const COPY = {
-  ar: {
-    heading: "انشر معنا",
-    intro: "اترك بياناتك ومحتواك وسنتواصل معك قريباً لمراجعة طلبك",
-    sentTitle: "تم إرسال طلبك بنجاح!",
-    sentBody: "شكراً لك، سنتواصل معك قريباً",
-    name: "الاسم الثلاثي",
-    namePlaceholder: "أدخل اسمك الثلاثي",
-    email: "البريد الإلكتروني",
-    emailPlaceholder: "أدخل بريدك الإلكتروني",
-    title: "العنوان",
-    titlePlaceholder: "أدخل عنوان المحتوى",
-    message: "الرسالة",
-    messagePlaceholder: "اكتب رسالتك أو وصف المحتوى",
-    sending: "جاري الإرسال...",
-    submit: "إرسال الطلب",
-    errorTitle: "خطأ",
-    failed: "حدث خطأ أثناء إرسال البيانات",
-    network: "حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
-  },
-  en: {
-    heading: "Publish with us",
-    intro: "Leave your details and your content, and we will get back to you soon to review your request",
-    sentTitle: "Your request was sent successfully!",
-    sentBody: "Thank you — we will be in touch soon",
-    name: "Full name",
-    namePlaceholder: "Enter your full name",
-    email: "Email address",
-    emailPlaceholder: "Enter your email address",
-    title: "Title",
-    titlePlaceholder: "Enter the title of your content",
-    message: "Message",
-    messagePlaceholder: "Write your message or describe your content",
-    sending: "Sending...",
-    submit: "Submit request",
-    errorTitle: "Error",
-    failed: "Something went wrong while sending your details",
-    network: "A connection error occurred. Please try again.",
-  },
-};
 
 export default function PublishWithUsPage() {
   const c = useCopy(COPY);

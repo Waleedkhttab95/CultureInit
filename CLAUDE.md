@@ -32,7 +32,10 @@ Soft orange→green hero gradients; calm tinted backgrounds from the identity; s
 Arabic is the default (un-prefixed URLs); English lives under `/en`. Articles are Arabic-only (`/en/articles/:slug` 301s to the Arabic URL); the UI and page metadata exist in both languages.
 
 - **Single source of truth:** `shared/seo.ts` — per-page title/description (ar + en), URL/hreflang helpers, JSON-LD builders. Never hard-code SEO tags elsewhere.
-- **Server injects the `<head>`** (`server/seo.ts`, wired in `server/vite.ts`) so crawlers/scrapers see real tags, correct status codes (200/301/404) and a `<noscript>` fallback. The client `<SEO>` component only keeps the head in sync during SPA navigation.
+- **Server renders the page content and `<head>`** (`server/seo.ts`, `server/page-body.ts`, wired in `server/vite.ts`). The body is written into `#root` so crawlers that don't run JS see the real H1/copy; the client `<SEO>` component keeps the head in sync during SPA navigation. Correct status codes (200/301/404) are returned too.
+- **Page copy lives in `shared/copy/*.ts`** and is imported by BOTH the React page and `server/page-body.ts`. Change text there, never only in the page, or crawlers and visitors will see different content.
+- **Titles:** keep under 60 chars. Use `fitTitle()` from `shared/seo.ts` for article/guide titles.
+- **Cultural-site article slugs are lowercase.** The API lowercases them and lookups ignore case; mixed-case URLs 301. (write-community slugs are left as stored.)
 - **Sitemap is generated** (`GET /sitemap.xml`) from `PAGES` + published articles — do not add a static one.
 - **New page:** add to `PAGES`, add the route in `App.tsx` `AppRoutes`, render `<SEO page="…" />`, and write copy with `useCopy({ ar, en })` (or `useT` for long forms).
 - **RTL/LTR:** use logical utilities (`ms-/me-/ps-/pe-/text-start/end`), not `ml/mr/pl/pr/text-left/right`, so both directions work. Inside `/en` wouter prefixes `<Link href="/x">` with `/en` automatically; use `~/x` for an absolute link (e.g. Arabic-only articles).

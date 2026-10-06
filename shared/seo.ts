@@ -281,6 +281,22 @@ export function resourceIdFromPath(path: string): string | undefined {
   }
 }
 
+/** Ubersuggest flags titles over 65 chars; keep a margin. */
+export const TITLE_MAX = 60;
+
+/**
+ * "<title> | <brand>" when it fits, otherwise the bare title, otherwise the
+ * title cut at a word boundary. Brand is dropped before content is truncated.
+ */
+export function fitTitle(title: string, locale: Locale): string {
+  const withBrand = `${title} | ${BRAND[locale]}`;
+  if (withBrand.length <= TITLE_MAX) return withBrand;
+  if (title.length <= TITLE_MAX) return title;
+  const cut = title.slice(0, TITLE_MAX - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > TITLE_MAX * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
 /** Trims to a search-snippet friendly length without cutting mid-word. */
 export function truncateDescription(text: string, max = 160): string {
   const clean = text.replace(/\s+/g, " ").trim();
