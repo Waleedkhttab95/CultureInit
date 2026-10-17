@@ -123,10 +123,19 @@ npm run db:push    # adds the tags column
 Until this runs, the admin panel's tags field will save but the column won't
 exist, so the request will fail — run it before using the field.
 
+### Form submissions now persist to Postgres
+Newsletter signups, PDF download requests, publish requests, service
+requests and program registrations are written to the DB
+(`newsletter_subscribers`, `pdf_download_requests`, `publish_requests`,
+`service_requests`, `program_registrations`) via `server/db-storage.ts`,
+whenever `DATABASE_URL` is set — previously they used in-memory storage
+(`server/storage.ts`'s `MemStorage`) and were lost on every restart/redeploy.
+No `db:push` needed for this: those tables were already in `shared/schema.ts`
+and, per the last `db:push` run, already existed in production (only
+`service_requests` was missing, and that's now created). Without
+`DATABASE_URL` the app still falls back to `MemStorage`, same as before.
+
 ## Known pre-existing items (out of scope, flagged)
-- Newsletter / registration form submissions still use in-memory storage and
-  are lost on restart — separate from articles; recommend migrating to the DB
-  later.
 - Uploaded files on Render's disk are ephemeral unless a Render **Persistent
   Disk** is mounted at `/uploads`. Cover images uploaded via the editor live
   there; for durability, mount a disk or move to object storage later.

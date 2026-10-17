@@ -1,5 +1,7 @@
 import { type User, type InsertUser, type NewsletterSubscriber, type InsertNewsletterSubscriber, type PdfDownloadRequest, type InsertPdfDownloadRequest, type PublishRequest, type InsertPublishRequest, type ProgramRegistration, type InsertProgramRegistration, type ServiceRequest, type InsertServiceRequest } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { isDbConfigured } from "./db";
+import { DbStorage } from "./db-storage";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -222,4 +224,9 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Forms (newsletter, PDF/publish/service requests, program registrations)
+// persist to Postgres once DATABASE_URL is set; MemStorage is the fallback
+// so the public site's forms still work without a DB configured (same
+// graceful-degradation rule as the article CMS — see article-store.ts).
+// Decided once at startup: DATABASE_URL doesn't change mid-process.
+export const storage: IStorage = isDbConfigured() ? new DbStorage() : new MemStorage();
