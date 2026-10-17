@@ -9,12 +9,14 @@ export interface PublicArticle {
   excerpt: string;
   image: string;
   content: string;
+  tags?: string[];
   /** ISO timestamp of the last edit (present on the API response). */
   updatedAt?: string;
 }
 
-export async function fetchArticles(): Promise<PublicArticle[]> {
-  const res = await fetch("/api/articles");
+export async function fetchArticles(opts?: { tagSlug?: string }): Promise<PublicArticle[]> {
+  const qs = opts?.tagSlug ? `?tagSlug=${encodeURIComponent(opts.tagSlug)}` : "";
+  const res = await fetch(`/api/articles${qs}`);
   if (!res.ok) throw new Error("Failed to load articles");
   return res.json();
 }

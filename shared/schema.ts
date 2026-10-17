@@ -194,6 +194,9 @@ export const articles = pgTable(
     image: text("image").notNull(),
     content: text("content").notNull(),
     category: text("category"),
+    // Topic labels, cultural site only. Rendered as links on the article and
+    // used to build the /articles/tag/:slug pages (see shared/seo.ts).
+    tags: text("tags").array().notNull().default(sql`'{}'::text[]`),
     published: boolean("published").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -224,6 +227,13 @@ export const insertArticleSchema = z.object({
   image: z.string().trim().min(1, "Image is required").max(500),
   content: z.string().min(1, "Content is required"),
   category: z.string().trim().max(120).optional().nullable(),
+  // Short topic labels, e.g. "الذكاء الاصطناعي". Each becomes a link to its
+  // own /articles/tag/:slug page — keep them specific, not generic.
+  tags: z
+    .array(z.string().trim().min(1).max(40))
+    .max(8, "الحد الأقصى 8 وسوم")
+    .optional()
+    .default([]),
   published: z.boolean().optional().default(true),
 });
 

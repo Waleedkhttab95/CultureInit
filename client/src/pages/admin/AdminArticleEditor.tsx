@@ -38,8 +38,21 @@ const makeEmpty = (site: ArticleSite): ArticleInput => ({
   image: "",
   content: "",
   category: "",
+  tags: [],
   published: true,
 });
+
+// "الذكاء الاصطناعي، الكتابة" -> ["الذكاء الاصطناعي", "الكتابة"]. Accepts
+// Arabic (،) and ASCII (,) commas, trims, drops empties, dedupes, caps at 8
+// (matches the server-side limit in shared/schema.ts).
+function parseTags(input: string): string[] {
+  const seen = new Set<string>();
+  for (const raw of input.split(/[,،]/)) {
+    const t = raw.trim();
+    if (t) seen.add(t);
+  }
+  return Array.from(seen).slice(0, 8);
+}
 
 export default function AdminArticleEditor() {
   const [match, params] = useRoute("/admin/articles/:id/edit");
@@ -54,6 +67,7 @@ export default function AdminArticleEditor() {
     makeEmpty(isEdit ? "cultural" : siteFromSearch()),
   );
   const [saving, setSaving] = useState(false);
+  const [tagsInput, setTagsInput] = useState("");
   const site: ArticleSite = form.site ?? "cultural";
 
   const { data: existing } = useQuery({
@@ -74,8 +88,10 @@ export default function AdminArticleEditor() {
         image: existing.image,
         content: existing.content,
         category: existing.category ?? "",
+        tags: existing.tags ?? [],
         published: existing.published,
       });
+      setTagsInput((existing.tags ?? []).join("، "));
     }
   }, [existing]);
 
@@ -107,6 +123,7 @@ export default function AdminArticleEditor() {
         ...form,
         slug: form.slug?.trim() || undefined,
         category: form.category?.trim() || null,
+        tags: parseTags(tagsInput),
       };
       if (isEdit) {
         await updateArticle(id as string, payload);
@@ -197,6 +214,22 @@ export default function AdminArticleEditor() {
                 placeholder="مثال: مقالات تعليمية"
                 onChange={(e) => set("category", e.target.value)}
               />
+            </div>
+          )}
+
+          {site === "cultural" && (
+            <div className="space-y-2">
+              <Label htmlFor="tags">الوسوم (افصل بينها بفاصلة، بحد أقصى 8)</Label>
+              <Input
+                id="tags"
+                value={tagsInput}
+                placeholder="الذكاء الاصطناعي، الكتابة الإبداعية"
+                onChange={(e) => setTagsInput(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                كل وسم يصبح رابطاً إلى صفحة تجمع كل المقالات بنفس الوسم، لذا اختر وسوماً محددة
+                تصف المقال فعلاً (وليس "ثقافة" أو كلمات عامة).
+              </p>
             </div>
           )}
 

@@ -6,6 +6,7 @@ import { fetchArticle, type PublicArticle } from "@/lib/articles";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
+import { tagHref } from "@/i18n/locale";
 import {
   ARTICLES_PATH,
   BRAND,
@@ -14,6 +15,7 @@ import {
   absoluteUrl,
   articleLd,
   breadcrumbLd,
+  tagSlug,
   truncateDescription,
 } from "@shared/seo";
 
@@ -132,6 +134,21 @@ export default function ArticleDetailPage() {
             style={{ direction: 'rtl' }}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
+
+          {/* Tags */}
+          {article.tags && article.tags.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-2" aria-label="وسوم المقال">
+              {article.tags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={tagHref(tagSlug(tag))}
+                  className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground hover-elevate"
+                >
+                  {tag}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Back to Articles Button */}
           <div className="mt-12 pt-8 border-t border-border">

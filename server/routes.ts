@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
 import { insertNewsletterSubscriberSchema, insertPdfDownloadRequestSchema, insertPublishRequestSchema, insertProgramRegistrationSchema, insertServiceRequestSchema, insertArticleSchema, updateArticleSchema, ARTICLE_SITES, type ArticleSite } from "@shared/schema";
+import { tagSlug } from "@shared/seo";
 import { addContactToBrevo, isBrevoConfigured, sendEmail } from "./brevo";
 import { appendRegistrationToSheet, initSheetHeaders, isGoogleSheetsConfigured } from "./google-sheets";
 import { fromZodError } from "zod-validation-error";
@@ -131,7 +132,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/articles", publicReadCors, async (req, res) => {
     try {
-      const list = await listPublishedArticles(resolveSite(req.query.site));
+      let list = await listPublishedArticles(resolveSite(req.query.site));
+      // Optional ?tagSlug= filters to articles carrying a tag that slugifies
+      // to this value (see shared/seo.ts tagSlug — same function used for the
+      // /articles/tag/:slug page, so a slug here always matches that page).
+      const tagSlugParam = typeof req.query.tagSlug === "string" ? req.query.tagSlug : undefined;
+      if (tagSlugParam) {
+        list = list.filter((a) => (a.tags ?? []).some((t) => tagSlug(t) === tagSlugParam));
+      }
       res.json(list);
     } catch (error) {
       console.error("List articles error:", error);

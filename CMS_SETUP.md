@@ -110,6 +110,19 @@ npm run db:seed-write-community    # imports the 22 original write-community art
 is safe to re-run. The seed data lives in `server/write-community-articles.json`
 (regenerate from the source project with `node scripts/extract-wc.mjs` if needed).
 
+### Migration: article tags (SEO)
+Adds a `tags` column (text array, defaults to `{}`) to `articles`, used by the
+admin editor's "الوسوم" field and the `/articles/tag/:slug` pages. Additive and
+non-destructive — existing articles just get an empty array. Run once after
+deploying, with `DATABASE_URL` available:
+
+```bash
+npm run db:push    # adds the tags column
+```
+
+Until this runs, the admin panel's tags field will save but the column won't
+exist, so the request will fail — run it before using the field.
+
 ## Known pre-existing items (out of scope, flagged)
 - Newsletter / registration form submissions still use in-memory storage and
   are lost on restart — separate from articles; recommend migrating to the DB

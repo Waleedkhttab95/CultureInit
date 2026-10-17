@@ -13,6 +13,7 @@ import { LocaleProvider } from "@/i18n/locale";
 // the initial download for public visitors.
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
 const ArticlesPage = lazy(() => import("@/pages/ArticlesPage"));
+const ArticleTagPage = lazy(() => import("@/pages/ArticleTagPage"));
 const ArticleDetailPage = lazy(() => import("@/pages/ArticleDetailPage"));
 const ResourcesPage = lazy(() => import("@/pages/ResourcesPage"));
 const ResourceDetailPage = lazy(() => import("@/pages/ResourceDetailPage"));
@@ -58,6 +59,7 @@ function AppRoutes() {
       <Switch>
         <Route path="/" component={LandingPage} />
         <Route path="/articles" component={ArticlesPage} />
+        <Route path="/articles/tag/:tag" component={ArticleTagPage} />
         <Route path="/articles/:id" component={ArticleDetailPage} />
         <Route path="/resources" component={ResourcesPage} />
         <Route path="/resources/:id" component={ResourceDetailPage} />

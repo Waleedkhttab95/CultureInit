@@ -54,6 +54,12 @@ export function resourceHref(id: string): string {
   return `~/resources/${encodeURIComponent(id)}`;
 }
 
+/** Tag listing pages are Arabic-only too, so the link is absolute (see articleHref).
+ * `slug` must already be a tag slug (see @shared/seo tagSlug), not raw tag text. */
+export function tagHref(slug: string): string {
+  return `~/articles/tag/${encodeURIComponent(slug)}`;
+}
+
 /**
  * The API's validation messages are Arabic-only. Arabic visitors see them as
  * before; English visitors get the localized fallback instead of Arabic text.

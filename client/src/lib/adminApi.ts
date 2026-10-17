@@ -14,6 +14,7 @@ export interface AdminArticle {
   image: string;
   content: string;
   category: string | null;
+  tags: string[];
   published: boolean;
   createdAt: string;
   updatedAt: string;
@@ -29,6 +30,7 @@ export interface ArticleInput {
   image: string;
   content: string;
   category?: string | null;
+  tags?: string[];
   published: boolean;
 }
 

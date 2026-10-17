@@ -24,6 +24,9 @@ import {
   parseLocale,
   resourceIdFromPath,
   resourceLd,
+  tagPagePath,
+  tagSlug,
+  tagSlugFromPath,
   truncateDescription,
   websiteLd,
   type Alternate,
@@ -189,12 +192,20 @@ function pageBody(locale: Locale, title: string, description: string, extra = ""
   return wrapBody(locale, `<h1>${esc(title)}</h1><p>${esc(description)}</p>${extra}`);
 }
 
+function tagLinksHtml(tags: string[] | null | undefined): string {
+  if (!tags?.length) return "";
+  const links = tags
+    .map((t) => `<li><a href="${tagPagePath(tagSlug(t))}">${esc(t)}</a></li>`)
+    .join("");
+  return `<ul>${links}</ul>`;
+}
+
 function articleBody(a: Article): string {
   // `content` is sanitized HTML (see sanitize.ts) — safe to embed as-is.
   return wrapBody(
     "ar",
     `<article><h1>${esc(a.title)}</h1><p>${esc(a.author)} — ${esc(a.date)}</p>` +
-      `<p>${esc(a.excerpt)}</p>${a.content}</article>`,
+      `<p>${esc(a.excerpt)}</p>${a.content}${tagLinksHtml(a.tags)}</article>`,
   );
 }
 
@@ -304,6 +315,58 @@ export async function resolveHead(rawPathname: string): Promise<PageHead> {
         locale,
         `${staticBody(key, locale) ?? `<h1>${esc(meta.title)}</h1><p>${esc(meta.description)}</p>`}${extra}`,
       ),
+    };
+  }
+
+  // Tag listing. Built from whatever tags the published articles actually
+  // carry — there is no separate tags table. Arabic only, like articles.
+  const tagParam = tagSlugFromPath(path);
+  if (tagParam) {
+    if (locale === "en") {
+      return { status: 301, redirect: tagPagePath(tagParam), locale: "ar", head: "", body: "" };
+    }
+
+    let allArticles: Article[] = [];
+    try {
+      allArticles = await listPublishedArticles("cultural");
+    } catch (err) {
+      console.error("[seo] tag lookup failed:", err);
+      return { status: 200, locale, head: "", body: "" };
+    }
+
+    // The tag label as an author actually typed it — first match wins so the
+    // page title stays stable even if spelling/casing varies across articles.
+    let label: string | undefined;
+    const matches: Article[] = [];
+    for (const a of allArticles) {
+      for (const t of a.tags ?? []) {
+        if (tagSlug(t) !== tagParam) continue;
+        if (!label) label = t;
+        matches.push(a);
+        break;
+      }
+    }
+    if (!label) return notFound("ar");
+
+    const url = absoluteUrl("ar", tagPagePath(tagParam));
+    return {
+      status: 200,
+      locale: "ar",
+      head: renderHead({
+        locale: "ar",
+        title: fitTitle(`مقالات عن ${label}`, "ar"),
+        description: `مقالات منصة الإدارة الثقافية المصنّفة تحت وسم «${label}».`,
+        robots: robotsFor(true),
+        canonical: url,
+        jsonLd: [
+          breadcrumbLd([
+            { name: BRAND.ar, url: absoluteUrl("ar", "/") },
+            { name: "المقالات", url: absoluteUrl("ar", ARTICLES_PATH) },
+            { name: label, url },
+          ]),
+        ],
+      }),
+      body: wrapBody("ar", `<h1>مقالات عن ${esc(label)}</h1>${articleListHtml(matches)}`),
     };
   }
 
@@ -499,6 +562,26 @@ export async function buildSitemap(): Promise<string> {
         "    <priority>0.7</priority>",
         "  </url>",
       ].join("\n"),
+    );
+  }
+
+  // One URL per distinct tag slug (first spelling seen wins — see resolveHead).
+  const tagSlugs = new Set<string>();
+  for (const a of list) {
+    for (const t of a.tags ?? []) tagSlugs.add(tagSlug(t));
+  }
+  for (const slug of Array.from(tagSlugs)) {
+    urls.push(
+      [
+        "  <url>",
+        `    <loc>${xmlEsc(absoluteUrl("ar", tagPagePath(slug)))}</loc>`,
+        newest ? `    <lastmod>${newest}</lastmod>` : "",
+        "    <changefreq>weekly</changefreq>",
+        "    <priority>0.5</priority>",
+        "  </url>",
+      ]
+        .filter(Boolean)
+        .join("\n"),
     );
   }
 

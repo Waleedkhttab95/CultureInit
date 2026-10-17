@@ -4,6 +4,8 @@
 // <SEO> component (which keeps the head in sync during SPA navigation).
 // Keep this file free of Node/DOM APIs.
 
+import { slugify } from "./slugify";
+
 export const SITE_URL = "https://cultural-managment.com";
 
 export const LOCALES = ["ar", "en"] as const;
@@ -279,6 +281,22 @@ export function resourceIdFromPath(path: string): string | undefined {
   } catch {
     return undefined;
   }
+}
+
+/** ASCII slug for a tag, e.g. "الذكاء الاصطناعي" -> "aladhka-alastnaay". Must
+ * give the same result on the server (sitemap, SSR head) and the client
+ * (the chip link on an article) for a given tag string. */
+export function tagSlug(tag: string): string {
+  return slugify(tag.trim().toLowerCase());
+}
+
+export function tagPagePath(slug: string): string {
+  return `${ARTICLES_PATH}/tag/${slug}`;
+}
+
+export function tagSlugFromPath(path: string): string | undefined {
+  const m = /^\/articles\/tag\/([^/]+)$/.exec(normalizePath(path));
+  return m ? m[1] : undefined;
 }
 
 /** Ubersuggest flags titles over 65 chars; keep a margin. */

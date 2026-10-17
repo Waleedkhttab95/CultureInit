@@ -11,6 +11,7 @@ import {
 } from "@shared/schema";
 import { sanitizeArticleHtml } from "./sanitize";
 import { markdownLiteToHtml } from "./markdown-lite";
+import { slugify as slugifyAscii } from "@shared/slugify";
 
 // ---- Public read path with graceful degradation -------------------------
 // If DATABASE_URL is not configured yet (e.g. during the Render env setup),
@@ -33,7 +34,7 @@ function loadJsonFallback(): Article[] {
       "articles.json",
     );
     const raw = JSON.parse(fs.readFileSync(jsonPath, "utf-8")) as Array<
-      Record<string, string>
+      Record<string, string> & { tags?: string[] }
     >;
     jsonFallbackCache = raw.map((a) => ({
       id: a.id,
@@ -46,6 +47,7 @@ function loadJsonFallback(): Article[] {
       image: a.image,
       content: markdownLiteToHtml(a.content ?? ""),
       category: null,
+      tags: a.tags ?? [],
       published: true,
       createdAt: new Date(a.date),
       updatedAt: new Date(a.date),
@@ -68,40 +70,13 @@ function canonicalSlugRow(site: ArticleSite, row: Article): Article {
   return site === "cultural" ? { ...row, slug: lowerSlug(row.slug) } : row;
 }
 
-// Map Arabic letters/digits to Latin so slugs are always URL-safe ASCII.
-// The write-community site is a Next.js static export: a non-ASCII slug yields
-// an HTML file whose on-disk name never matches the browser's percent-encoded
-// request path, so the article 404s on read even though it lists fine. Manual
-// slugs are already restricted to ASCII by the schema (slugField); this keeps
-// auto-generated slugs consistent with that rule.
-const ARABIC_TRANSLITERATION: Record<string, string> = {
-  ا: "a", أ: "a", إ: "a", آ: "a", ٱ: "a", ء: "", ئ: "a", ؤ: "w", ى: "a", ة: "h",
-  ب: "b", ت: "t", ث: "th", ج: "j", ح: "h", خ: "kh", د: "d", ذ: "dh", ر: "r",
-  ز: "z", س: "s", ش: "sh", ص: "s", ض: "d", ط: "t", ظ: "z", ع: "a", غ: "gh",
-  ف: "f", ق: "q", ك: "k", ل: "l", م: "m", ن: "n", ه: "h", و: "w", ي: "y",
-  "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4", "٥": "5", "٦": "6",
-  "٧": "7", "٨": "8", "٩": "9",
-};
-
-function transliterateArabic(input: string): string {
-  let out = "";
-  for (const ch of input) {
-    // Drop Arabic diacritics (tashkeel, U+064B–U+0652) entirely.
-    if (ch >= "ً" && ch <= "ْ") continue;
-    out += ARABIC_TRANSLITERATION[ch] ?? ch;
-  }
-  return out;
-}
-
+// Manual slugs are already restricted to ASCII by the schema (slugField);
+// this keeps auto-generated slugs consistent with that rule. Transliteration
+// lives in shared/slugify.ts — also used for tag slugs, which the client
+// must be able to reproduce exactly to link to the right tag page.
 function slugify(input: string): string {
-  const base = transliterateArabic(input)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/gi, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 180);
   // Titles that transliterate to nothing — fall back to a random suffix.
-  return base || `article-${Math.random().toString(36).slice(2, 8)}`;
+  return slugifyAscii(input) || `article-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 // ---- Public reads -------------------------------------------------------
@@ -205,6 +180,7 @@ export async function createArticle(input: InsertArticle): Promise<Article> {
       image: input.image,
       content: sanitizeArticleHtml(input.content),
       category: input.category ?? null,
+      tags: input.tags ?? [],
       published: input.published ?? true,
     })
     .returning();
@@ -228,6 +204,7 @@ export async function updateArticle(
   if (input.excerpt !== undefined) patch.excerpt = input.excerpt;
   if (input.image !== undefined) patch.image = input.image;
   if (input.category !== undefined) patch.category = input.category ?? null;
+  if (input.tags !== undefined) patch.tags = input.tags;
   if (input.content !== undefined) {
     patch.content = sanitizeArticleHtml(input.content);
   }
