@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { Plus, Pencil, Trash2, ExternalLink, LogOut } from "lucide-react";
 
 const SITES: { id: ArticleSite; label: string }[] = [
@@ -34,6 +35,7 @@ const SITES: { id: ArticleSite; label: string }[] = [
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const { username } = useAdminAuth();
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const [site, setSite] = useState<ArticleSite>("cultural");
@@ -74,7 +76,12 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-muted/20 p-6" dir="rtl">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">إدارة المقالات</h1>
+          <div>
+            <h1 className="text-2xl font-bold">إدارة المقالات</h1>
+            {username && (
+              <p className="text-sm text-muted-foreground mt-1">مسجّل الدخول باسم {username}</p>
+            )}
+          </div>
           <div className="flex gap-2">
             <Link href={`/admin/articles/new?site=${site}`}>
               <Button className="gap-2">

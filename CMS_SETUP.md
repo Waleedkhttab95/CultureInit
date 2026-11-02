@@ -51,6 +51,23 @@ Deploy as usual. The admin lives at **`/admin`** (login at `/admin/login`).
 - Toggle the **Published** switch on the dashboard to show/hide an article.
 - Slug auto-generates from the title; you can override it (URL: `/articles/<slug>`).
 
+## Adding another admin
+The original admin login (`ADMIN_USERNAME`/`ADMIN_PASSWORD_HASH`) is a single
+shared account. To give someone their own login instead of sharing that one,
+create a DB-backed admin account (requires `DATABASE_URL`, run from wherever
+you have it — locally with `.env`, or Render's shell):
+
+```bash
+npm run create-admin -- "culture.tools.sa@gmail.com" "a-strong-password"
+```
+
+They can then sign in at `/admin/login` with that email as the username and
+the password you chose. Re-running the command with the same email resets
+that admin's password instead of creating a duplicate. Any number of DB
+admins can exist; the original env-var admin keeps working alongside them.
+There's no UI for this yet — it's a one-time CLI step per admin, same as
+`hash-password`.
+
 ## How it behaves before the DB is configured
 The public pages fall back to the bundled `articles.json`, so the site
 **never goes down** during setup. Once `DATABASE_URL` is set and seeded, the

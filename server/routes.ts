@@ -162,11 +162,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ---- Admin auth --------------------------------------------------------
-  app.post("/api/admin/login", loginRateLimiter, (req, res) => {
+  app.post("/api/admin/login", loginRateLimiter, async (req, res) => {
     const username = typeof req.body?.username === "string" ? req.body.username : "";
     const password = typeof req.body?.password === "string" ? req.body.password : "";
 
-    if (!verifyAdminCredentials(username, password)) {
+    if (!(await verifyAdminCredentials(username, password))) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
@@ -177,13 +177,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: "Login failed" });
       }
       req.session.isAdmin = true;
+      req.session.adminUsername = username;
       const csrfToken = getOrCreateCsrfToken(req as any);
       req.session.save((saveErr) => {
         if (saveErr) {
           console.error("Session save error:", saveErr);
           return res.status(500).json({ error: "Login failed" });
         }
-        res.json({ authenticated: true, csrfToken });
+        res.json({ authenticated: true, csrfToken, username });
       });
     });
   });
@@ -201,7 +202,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.session?.isAdmin) {
       return res.status(401).json({ authenticated: false });
     }
-    res.json({ authenticated: true, csrfToken: getOrCreateCsrfToken(req as any) });
+    res.json({
+      authenticated: true,
+      csrfToken: getOrCreateCsrfToken(req as any),
+      username: req.session.adminUsername,
+    });
   });
 
   // ---- Admin article CRUD (auth + DB required) --------------------------

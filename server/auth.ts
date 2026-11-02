@@ -9,12 +9,15 @@ import connectPgSimple from "connect-pg-simple";
 import createMemoryStore from "memorystore";
 import rateLimit from "express-rate-limit";
 import { getPool, isDbConfigured } from "./db";
+import { storage } from "./storage";
 
 // Session shape (module augmentation so req.session is typed).
 declare module "express-session" {
   interface SessionData {
     isAdmin?: boolean;
     csrfToken?: string;
+    /** Which admin is logged in — env-var admin or a DB account's username. */
+    adminUsername?: string;
   }
 }
 
@@ -40,16 +43,32 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 // ---- Admin credential check ---------------------------------------------
 
-export function verifyAdminCredentials(
+// Two kinds of admin, checked in order:
+// 1. DB-backed accounts in the `users` table — any number of them, created
+//    with `npm run create-admin -- "email" "password"` (see create-admin.ts).
+// 2. The original single shared login via ADMIN_USERNAME/ADMIN_PASSWORD_HASH
+//    env vars — kept working so existing deployments aren't locked out.
+export async function verifyAdminCredentials(
   username: string,
   password: string,
-): boolean {
+): Promise<boolean> {
+  if (isDbConfigured()) {
+    try {
+      const user = await storage.getUserByUsername(username);
+      if (user && verifyPassword(password, user.password)) return true;
+    } catch (err) {
+      console.error("[auth] DB admin lookup failed:", err);
+    }
+  }
+
   const expectedUser = process.env.ADMIN_USERNAME;
   const expectedHash = process.env.ADMIN_PASSWORD_HASH;
   if (!expectedUser || !expectedHash) {
-    console.warn(
-      "[auth] ADMIN_USERNAME / ADMIN_PASSWORD_HASH are not set — admin login is disabled.",
-    );
+    if (!isDbConfigured()) {
+      console.warn(
+        "[auth] No DB and ADMIN_USERNAME/ADMIN_PASSWORD_HASH are not set — admin login is disabled.",
+      );
+    }
     return false;
   }
   // Compare username in constant time too, and always run the password

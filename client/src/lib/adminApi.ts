@@ -70,6 +70,7 @@ async function adminFetch(
 export interface MeResponse {
   authenticated: boolean;
   csrfToken?: string;
+  username?: string;
 }
 
 export async function fetchMe(): Promise<MeResponse> {

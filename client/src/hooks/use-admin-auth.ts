@@ -15,6 +15,7 @@ export function useAdminAuth() {
   return {
     isLoading: query.isLoading,
     isAuthenticated: query.data?.authenticated === true,
+    username: query.data?.username,
     refetch: query.refetch,
   };
 }
