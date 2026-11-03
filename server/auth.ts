@@ -43,18 +43,29 @@ export function verifyPassword(password: string, stored: string): boolean {
 
 // ---- Admin credential check ---------------------------------------------
 
+// DB-backed admin usernames are almost always email addresses, which people
+// (and browsers' autofill/capitalization) don't treat as case-sensitive — so
+// store and look them up in one canonical form. Used by both create-admin.ts
+// and the DB lookup below; keep the two in sync or logins will mysteriously
+// fail for anyone whose typed case doesn't match what was stored.
+export function normalizeAdminUsername(username: string): string {
+  return username.trim().toLowerCase();
+}
+
 // Two kinds of admin, checked in order:
 // 1. DB-backed accounts in the `users` table — any number of them, created
 //    with `npm run create-admin -- "email" "password"` (see create-admin.ts).
 // 2. The original single shared login via ADMIN_USERNAME/ADMIN_PASSWORD_HASH
 //    env vars — kept working so existing deployments aren't locked out.
+//    Unlike the DB accounts, this one is compared byte-for-byte, matching
+//    its original (pre-multi-admin) behavior exactly.
 export async function verifyAdminCredentials(
   username: string,
   password: string,
 ): Promise<boolean> {
   if (isDbConfigured()) {
     try {
-      const user = await storage.getUserByUsername(username);
+      const user = await storage.getUserByUsername(normalizeAdminUsername(username));
       if (user && verifyPassword(password, user.password)) return true;
     } catch (err) {
       console.error("[auth] DB admin lookup failed:", err);

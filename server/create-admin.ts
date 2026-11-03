@@ -2,7 +2,7 @@ import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { getDb, isDbConfigured } from "./db";
 import { users } from "@shared/schema";
-import { hashPassword } from "./auth";
+import { hashPassword, normalizeAdminUsername } from "./auth";
 
 // Usage: npm run create-admin -- "email@example.com" "a-strong-password"
 //
@@ -13,10 +13,10 @@ import { hashPassword } from "./auth";
 // ADMIN_USERNAME/ADMIN_PASSWORD_HASH env-var admin (see .env.example) keeps
 // working alongside these — this does not replace it.
 async function main() {
-  const username = process.argv[2];
+  const rawUsername = process.argv[2];
   const password = process.argv[3];
 
-  if (!username || !password) {
+  if (!rawUsername || !password) {
     console.error('Usage: npm run create-admin -- "email@example.com" "a-strong-password"');
     process.exit(1);
   }
@@ -32,6 +32,11 @@ async function main() {
     );
     process.exit(1);
   }
+
+  // Stored and matched in one canonical form (trimmed, lowercased) so typing
+  // the email with different capitalization at login can't fail to match —
+  // see normalizeAdminUsername's comment in auth.ts.
+  const username = normalizeAdminUsername(rawUsername);
 
   const db = getDb();
   const passwordHash = hashPassword(password);
@@ -50,7 +55,7 @@ async function main() {
     console.log(`✓ Admin account created: ${username}`);
   }
 
-  console.log("They can log in now at /admin/login with this username and password.");
+  console.log(`Log in at /admin/login with username "${username}" and the password you chose.`);
   process.exit(0);
 }
 
