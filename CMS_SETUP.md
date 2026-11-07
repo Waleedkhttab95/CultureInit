@@ -140,6 +140,23 @@ npm run db:push    # adds the tags column
 Until this runs, the admin panel's tags field will save but the column won't
 exist, so the request will fail — run it before using the field.
 
+### Internal article links are now dofollow
+Links inside article content used to get `rel="noopener noreferrer nofollow"`
+unconditionally. Internal links (relative, or absolute links to
+cultural-managment.com/www.cultural-managment.com) now drop `nofollow` —
+`noopener noreferrer` stays for security, `nofollow` stays too but only on
+genuinely external links. This only changes what happens when an article is
+*saved* (server/sanitize.ts runs at write time, not at render time), so
+already-published articles keep their old `rel` until re-sanitized. To fix
+existing articles, run once with `DATABASE_URL` available:
+
+```bash
+npm run fix-article-links
+```
+
+Safe to re-run — it only updates articles whose content actually changes,
+and doesn't touch `updatedAt` (this isn't a content edit).
+
 ### Form submissions now persist to Postgres
 Newsletter signups, PDF download requests, publish requests, service
 requests and program registrations are written to the DB

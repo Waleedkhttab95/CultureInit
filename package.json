@@ -13,7 +13,8 @@
     "db:seed": "tsx server/seed-articles.ts",
     "db:seed-write-community": "tsx server/seed-write-community.ts",
     "hash-password": "tsx server/hash-password.ts",
-    "create-admin": "tsx server/create-admin.ts"
+    "create-admin": "tsx server/create-admin.ts",
+    "fix-article-links": "tsx server/fix-article-links.ts"
   },
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",

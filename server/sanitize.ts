@@ -1,4 +1,22 @@
 import sanitizeHtml from "sanitize-html";
+import { SITE_URL } from "@shared/seo";
+
+const SITE_HOST = new URL(SITE_URL).hostname;
+
+// A link is internal if it's relative/an in-page anchor, or an absolute URL
+// that points at this site's own domain. Internal links should be dofollow
+// (rel has no "nofollow") so link equity flows through the site and crawlers
+// have a reason to follow them; outbound links stay nofollow.
+function isInternalHref(href: string | undefined): boolean {
+  if (!href) return false;
+  if (href.startsWith("/") || href.startsWith("#")) return true;
+  try {
+    const { hostname } = new URL(href);
+    return hostname === SITE_HOST || hostname === `www.${SITE_HOST}`;
+  } catch {
+    return false;
+  }
+}
 
 // Article HTML is authored by the trusted admin via the WYSIWYG editor, but it
 // is rendered to every public visitor with dangerouslySetInnerHTML. We sanitize
@@ -36,9 +54,16 @@ const options: sanitizeHtml.IOptions = {
   },
   transformTags: {
     // Force safe link behavior regardless of what the editor emitted.
-    a: sanitizeHtml.simpleTransform("a", {
-      rel: "noopener noreferrer nofollow",
-      target: "_blank",
+    // nofollow is dropped for internal links only — see isInternalHref.
+    a: (tagName, attribs) => ({
+      tagName,
+      attribs: {
+        ...attribs,
+        target: "_blank",
+        rel: isInternalHref(attribs.href)
+          ? "noopener noreferrer"
+          : "noopener noreferrer nofollow",
+      },
     }),
   },
   disallowedTagsMode: "discard",
